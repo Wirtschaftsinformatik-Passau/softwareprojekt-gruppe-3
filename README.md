@@ -16,6 +16,7 @@
 ### Vorstellung
 
 [Beschreiben Sie hier die einzelnen Teammitglieder mit Namen, E-Mail-Adresse und Github-Nutzernamen.]
+gauer03@ads.uni-passau.de
 
 ### Zuständigkeiten
 
