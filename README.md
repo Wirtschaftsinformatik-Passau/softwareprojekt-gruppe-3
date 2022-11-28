@@ -18,6 +18,7 @@
 [Beschreiben Sie hier die einzelnen Teammitglieder mit Namen, E-Mail-Adresse und Github-Nutzernamen.]
 gauer03@ads.uni-passau.de
 lippma05@ads.uni-passau.de
+abbass01@ads.uni-passau.de
 ### Zuständigkeiten
 
 [Beschreiben Sie die Verteilung der Aufgaben und Zusändigkeiten innerhalb Ihres Teams.]
