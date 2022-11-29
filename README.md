@@ -4,7 +4,7 @@
 
 ### Projektziele
 
-[Beschreiben Sie hier in einer kurzen Zusammenfassung den Hintergrund und die Ziele Ihrer Anwendung.]
+[Beschreiben Sie hier in einer kurzen Zusammenfassung den Hintergrund und die Ziele Ihrer Anwendung: Airline.]
 
 ### Funktionen
 
