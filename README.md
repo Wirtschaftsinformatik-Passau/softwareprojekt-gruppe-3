@@ -19,6 +19,8 @@
 gauer03@ads.uni-passau.de
 lippma05@ads.uni-passau.de
 abbass01@ads.uni-passau.de
+vrdolj02@ads.uni-passau.de
+gerste04@ads.uni-passau.de
 ### Zuständigkeiten
 
 [Beschreiben Sie die Verteilung der Aufgaben und Zusändigkeiten innerhalb Ihres Teams.]
