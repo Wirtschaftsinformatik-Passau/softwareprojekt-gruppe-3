@@ -6,5 +6,5 @@ views = Blueprint('views', __name__)
 
 
 @views.route('/')
-def home():
-    return "<h1>Test</h1>"
+def startseite():
+    return "<h1>Startseite anzeigen</h1>"
