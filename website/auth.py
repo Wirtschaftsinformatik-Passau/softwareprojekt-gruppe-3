@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, Flask
 
 # store the standard routes for a website where the user can navigate to
 
