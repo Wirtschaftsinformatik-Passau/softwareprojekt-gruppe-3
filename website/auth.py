@@ -24,19 +24,19 @@ def registrieren():
         cursor.execute('SELECT * FROM nutzerkonto WHERE emailAdresse = % s', (emailAdresse,))
         konto = cursor.fetchone()
         if konto:
-            msg = 'Account already exists !'
+            msg = 'Konto existiert bereits !'
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', emailAdresse):
-            msg = 'Invalid email address !'
+            msg = 'Ungültige E-Mail-Adresse !'
         elif not re.match(r'[A-Za-z0-9]+', passwort):
-            msg = 'Passwort must contain only characters and numbers !'
+            msg = 'Das Passwort darf nur Buchstaben und Zahlen enthalten!'
         elif not vorname or not nachname or not emailAdresse or not passwort:
-            msg = 'Please fill out the form !'
+            msg = 'Bitte füllen Sie das Formular aus !'
         else:
             cursor.execute('INSERT INTO nutzerkonto VALUES (NULL, % s, % s, % s, % s , "Passagier")', (vorname, nachname, emailAdresse , passwort ))
             mysql.get_db().commit()
-            msg = 'You have successfully registered !'
+            msg = 'Sie haben sich erfolgreich registriert !'
     elif request.method == 'POST':
-        msg = 'Please fill out the form !'
+        msg = 'Bitte füllen Sie das Formular aus !'
     return render_template('registrieren.html', msg=msg)
 
 
