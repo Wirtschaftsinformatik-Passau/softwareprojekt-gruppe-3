@@ -1,10 +1,11 @@
 <form action="{{ url_for('auth.registrieren') }}" method = "POST">
-    <div class="msg">{{ msg }}</div>
+
     <p><input type = "text" name = "vorname" placeholder="Vorname*" required/></p>
     <p><input type = "text" name = "nachname" placeholder="Nachname*" required/></p>
     <p><input type = "email" name = "emailAdresse" placeholder="E-Mail Adresse*" required/></p>
     <p><input type = "password" name = "passwort" placeholder="Passwort*" required /></p>
-    <!--<p>  <input type = "password" name = "passwort wiederholen" placeholder="Passwort wiederholen*" required />  </p>-->
+    <input type = "password" name = "passwort wiederholen" placeholder="Passwort wiederholen*" required />
   <p> <input type = "submit" value = "Jetzt Registrieren" /></p>
+    <div class="msg">{{ msg }}</div>
 </form>
 
