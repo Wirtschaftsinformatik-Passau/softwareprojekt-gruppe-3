@@ -1,16 +1,46 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request,session,redirect, url_for
 from .database import mysql
 import re
+
+
 # store the standard routes for a website where the user can navigate to
 auth = Blueprint('auth', __name__)
-@auth.route('anmelden', methods = ['POST', 'GET'])
-def anmelden():
-    return render_template("anmelden.html")
+
+
+@auth.route('/einloggen', methods = ['POST', 'GET'])
+def einloggen():
+    msg = ''
+    if request.method == 'POST' and 'emailAdresse' in request.form and 'passwort' in request.form:
+        emailAdresse = request.form['emailAdresse']
+        passwort = request.form['passwort']
+        # Check if account exists using MySQL
+        cursor = mysql.get_db().cursor()
+        cursor.execute('SELECT * FROM nutzerkonto WHERE emailAdresse = %s AND passwort = %s', (emailAdresse, passwort,))
+        # Fetch one record and return result
+        account = cursor.fetchone()
+        # If account exists in accounts table in out database
+        if account:
+            session['loggedin'] = True
+            session['id'] = account[0]
+            session['email'] = account[3]
+            return 'Erfolgreich eingeloggt!'
+        else:
+            # Account doesnt exist or EmailAdresse/passwort incorrect
+            msg = 'Email Adresse/passwort ist nicht korrekt !'
+
+    return render_template("einloggen.html",msg=msg)
 
 
 @auth.route('/logout')
 def logout():
-    return render_template("logout.html")
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    session.pop('email', None)
+    # Redirect to login page
+    return redirect(url_for('auth.einloggen'))
+
+
+
 @auth.route('/registrieren', methods= ['GET', 'POST'])
 def registrieren():
     msg = ''
@@ -22,8 +52,8 @@ def registrieren():
 
         cursor= mysql.get_db().cursor()
         cursor.execute('SELECT * FROM nutzerkonto WHERE emailAdresse = % s', (emailAdresse,))
-        konto = cursor.fetchone()
-        if konto:
+        account = cursor.fetchone()
+        if account:
             msg = 'Konto existiert bereits !'
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', emailAdresse):
             msg = 'Ungültige E-Mail-Adresse !'
