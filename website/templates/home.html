@@ -8,7 +8,7 @@
 <div class="card" style="width: 68rem;">
     <div class="card-body">
         <div class="container" style="width: 60rem; height: 10rem">
-            <form method="GET">
+            <form action="#" method="GET">
                 <div class="form-row">
                     <div class="col">
                         <label for="Von">Von:</label>
@@ -29,11 +29,46 @@
                                placeholder="1" style="width: 4rem">
 
                     </div>
-                        <button type="submit" class="btn btn-primary" style="height: 3rem">Flüge finden</button>
+                        <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Flüge finden</button>
                 </div>
 
             </form>
         </div>
     </div>
 </div>
+    {% if fluege %}
+<table border="1">
+        <thread>
+            <tr>
+                <th>Von</th>
+                <th>Nach</th>
+                <th>Abflug</th>
+                <th>Ankunft</th>
+                <th>Preis</th>
+            </tr>
+            </thread>
+        <tbody>
+        {% for rows in fluege %}
+        <tr>
+            <td>
+                {{ rows.abflugid }}
+            </td>
+             <td>
+                {{ rows.zielid }}
+            </td>
+             <td>
+                {{ rows.sollabflugzeit}}
+            </td>
+            <td>
+                {{ rows.sollankunftszeit }}
+            </td>
+        <td>
+                {{ rows.preis }}
+            </td>
+        </tr>
+             {% endfor %}
+            </tbody>
+
+    </table>
+{% endif %}
 {% endblock %}

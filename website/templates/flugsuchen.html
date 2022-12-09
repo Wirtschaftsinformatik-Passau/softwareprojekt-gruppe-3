@@ -4,20 +4,36 @@
 {% block content %}
 
 
-    <table border="1">
-        { % for flug in fluege % }
+{% if alle_flughafen %}
+<table border="1">
+        <thread>
+            <tr>
+                <th>Von</th>
+                <th>Nach</th>
+                <th>Abflug</th>
+                <th>Ankunft</th>
+            </tr>
+            </thread>
+        <tbody>
+        {% for rows in alle_flughafen %}
         <tr>
             <td>
-                {{ flug[0] }}
+                {{ rows.flugzeugid }}
             </td>
              <td>
-                {{ flug[1] }}
+                {{ rows.modell }}
             </td>
              <td>
-                {{ flug[2] }}
+                {{ rows.hersteller}}
+            </td>
+            <td>
+                {{ rows.anzahlsitzplaetze }}
             </td>
         </tr>
-        {% endfor %}
+             {% endfor %}
+            </tbody>
+
     </table>
+{% endif %}
 
 {% endblock %}

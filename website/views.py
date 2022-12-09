@@ -1,9 +1,8 @@
-from flask import Blueprint, render_template, request, flash
-import mysql.connector
-from .models import Flugzeug
-from website import db
-from website import create_app
-
+from flask import Blueprint, render_template, request, flash, jsonify
+from flask_login import login_required, current_user
+from .models import Flug, Flughafen, Flugzeug
+from . import db
+import json
 
 # store the standard routes for a website where the user can navigate to
 views = Blueprint('views', __name__)
@@ -11,7 +10,19 @@ views = Blueprint('views', __name__)
 
 @views.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template("home.html")
+    von = request.args.get('Von')
+    nach = request.args.get('Nach')
+    abflug = request.args.get('Abflugdatum')
+    passagiere = request.args.get('AnzahlPersonen')
+    print(von, nach, abflug, passagiere)
+    fluege = Flug.query.all()
+    return render_template("home.html", fluege=fluege)
+
+
+@views.route('/suchen')
+def flug_suchen():
+    alle_flughafen = Flugzeug.query.all()
+    return render_template("flugsuchen.html", alle_flughafen=alle_flughafen)
 
 
 @views.route('/flugzeug_erstellen', methods=['GET', 'POST'])
@@ -27,8 +38,3 @@ def flugzeug_erstellen():
         flash('Flugzeug added!', category='success')
 
     return render_template("Verwaltungspersonal/flugzeug_erstellen.html")
-
-
-
-
-
