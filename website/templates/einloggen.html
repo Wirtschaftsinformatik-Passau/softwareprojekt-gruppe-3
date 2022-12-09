@@ -1,0 +1,9 @@
+
+<form action="{{ url_for('auth.einloggen') }}" method = "POST">
+    <p>E-Mail Adresse  <input type = "email" name = "emailAdresse" required /></p>
+    <p>Passwort  <input type = "password" name = "passwort" required/></p>
+    <div class="msg">{{ msg }}</div>
+     <input type = "submit" value = "Jetzt Einloggen" />
+</form>
+
+<h3><a href = " ">Passwort vergessen? Hier klicken </a></h3>
