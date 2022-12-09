@@ -12,5 +12,12 @@
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$/website/templates" />
+        <option value="$MODULE_DIR$/website/templates/user_authentification" />
+        <option value="$MODULE_DIR$/website/templates/Verwaltungspersonal" />
+      </list>
+    </option>
   </component>
 </module>

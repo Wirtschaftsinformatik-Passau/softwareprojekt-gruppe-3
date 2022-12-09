@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Changed{% endblock %}
+{% block content %}
+
+
+    <table border="1">
+        { % for flug in fluege % }
+        <tr>
+            <td>
+                {{ flug[0] }}
+            </td>
+             <td>
+                {{ flug[1] }}
+            </td>
+             <td>
+                {{ flug[2] }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

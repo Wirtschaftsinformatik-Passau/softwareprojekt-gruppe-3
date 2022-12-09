@@ -7,14 +7,14 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('anmelden')
 def anmelden():
-    return render_template("anmelden.html")
+    return render_template("user_authentification/anmelden.html")
 
 
 @auth.route('/logout')
 def logout():
-    return render_template("logout.html")
+    return render_template("user_authentification/logout.html")
 
 
 @auth.route('/registrieren')
 def registrieren():
-    return render_template("registrieren.html")
+    return render_template("user_authentification/registrieren.html")

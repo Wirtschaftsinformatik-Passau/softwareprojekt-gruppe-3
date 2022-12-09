@@ -3,5 +3,37 @@
 {% block title %}Changed{% endblock %}
 {% block content %}
 
-<p class="text-center">Dies ist ein Airline-Buchungssystem.</p>
+<p class="text-center">Dies ist ein Airline-Buchungssystem.
+
+<div class="card" style="width: 68rem;">
+    <div class="card-body">
+        <div class="container" style="width: 60rem; height: 10rem">
+            <form method="GET">
+                <div class="form-row">
+                    <div class="col">
+                        <label for="Von">Von:</label>
+                        <input type="text" class="form-control" id="Von" name="Von" placeholder="Flughafen">
+                    </div>
+                    <div class="col">
+                        <label for="Nach">Nach:</label>
+                        <input type="text" class="form-control" id="Nach" name="Nach" placeholder="Flughafen">
+                    </div>
+                    <div class="col">
+                        <label for="Abflugdatum">Abflugdatum:</label>
+                        <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum"
+                               placeholder="24.12.2022">
+                    </div>
+                    <div class="col">
+                        <label for="AnzahlPersonen">Passagiere:</label>
+                        <input type="number" class="form-control" id="AnzahlPersonen" name="AnzahlPersonen"
+                               placeholder="1" style="width: 4rem">
+
+                    </div>
+                        <button type="submit" class="btn btn-primary" style="height: 3rem">Flüge finden</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

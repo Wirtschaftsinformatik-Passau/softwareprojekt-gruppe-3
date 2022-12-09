@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Flugzeug erstellen{% endblock %}
+{% block content %}
+    <div class="card" style="width: 68rem;">
+    <div class="card-body">
+        <div class="container" style="width: 60rem; height: 10rem">
+            <form method="POST">
+                <div class="form-row">
+                    <div class="col">
+                        <label for="Modell">Modell:</label>
+                        <input type="text" class="form-control" id="Modell" name="Modell" placeholder="">
+                    </div>
+                    <div class="col">
+                        <label for="Hersteller">Hersteller:</label>
+                        <input type="text" class="form-control" id="Hersteller" name="Hersteller" placeholder="">
+                    </div>
+                    <div class="col">
+                        <label for="Anzahl Sitzplätze">Anzahl der Sitzplätze:</label>
+                        <input type="number" class="form-control" id="anzahlsitzplaetze" name="anzahlsitzplaetze"
+                               placeholder="">
+                    </div>
+                        <button type="submit" class="btn btn-primary" style="height: 3rem">Flugzeug anlegen</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
