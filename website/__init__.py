@@ -1,10 +1,6 @@
 from flask import Flask
-from website import connect
-from flask_mysqldb import MySQL
-import mysql.connector
 from flask_sqlalchemy import SQLAlchemy
-import mysql.connector
-import pymysql
+
 
 conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("root", "", "localhost", "airlinedb")
 db = SQLAlchemy()
