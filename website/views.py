@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
 from .models import Flug, Flughafen, Flugzeug
 from . import db
-import json
+
 
 # store the standard routes for a website where the user can navigate to
 views = Blueprint('views', __name__)
