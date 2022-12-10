@@ -1,7 +1,5 @@
-from flask import Flask
-from flask_mysqldb import MySQL
 #import mysql.connector
-from website import db, create_app
+from website import db
 
 
 class Buchung(db.Model):

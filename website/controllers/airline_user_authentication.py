@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, Flask
 auth = Blueprint('auth', __name__)
 
 
-@auth.route('anmelden')
+@auth.route('/anmelden')
 def anmelden():
     return render_template("user_authentification/anmelden.html")
 
