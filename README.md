@@ -45,11 +45,11 @@ Claudius Gerstenkorn, gerste04@ads.uni-passau.de, ClaudiusGerstenkorn
 
 ### Zuständigkeiten
 
-Clara Gauer: Projektmanagement, Technische Koordination, Backend-Development
+Clara Gauer: Projektmanagement, Technische Koordination, Backend-Development, Frontend-Development
 
-Dani Lippmann: Backend-Development
+Dani Lippmann: Backend-Development, Frontend-Development
 
-Meriem Abbassi: Datenbank
+Meriem Abbassi: Data-Development, Backend-Development, Frontend-Development
 
 Marin Vrdoljak: Projektdokumentation, Technische Systemdokumentation, Präsentationen
 
