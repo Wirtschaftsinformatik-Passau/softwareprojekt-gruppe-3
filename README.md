@@ -53,7 +53,7 @@ Meriem Abbassi: Datenbank
 
 Marin Vrdoljak: Projektdokumentation, Technische Systemdokumentation, Präsentationen
 
-Claudius Gerstenkorn: Frontend-Development
+Claudius Gerstenkorn: Unit-Testing
 
 
 ## Guidelines zur Nutzung dieses Repositorys
