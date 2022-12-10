@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Changed{% endblock %}
+{% block content %}
+
+
+{% if alle_flughafen %}
+<table border="1">
+        <thread>
+            <tr>
+                <th>Von</th>
+                <th>Nach</th>
+                <th>Abflug</th>
+                <th>Ankunft</th>
+            </tr>
+            </thread>
+        <tbody>
+        {% for rows in alle_flughafen %}
+        <tr>
+            <td>
+                {{ rows.flugzeugid }}
+            </td>
+             <td>
+                {{ rows.modell }}
+            </td>
+             <td>
+                {{ rows.hersteller}}
+            </td>
+            <td>
+                {{ rows.anzahlsitzplaetze }}
+            </td>
+        </tr>
+             {% endfor %}
+            </tbody>
+
+    </table>
+{% endif %}
+
+{% endblock %}

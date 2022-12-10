@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Changed{% endblock %}
+{% block content %}
+
+
+<br>
+    <br>
+
+    <ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="#">Active</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Buchungen suchen</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Flugstatus</a>
+  </li>
+</ul>
+
+
+<div class="card" style="width: 68rem;">
+    <div class="card-body">
+        <div class="container" style="width: 60rem; height: 10rem">
+            <form action="#" method="GET">
+                <div class="form-row">
+                    <div class="col">
+                        <label for="Von">Von:</label>
+                        <input type="text" class="form-control" id="Von" name="Von" placeholder="Flughafen">
+                    </div>
+                    <div class="col">
+                        <label for="Nach">Nach:</label>
+                        <input type="text" class="form-control" id="Nach" name="Nach" placeholder="Flughafen">
+                    </div>
+                    <div class="col">
+                        <label for="Abflugdatum">Abflugdatum:</label>
+                        <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum"
+                               placeholder="24.12.2022">
+                    </div>
+                    <div class="col">
+                        <label for="AnzahlPersonen">Passagiere:</label>
+                        <input type="number" class="form-control" id="AnzahlPersonen" name="AnzahlPersonen"
+                               placeholder="1" style="width: 4rem">
+
+                    </div >
+                     <div class="col-auto my-4">
+                        <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Flüge finden</button>
+                        </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+    <br>
+    {% if fluege %}
+<table class="table">
+          <thead>
+    <tr>
+      <th scope="col">Von</th>
+      <th scope="col">Nach</th>
+      <th scope="col">Abflug</th>
+      <th scope="col">Ankunft</th>
+        <th scope="col">Preis</th>
+        <th scope="col"></th>
+    </tr>
+  </thead>
+        <tbody>
+        {% for rows in fluege %}
+        <tr>
+            <td>
+                {{ rows.abflugid }}
+            </td>
+             <td>
+                {{ rows.zielid }}
+            </td>
+             <td>
+                {{ rows.sollabflugzeit}}
+            </td>
+            <td>
+                {{ rows.sollankunftszeit }}
+            </td>
+            <td>
+                {{ rows.preis }}
+            </td>
+             <td>
+                 <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Flug buchen</button>
+            </td>
+        </tr>
+             {% endfor %}
+            </tbody>
+
+    </table>
+{% endif %}
+{% endblock %}
