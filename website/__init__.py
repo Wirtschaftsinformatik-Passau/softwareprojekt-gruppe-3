@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 
-conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("root", "", "localhost", "airlinedb")
+conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("clara", "1234", "localhost", "airline")
 db = SQLAlchemy()
 
 
