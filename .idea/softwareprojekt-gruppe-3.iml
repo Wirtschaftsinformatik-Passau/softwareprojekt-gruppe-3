@@ -17,6 +17,9 @@
         <option value="$MODULE_DIR$/website/templates" />
         <option value="$MODULE_DIR$/website/templates/user_authentification" />
         <option value="$MODULE_DIR$/website/templates/Verwaltungspersonal" />
+        <option value="$MODULE_DIR$/website/templates/Bodenpersonal" />
+        <option value="$MODULE_DIR$/website/templates/Gast" />
+        <option value="$MODULE_DIR$/website/templates/Passagier" />
       </list>
     </option>
   </component>

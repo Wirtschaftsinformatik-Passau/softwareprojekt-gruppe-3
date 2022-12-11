@@ -3,29 +3,30 @@ from flask_login import login_required, current_user
 from .models import Flug, Flughafen, Flugzeug
 from . import db
 
-
 # store the standard routes for a website where the user can navigate to
 views = Blueprint('views', __name__)
 
 
 @views.route('/', methods=['GET', 'POST'])
 def home():
-    von = request.args.get('Von')
-    nach = request.args.get('Nach')
+    vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('Von')).with_entities(Flughafen.flughafenid)
+    nachID = Flughafen.query.filter(Flughafen.stadt == request.args.get('Nach')).with_entities(Flughafen.flughafenid)
     abflug = request.args.get('Abflugdatum')
     passagiere = request.args.get('AnzahlPersonen')
-    print(von, nach, abflug, passagiere)
-    fluege = Flug.query.all()
-    return render_template("home.html", fluege=fluege)
+
+    fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID)
+
+    return render_template("Gast/home.html", fluege=fluege)
 
 
 @views.route('/suchen')
 def flug_suchen():
-    alle_flughafen = Flugzeug.query.all()
-    return render_template("flugsuchen.html", alle_flughafen=alle_flughafen)
+    flughafen = Flughafen.query.all()
+
+    return render_template("flugsuchen.html", flughafen=flughafen)
 
 
-@views.route('/flugzeug_erstellen', methods=['GET', 'POST'])
+@views.route('/home-vp', methods=['GET', 'POST'])
 def flugzeug_erstellen():
     if request.method == 'POST':
         modell = request.form.get('Modell')
@@ -37,4 +38,32 @@ def flugzeug_erstellen():
         db.session.commit()
         flash('Flugzeug added!', category='success')
 
-    return render_template("Verwaltungspersonal/flugzeug_erstellen.html")
+    return render_template("Verwaltungspersonal/home_vp.html")
+
+
+@views.route('/flug-anlegen', methods=['GET', 'POST'])
+def flug_anlegen():
+    if request.method == 'POST':
+        abflugid = Flughafen.query.filter(Flughafen.stadt == request.form.get('von')) \
+            .with_entities(Flughafen.flughafenid)
+        zielid = Flughafen.query.filter(Flughafen.stadt == request.form.get('nach')) \
+            .with_entities(Flughafen.flughafenid)
+        flugstatus = "pünktlich"
+        abflugdatum = request.form.get('abflugdatum') + " " + request.form.get("abflugzeit")
+        ankunftsdatum = request.form.get('ankunftsdatum') + " " + request.form.get("ankunftszeit")
+        flugnummer = request.form.get('fluglinie')
+        preis = request.form.get('preis')
+        gate = "A2"
+
+        new_flug = Flug(flugzeugid=1, abflugid=abflugid, zielid=zielid, flugstatus=flugstatus,
+                        sollabflugzeit=abflugdatum, sollankunftszeit=ankunftsdatum,
+                        istabflugzeit=abflugdatum, istankunftszeit=ankunftsdatum,
+                        flugnummer=flugnummer,
+                        preis=preis, gate=gate)
+        db.session.add(new_flug)
+        db.session.commit()
+        flash('Flugzeug added!', category='success')
+
+        print(abflugid, zielid, flugstatus, abflugdatum, ankunftsdatum, flugnummer, preis, gate)
+
+    return render_template("Verwaltungspersonal/flug_anlegen.html")
