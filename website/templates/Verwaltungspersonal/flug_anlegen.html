@@ -28,16 +28,24 @@
                     <div class="form-row">
                         <div class="col-md-4 mb-3">
                             <label for="Von">Von:</label>
-                            <input type="text" class="form-control" id="von" name="von" placeholder="Flughafen"
-                                   required>
+                             <select id="von" name="von" class="form-control">
+                                <option selected>auswählen...</option>
+                                {% for rows in flughafen_liste %}
+                                <option> {{ rows.stadt }} </option>
+                                {% endfor %}
+                            </select>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Nach">Nach:</label>
-                            <input type="text" class="form-control" id="nach" name="nach" placeholder="Flughafen"
-                                   required>
+                             <select id="nach" name="nach" class="form-control">
+                                <option selected>auswählen...</option>
+                                {% for rows in flughafen_liste %}
+                                <option> {{ rows.stadt }} </option>
+                                {% endfor %}
+                            </select>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>

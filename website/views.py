@@ -9,14 +9,20 @@ views = Blueprint('views', __name__)
 
 @views.route('/', methods=['GET', 'POST'])
 def home():
-    vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('Von')).with_entities(Flughafen.flughafenid)
-    nachID = Flughafen.query.filter(Flughafen.stadt == request.args.get('Nach')).with_entities(Flughafen.flughafenid)
+    flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
+
+    vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('von')).with_entities(Flughafen.flughafenid)
+    nachID = Flughafen.query.filter(Flughafen.stadt == request.args.get('nach')).with_entities(Flughafen.flughafenid)
     abflug = request.args.get('Abflugdatum')
     passagiere = request.args.get('AnzahlPersonen')
 
+    print(vonID, nachID)
+
+    #Datenbankabrag nach Abflug und Ziel Flughafen sowie Datum und Passagieranzahl < Summe bereits gebuchter Passagiere
+
     fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID)
 
-    return render_template("Gast/home.html", fluege=fluege)
+    return render_template("Gast/home.html", fluege=fluege, flughafen_liste=flughafen_liste)
 
 
 @views.route('/suchen')
@@ -43,6 +49,8 @@ def flugzeug_erstellen():
 
 @views.route('/flug-anlegen', methods=['GET', 'POST'])
 def flug_anlegen():
+    flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
+
     if request.method == 'POST':
         abflugid = Flughafen.query.filter(Flughafen.stadt == request.form.get('von')) \
             .with_entities(Flughafen.flughafenid)
@@ -66,4 +74,4 @@ def flug_anlegen():
 
         print(abflugid, zielid, flugstatus, abflugdatum, ankunftsdatum, flugnummer, preis, gate)
 
-    return render_template("Verwaltungspersonal/flug_anlegen.html")
+    return render_template("Verwaltungspersonal/flug_anlegen.html", flughafen_liste=flughafen_liste)
