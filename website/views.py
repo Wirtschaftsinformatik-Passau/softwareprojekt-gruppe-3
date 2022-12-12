@@ -18,22 +18,18 @@ def home():
 
     print(vonID, nachID)
 
-    #Datenbankabrag nach Abflug und Ziel Flughafen sowie Datum und Passagieranzahl < Summe bereits gebuchter Passagiere
+    # Datenbankabfrage nach Abflug und Ziel Flughafen sowie Datum und Passagieranzahl < Summe bereits gebuchter Passagiere
 
     fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID)
 
     return render_template("Gast/home.html", fluege=fluege, flughafen_liste=flughafen_liste)
 
 
-@views.route('/suchen')
-def flug_suchen():
-    flughafen = Flughafen.query.all()
-
-    return render_template("flugsuchen.html", flughafen=flughafen)
-
-
 @views.route('/home-vp', methods=['GET', 'POST'])
 def flugzeug_erstellen():
+    flugzeuge = Flugzeug.query.all()
+    print(flugzeuge)
+
     if request.method == 'POST':
         modell = request.form.get('Modell')
         hersteller = request.form.get('Hersteller')
@@ -44,7 +40,7 @@ def flugzeug_erstellen():
         db.session.commit()
         flash('Flugzeug added!', category='success')
 
-    return render_template("Verwaltungspersonal/home_vp.html")
+    return render_template("Verwaltungspersonal/home_vp.html", flugzeuge=flugzeuge)
 
 
 @views.route('/flug-anlegen', methods=['GET', 'POST'])
