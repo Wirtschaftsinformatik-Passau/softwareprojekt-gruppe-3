@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, flash, jsonify, url_for
 from flask_login import login_required, current_user
+from werkzeug.security import generate_password_hash
+
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto
 from . import db
 
@@ -41,7 +43,7 @@ def flugzeug_erstellen():
         db.session.commit()
         flash('Flugzeug added!', category='success')
 
-    return render_template("Verwaltungspersonal/home_vp.html", flugzeuge=flugzeuge)
+    return render_template("Verwaltungspersonal/home_vp.html", flugzeuge=flugzeuge, user=current_user)
 
 
 @views.route('/flugzeug-bearbeiten', methods=['GET', 'POST'])
@@ -50,7 +52,7 @@ def flugzeug_bearbeiten():
                                              Flugzeug.anzahlsitzplaetze).order_by(Flugzeug.flugzeugid.desc()) \
                                             .limit(5).all()
 
-    return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge)
+    return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge, user=current_user)
 
 
 @views.route('/flug-anlegen', methods=['GET', 'POST'])
@@ -80,7 +82,7 @@ def flug_anlegen():
 
         print(abflugid, zielid, flugstatus, abflugdatum, ankunftsdatum, flugnummer, preis, gate)
 
-    return render_template("Verwaltungspersonal/flug_anlegen.html", flughafen_liste=flughafen_liste)
+    return render_template("Verwaltungspersonal/flug_anlegen.html", flughafen_liste=flughafen_liste, user=current_user)
 
 
 @views.route('/accounts-anlegen', methods=['GET', 'POST'])
@@ -89,23 +91,23 @@ def accounts_anlegen():
         vorname = request.form.get('vorname')
         nachname = request.form.get('nachname')
         emailadresse = request.form.get('emailadresse')
-        passwort = "aadsöf"
+        passwort = "12345"
         rolle = request.form.get('rolle')
 
         new_account = Nutzerkonto(vorname=vorname, nachname=nachname, emailadresse=emailadresse, rolle=rolle,
-                                  passwort=passwort)
+                                  passwort=generate_password_hash(passwort, method='sha256'))
         db.session.add(new_account)
         db.session.commit()
 
         flash(rolle + "account wurde erfolgreich erstellt")
 
-    return render_template("Verwaltungspersonal/accounts_anlegen.html")
+    return render_template("Verwaltungspersonal/accounts_anlegen.html", user=current_user)
 
 
 @views.route('/accounts-bearbeiten', methods=['GET', 'POST'])
 def accounts_bearbeiten():
     accounts = Nutzerkonto.query.all()
-    return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts)
+    return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)
 
 
 @views.route('/accounts-loeschen/<int:id>', methods=['GET', 'POST'])
@@ -114,4 +116,4 @@ def accounts_loeschen(id):
     db.session.delete(account)
     db.session.commit()
     accounts = Nutzerkonto.query.all()
-    return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts)
+    return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)

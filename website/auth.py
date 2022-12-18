@@ -10,7 +10,7 @@ import re
 auth = Blueprint('auth', __name__)
 
 
-@auth.route('anmelden')
+@auth.route('anmelden', methods=['GET', 'POST'])
 def anmelden():
     if request.method == 'POST':
         emailadresse = request.form.get('emailadresse')
@@ -18,14 +18,18 @@ def anmelden():
 
         nutzer = Nutzerkonto.query.filter_by(emailadresse=emailadresse).first()
         if nutzer:
-            if check_password_hash(nutzer.passwort, passwort):
-                flash('Logged in successfully!', category='success')
+            if check_password_hash(nutzer.passwort, passwort) and nutzer.rolle == "Passagier":
+                flash('Erfolgreich angemeldet', category='success')
                 login_user(nutzer, remember=True)
                 return redirect(url_for('views.home'))
+            elif check_password_hash(nutzer.passwort, passwort) and nutzer.rolle == "Verwaltungspersonal":
+                flash('Erfolgreich angemeldet', category='success')
+                login_user(nutzer, remember=True)
+                return redirect(url_for('views.flugzeug_erstellen'))
             else:
-                flash('Incorrect password, try again.', category='error')
+                flash('Falsches Passwort! Versuchen Sie es erneut.', category='error')
         else:
-            flash('Email does not exist.', category='error')
+            flash('Die E-Mail Adresse existiert nicht.', category='error')
 
     return render_template("user_authentification/anmelden.html", user=current_user)
 
