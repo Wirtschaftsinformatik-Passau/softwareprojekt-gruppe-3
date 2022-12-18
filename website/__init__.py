@@ -15,9 +15,13 @@ def create_app():
 
     from .views import views
     from .auth import auth
+    from .passagier_views import passagier_views
+    from .verwaltungspersonal_views import verwaltungspersonal_views
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(passagier_views, url_prefix='/')
+    app.register_blueprint(verwaltungspersonal_views, url_prefix='/')
 
     from .models import Nutzerkonto
     login_manager = LoginManager()
