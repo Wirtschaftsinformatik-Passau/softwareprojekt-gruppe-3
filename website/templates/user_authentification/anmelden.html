@@ -1,9 +1,12 @@
-
+ <h1>Willkommen zurück!</h1>
 <form action="" method = "POST">
-    <p>E-Mail Adresse  <input type = "email" name = "email" /></p>
-    <p>Passwort  <input type = "password" name = "password" /></p>
-    <p>Anmelden <input type = "submit" value = "Submit" /></p>
+    <p>Email Adresse*:  <input type = "email" name = "emailAdresse"  required/></p>
+    <p>Passwort*:  <input type = "password" name = "passwort"   required/></p>
+    <p><input type = "submit" value = "Jetzt Einloggen" /></p>
+    <p> <input type = "submit" value = "Passwort vergessen? Hier Klicken!" /></p>
+
 </form>
 
-<h3>Sie sind noch nicht registriert?</h3>
-<h3><a href = "{{url_for('auth.registrieren') }}">Zum Registrieren hier klicken</a></h3>
+<!--<h3>Sie sind noch nicht registriert?</h3>-->
+<!--<h3><a href = "{{url_for('auth.registrieren') }}">Zum Registrieren hier klicken</a></h3>-->
+

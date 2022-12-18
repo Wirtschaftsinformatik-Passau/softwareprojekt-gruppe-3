@@ -2,12 +2,12 @@
 {% block title %}registrieren{% endblock %}
 {% block content %}
     <h1>Hier Registrieren:</h1>
-<form action="" method = "POST">
-    <p><input type = "text" name = "Vorname" placeholder="Vorname*" required/></p>
-    <p><input type = "text" name = "Nachname" placeholder="Nachname*" required/></p>
-    <p><input type = "email" name = "EmailAdresse" placeholder="E-Mail Adresse*" required/></p>
-    <p><input type = "password" name = "Passwort" placeholder="Passwort*" required /></p>
-    <p>  <input type = "password" name = "Passwort wiederholen" placeholder="Passwort wiederholen*" required />  </p>
+<form action="{{ url_for('auth.registrieren') }}" method = "POST">
+    <p><input type = "text" name = "vorname" placeholder="Vorname*" required/></p>
+    <p><input type = "text" name = "nachname" placeholder="Nachname*" required/></p>
+    <p><input type = "email" name = "emailadresse" placeholder="Email Adresse*" required/></p>
+    <p><input type = "password" name = "passwort1" placeholder="Passwort*" required /></p>
+    <p>  <input type = "password" name = "passwort2" placeholder="Passwort wiederholen*" required />  </p>
   <p> <input type = "submit" value = "Jetzt Registrieren" /></p>
 </form>
 {% endblock %}
