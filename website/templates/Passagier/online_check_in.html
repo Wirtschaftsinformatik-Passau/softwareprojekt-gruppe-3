@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Online Checkin{% endblock %}
+{% block content %}
+
+    <h4>Personenbezogene Daten</h4>
+    <!-- Vorname und Nachname -->
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="">Vorname</span>
+        </div>
+        <input type="text" class="form-control">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="">Nachname</span>
+        </div>
+        <input type="text" class="form-control">
+    </div>
+    <br>
+    <!-- Geburtsdatum -->
+    <div class="input-group-prepend">
+        <span class="input-group-text" id="">Geburtsdatum</span>
+    </div>
+    <input type="Date" class="form-control" id="geburtsdatum" name="geburtsdatum" placeholder=""
+           required>
+    <div class="valid-feedback">
+        Looks good!
+    </div>
+    <!-- Leerzeile einfügen durch <br> -->
+    <!-- Staatsbürgerschaft im Drop-Down-Menü-->
+    <br>
+    <!-- Example split danger button -->
+<div class="btn-group">
+  <button type="button" class="btn btn-secondary">Staatsbürgerschaft</button>
+  <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item" href="#">deutsch</a>
+    <a class="dropdown-item" href="#">englisch</a>
+    <a class="dropdown-item" href="#">polnisch</a>
+  </div>
+</div>
+
+{% endblock %}

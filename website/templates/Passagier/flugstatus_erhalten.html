@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Flugstatus{% endblock %}
+{% block content %}
+
+    <h1>Flugstatus</h1>
+
+    <form>
+
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="flugnummer" name="flugnummer">Flugnummer</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm"
+                   placeholder="ABC123">
+        </div>
+        <button type="submit" class="btn btn-outline-success">Submit</button>
+    </form>
+    <thead>
+        <tr>
+            <th>Flugstatus</th>
+        </tr>
+    </thead>
+     <tbody>
+        <tr>
+            <td>{{ flugstatus }}</td>
+        </tr>
+    </tbody>
+{% endblock %}

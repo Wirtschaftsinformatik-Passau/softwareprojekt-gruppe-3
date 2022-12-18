@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Buchungsuebersicht{% endblock %}
+{% block content %}
+
+    <h1>Buchungsübersicht</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Buchungsnummer</th>
+            <th scope="col">Buchungsstatus</th>
+            <th scope="col">Von</th>
+            <th scope="col">Nach</th>
+            <th scope="col">Datum</th>
+            <th scope="col">Vorname</th>
+            <th scope="col">Nachname</th>
+            <th scope="col">Gepaeckstatus</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for rows in buchung %}
+            <tr>
+                <td>
+                    {{ rows.buchungsid }}
+                </td>
+                <td>
+                    {{ rows.buchungsstatus }}
+                </td>
+                <td>
+                    {{ von }}
+                </td>
+                <td>
+                    {{ nach }}
+                </td>
+                <td>
+                    {{ datum }}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
