@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Changed{% endblock %}
+{% block title %}Homepage{% endblock %}
 {% block content %}
 
 
@@ -15,7 +15,13 @@
             <a class="nav-link" href="/flug-anlegen">Buchungen suchen</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Flugstatus</a>
+            <a class="nav-link" href="/flugstatus_erhalten">Flugstatus</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/buchung_suchen">Buchungsübersicht</a>
+        </li>
+    <li class="nav-item">
+            <a class="nav-link" href="/online_check_in">Online-Check-In</a>
         </li>
     </ul>
 
@@ -107,3 +113,4 @@
         </table>
     {% endif %}
 {% endblock %}
+

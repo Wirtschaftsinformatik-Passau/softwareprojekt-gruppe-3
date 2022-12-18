@@ -91,10 +91,10 @@ def buchungsuebersicht_erhalten():
             and_(Flug.abflugid == Flughafen.flughafenid, Flug.flugid == Buchung.flugid))
 
 
-    return render_template("Passagier/buchungsuebersicht.html", buchung=buchung, von=von)
+    return render_template("Passagier/buchung_suchen.html", buchung=buchung, von=von)
 
 
-@views.route('/flugstatus', methods=['POST', 'GET'])
+@views.route('/flugstatus_erhalten', methods=['POST', 'GET'])
 def flugstatus_erhalten():
     # Status von der Flugnummer holen, die eingetippt worden ist
 
@@ -104,7 +104,7 @@ def flugstatus_erhalten():
     #gibt leere Brackets zurück
     flugstatus = Flug.query.filter(flug_nummer).all()
 
-    return render_template("Passagier/flugstatus_einsehen.html", flugstatus=flugstatus)
+    return render_template("Passagier/flugstatus_erhalten.html", flugstatus=flugstatus)
 
 @views.route('/online_check_in', methods=['POST', 'GET'])
 def online_check_in():
