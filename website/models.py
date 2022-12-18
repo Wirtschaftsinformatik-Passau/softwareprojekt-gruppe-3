@@ -1,7 +1,18 @@
-#from flask import Flask
-#from flask_mysqldb import MySQL
-#import mysql.connector
+# from flask import Flask
+# from flask_mysqldb import MySQL
+# import mysql.connector
+from flask_login import UserMixin
+
 from website import db, create_app
+
+
+class Nutzerkonto(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    vorname = db.Column(db.String(150))
+    nachname = db.Column(db.String(150))
+    emailadresse = db.Column(db.String(150), unique=True)
+    passwort = db.Column(db.String(150))
+    rolle = db.Column(db.Enum("Bodenpersonal", "Verwaltungspersonal", "Passagier"))
 
 
 class Buchung(db.Model):
@@ -52,15 +63,6 @@ class Gepaeck(db.Model):
     passagierid = db.Column(db.Integer)
     gewicht = db.Column(db.Float)
     status = db.Column(db.Enum("gebucht", "storniert", "eingecheckt"))
-
-
-class Nutzerkonto(db.Model):
-    nutzerid = db.Column(db.Integer, primary_key=True)
-    vorname = db.Column(db.String(150))
-    nachname = db.Column(db.String(150))
-    emailadresse = db.Column(db.String(150))
-    gehashtespasswort = db.Column(db.String(150))
-    rolle = db.Column(db.Enum("Bodenpersonal", "Verwaltungspersonal", "Passagier"))
 
 
 class Passagier(db.Model):

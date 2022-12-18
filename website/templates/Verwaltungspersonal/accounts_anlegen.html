@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Buchung{% endblock %}
+{% block content %}
+    <br>
+    <br>
+
+
+    <!-- upper nav bar with links to VP functions -->
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="/home-vp">Flugzeuge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/flug-anlegen">Flüge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Log</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Reporting</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link active" href="/accounts_anlegen">Accounts</a>
+        </li>
+    </ul>
+
+    <!-- bigger box around form  -->
+
+    <div class="card" style="width: 63rem; height: 34rem">
+        <div class="card-body">
+
+            <!-- smaller nav bar for anlegen und bearbeiten -->
+
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Anlegen</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/accounts-bearbeiten">Bearbeiten</a>
+                </li>
+            </ul>
+
+            <!-- smaller box around input form -->
+
+            <div class="card" style="width: 60rem;">
+                <div class="card-body">
+                    <div class="container" style="width: 55rem; height: 26rem">
+
+                        <!-- form to input data -->
+
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="Vorname">Vorname:</label>
+                                <input type="text" class="form-control" id="vorname" name="vorname"
+                                       placeholder="" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="Nachname">Nachname:</label>
+                                <input type="text" class="form-control" id="nachname" name="nachname"
+                                       placeholder="" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="emailadresse">E-mail Adresse:</label>
+                                <input type="email" class="form-control" id="emailadresse" name="emailadresse"
+                                       placeholder="name@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="Rolle">Rolle</label>
+                                <select class="form-control" id="rolle" name="rolle">
+                                    <option>Verwaltungspersonal</option>
+                                    <option>Bodenpersonal</option>
+                                </select>
+                            </div>
+                            <br>
+
+
+                            <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Account
+                                anlegen
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

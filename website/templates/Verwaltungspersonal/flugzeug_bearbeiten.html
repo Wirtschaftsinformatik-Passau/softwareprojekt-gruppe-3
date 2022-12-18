@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Buchung{% endblock %}
+{% block content %}
+        <br>
+    <br>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Flugzeuge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/flug-anlegen">Flüge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Log</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Reporting</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/accounts-anlegen">Accounts</a>
+        </li>
+    </ul>
+
+
+    <div class="card" style="width: 68rem; height: 35rem">
+        <div class="card-body">
+
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/home-vp">Anlegen</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Bearbeiten</a>
+                </li>
+            </ul>
+            <div class="card" style="width: 60rem;height: 30rem">
+                <div class="card-body">
+                    <div class="container" style="width: 55rem; height: 30rem">
+                        <br>
+
+                         {% if flugzeuge %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Hersteller</th>
+                <th scope="col">Modell</th>
+                <th scope="col">Sitzplatzanzahl</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for rows in flugzeuge %}
+                <tr>
+                    <td>
+                        {{ rows.flugzeugid }}
+                    </td>
+                    <td>
+                        {{ rows.hersteller }}
+                    </td>
+                    <td>
+                        {{ rows.modell }}
+                    </td>
+                    <td>
+                        {{ rows.anzahlsitzplaetze }}
+                    </td>
+                    <td>
+                        {{ "" }}
+                    </td>
+                    <td>
+                        <button type="submit" value="submit" class="btn btn-primary" style="width: 8rem; height: 3rem">
+                            bearbeiten
+                        </button>
+
+                    </td>
+                    <td>
+                        <button type="submit" value="submit" class="btn btn-primary" style="width: 8rem; height: 3rem">
+                            löschen
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    {% endif %}
+
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
