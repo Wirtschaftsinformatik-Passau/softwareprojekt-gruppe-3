@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}Accounts bearbeiten{% endblock %}
+{% block content %}
+    <br>
+    <br>
+
+    <!-- upper nav bar with links to VP functions -->
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/home-vp">Flugzeuge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/flug-anlegen">Flüge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Log</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Reporting</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Accounts</a>
+        </li>
+    </ul>
+
+    <!-- bigger box around form  -->
+
+    <div class="card" style="width: 68rem; height: 35rem">
+        <div class="card-body">
+
+            <!-- smaller nav bar for anlegen und bearbeiten -->
+
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/accounts-anlegen">Anlegen</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Bearbeiten</a>
+                </li>
+            </ul>
+            <!-- smaller box around table  -->
+
+            <div class="card" style="width: 60rem;height: 30rem">
+                <div class="card-body">
+                    <div class="container" style="width: 55rem; height: 30rem">
+                        <br>
+
+                        <!-- table data -->
+
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">Vorname</th>
+                                <th scope="col">Nachname</th>
+                                <th scope="col">E-Mail Adresse</th>
+                                <th scope="col">Rolle</th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for rows in accounts %}
+                                <tr>
+                                    <td>
+                                        {{ rows.vorname }}
+                                    </td>
+                                    <td>
+                                        {{ rows.nachname }}
+                                    </td>
+                                    <td>
+                                        {{ rows.emailadresse }}
+                                    </td>
+                                    <td>
+                                        {{ rows.rolle }}
+                                    </td>
+
+                                    <!-- button die zu der funktion referenzieren -->
+
+                                    <td>
+                                        <a href="{{ url_for('views.accounts_bearbeiten', id=rows.id) }}"
+                                           data-toggle="modal" data-target="#updateModal"
+                                           class="btn btn-warning">Bearbeiten</a>
+
+
+                                        <a href="{{ url_for('views.accounts_loeschen', id=rows.id) }}"
+                                           class="btn btn-danger">Löschen</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+
+                        </table>
+
+                        <!-- pop up window for data update -->
+
+
+                        <div id="updateModal" class="modal fade">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="POST" action="{{ url_for('views.accounts_bearbeiten') }}">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Account bearbeiten</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="Vorname">Vorname:</label>
+                                                <input type="text" class="form-control" id="vorname" name="vorname"
+                                                       placeholder="" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Nachname">Nachname:</label>
+                                                <input type="text" class="form-control" id="nachname" name="nachname"
+                                                       placeholder="" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="emailadresse">E-mail Adresse:</label>
+                                                <input type="email" class="form-control" id="emailadresse"
+                                                       name="emailadresse"
+                                                       placeholder="name@example.com" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Rolle">Rolle</label>
+                                                <select class="form-control" id="rolle" name="rolle">
+                                                    <option>Verwaltungspersonal</option>
+                                                    <option>Bodenpersonal</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="button" class="btn btn-default" data-dismiss="modal"
+                                                   value="Abbrechen">
+                                            <input type="submit" class="btn btn-info" value="Speichern">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

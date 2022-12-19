@@ -6,46 +6,110 @@
     <br>
 
     <ul class="nav nav-tabs">
-  <li class="nav-item">
-    <a class="nav-link active" aria-current="page" href="#">Flugzeuge</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="/flug-anlegen">Flüge</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#">Log</a>
-  </li>
-    <li class="nav-item">
-    <a class="nav-link" href="#">Reporting</a>
-  </li>
-</ul>
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Flugzeuge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/flug-anlegen">Flüge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Log</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Reporting</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/accounts-anlegen">Accounts</a>
+        </li>
+    </ul>
 
 
-    <div class="card" style="width: 68rem;">
-    <div class="card-body">
-        <div class="container" style="width: 60rem; height: 10rem">
-            <form method="POST">
-                <div class="form-row">
-                    <div class="col">
-                        <label for="Modell">Modell:</label>
-                        <input type="text" class="form-control" id="Modell" name="Modell" placeholder="">
+    <div class="card" style="width: 63rem;">
+        <div class="card-body">
+
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Anlegen</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/flugzeug-bearbeiten">Bearbeiten</a>
+                </li>
+            </ul>
+            <div class="card" style="width: 60rem;">
+                <div class="card-body">
+                    <div class="container-fluid" style="width: 55rem; height: 10rem">
+                        <br>
+
+                        <form method="POST">
+                            <div class="form-row">
+                                <div class="col">
+                                    <label for="Modell">Modell:</label>
+                                    <input type="text" class="form-control" id="Modell" name="Modell" placeholder=""
+                                    required>
+                                </div>
+                                <div class="col">
+                                    <label for="Hersteller">Hersteller:</label>
+                                    <input type="text" class="form-control" id="Hersteller" name="Hersteller"
+                                           placeholder="" required>
+                                </div>
+                                <div class="col">
+                                    <label for="Anzahl Sitzplätze">Anzahl der Sitzplätze:</label>
+                                    <input type="number" class="form-control" id="anzahlsitzplaetze"
+                                           name="anzahlsitzplaetze"
+                                           placeholder="" required>
+                                </div>
+                                <div class="col-auto my-4">
+                                    <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">
+                                        Flugzeug anlegen
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+
                     </div>
-                    <div class="col">
-                        <label for="Hersteller">Hersteller:</label>
-                        <input type="text" class="form-control" id="Hersteller" name="Hersteller" placeholder="">
-                    </div>
-                    <div class="col">
-                        <label for="Anzahl Sitzplätze">Anzahl der Sitzplätze:</label>
-                        <input type="number" class="form-control" id="anzahlsitzplaetze" name="anzahlsitzplaetze"
-                               placeholder="">
-                    </div>
-                        <div class="col-auto my-4">
-                        <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Flugzeug anlegen</button>
-                        </div>
                 </div>
 
-            </form>
+            </div>
+
         </div>
     </div>
-</div>
+
+    <br>
+    {% if flugzeuge %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Hersteller</th>
+                <th scope="col">Modell</th>
+                <th scope="col">Sitzplatzanzahl</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for rows in flugzeuge %}
+                <tr>
+                    <td>
+                        {{ rows.flugzeugid }}
+                    </td>
+                    <td>
+                        {{ rows.hersteller }}
+                    </td>
+                    <td>
+                        {{ rows.modell }}
+                    </td>
+                    <td>
+                        {{ rows.anzahlsitzplaetze }}
+                    </td>
+                    <td>
+                        {{ "" }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    {% endif %}
 {% endblock %}

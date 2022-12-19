@@ -5,13 +5,12 @@
     <h1>Buchungsübersicht</h1>
 
     <div class="input-group mb-3">
-        <label for="Buchungsnummer">Buchungsnummer </label>
-
-        <input type="text" class="form-control" id="buchungsnummer" name="buchungsnummer" placeholder="103318"
+        <label for="buchungsnummer">Buchungsnummer</label>
+        <input type="text" class="form-control" id="buchungsnummer" name="buchungsnummer" placeholder="999"
                aria-label="buchungsnummer" aria-describedby="basic-addon2">
         <div class="input-group-append">
             <button
-                class="btn btn-info" id="inputGroup-sizing-lg" type="button" >Buchung suchen
+                    class="btn btn-info" id="inputGroup-sizing-lg" type="button">Buchung suchen
             </button>
         </div>
     </div>
@@ -28,30 +27,54 @@
             <th scope="col">Gepaeckstatus</th>
         </tr>
         </thead>
-        <tbody>
+
         {% for rows in buchung %}
-            <tr>
-                <td>
-                    {{ rows.buchungsid }}
-                </td>
-                <td>
-                    {{ rows.buchungsstatus }}
-                </td>
-                <td>
-                    {{ von }}
-                </td>
-                <td>
-                    {{ nach }}
-                </td>
-                <td>
-                    {{ datum }}
-                </td>
-                <td>
-                    {{ rows.vorname }}
-                    {{ rows.nachname }}
-                    <button type="button" class="btn btn-info">Online Check In</button>
-                </td>
-            </tr>
+
+            <td>
+                {{ rows.buchungsid }}
+            </td>
+            <td>
+                {{ rows.buchungsstatus }}
+            </td>
         {% endfor %}
+        {% for rows in ankunft_flughafen %}
+            <td>
+                {{ rows.kennung }}
+            </td>
+
+        {% endfor %}
+        {% for rows in ziel_flughafen %}
+            <td>
+            {{ rows.kennung }}
+            </td>
+        {% endfor %}
+
+        {% for rows in flug %}
+            <td>
+            {{ rows.sollabflugzeit }}
+            </td>
+        {% endfor %}
+
+        {% for rows in nutzer %}
+            <td>
+                {{ rows.vorname }}
+                {{ rows.nachname }}
+                <br>
+                <button onclick="window.location='online_check_in.html'"class="btn btn-info">Online-Check-In</button>
+                <button onclick="window.location='storno.html'"class="btn btn-danger">Storno</button>
+
+            </td>
+        {% endfor %}
+        {% for rows in gepaeck %}
+            <td>
+                {{ rows.status }}
+            </td>
+    {% endfor  %}
+
+
+        <!--<button type="button" class="btn btn-info">Online Check In</button>-->
+        </td>
+        </tr>
+
     </table>
 {% endblock %}

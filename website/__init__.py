@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, UserMixin
+
 
 
 conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("clara", "1234", "localhost", "airline")
@@ -31,6 +32,4 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return Nutzerkonto.query.get(int(id))
-
-
     return app

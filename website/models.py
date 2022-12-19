@@ -1,17 +1,14 @@
-from flask import Flask
-from flask_mysqldb import MySQL
-#import mysql.connector
-from website import db, create_app
+from website import db
 from flask_login import UserMixin
-
 
 
 class Buchung(db.Model):
     buchungsid = db.Column(db.Integer, primary_key=True)
-    nutzerid = db.Column(db.Integer, db.ForeignKey('nutzerkonto.nutzerid'))
+    nutzerid = db.Column(db.Integer, db.ForeignKey('nutzerkonto.id'))
     flugid = db.Column(db.Integer, db.ForeignKey('flug.flugid'))
     buchungsnummer = db.Column(db.Integer)
     buchungsstatus = db.Column(db.Enum("gebucht", "storniert", "verfallen"))
+
 
 class Flug(db.Model):
     flugid = db.Column(db.Integer, primary_key=True)
@@ -27,12 +24,14 @@ class Flug(db.Model):
     preis = db.Column(db.Integer)
     gate = db.Column(db.String(50))
 
+
 class Flughafen (db.Model):
     flughafenid = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
     kennung = db.Column(db.String(50))
     stadt = db.Column(db.String(150))
     land = db.Column(db.String(150))
+
 
 class Flugzeug(db.Model):
     flugzeugid = db.Column(db.Integer, primary_key=True)
@@ -44,11 +43,13 @@ class Flugzeug(db.Model):
         return "flugzeugid: {1} | modell: {1} | hersteller: {1} | anzahlsitzplaetze: {1}".format(
             self.flugzeugid, self.modell, self.hersteller, self.anzahlsitzplaetze)
 
+
 class Gepaeck(db.Model):
     gepaeckid = db.Column(db.Integer, primary_key=True)
     passagierid = db.Column(db.Integer)
     gewicht = db.Column(db.Float)
     status = db.Column(db.Enum("gebucht", "storniert", "eingecheckt"))
+
 
 class Nutzerkonto(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -60,7 +61,7 @@ class Nutzerkonto(db.Model, UserMixin):
 
 
 class Passagier (db.Model):
-    passagierid = db.Column(db.Integer, primary_key = True )
+    passagierid = db.Column(db.Integer, primary_key=True)
     buchungsid = db.Column(db.Integer, db.ForeignKey('buchung.buchungsid'))
     ausweistyp = db.Column(db.Enum("Ausweis", "Reisepass"))
     ausweisnummer = db.Column(db.String(10))
@@ -72,9 +73,9 @@ class Passagier (db.Model):
     boardingpassnummer = db.Column(db.Integer)
     passagierstatus = db.Column(db.Enum("eingecheckt", "boarded"))
 
+
 class Rechnung(db.Model):
     rechnungsid = db.Column(db.Integer, primary_key=True)
     buchungsid = db.Column(db.Integer)
     status = db.Column(db.Enum("zurückerstattet", "bezahlt"))
     rechnungsnummer = db.Column(db.Integer)
-
