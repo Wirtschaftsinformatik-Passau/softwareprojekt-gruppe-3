@@ -2,8 +2,20 @@
 
 {% block title %}Buchungsuebersicht{% endblock %}
 {% block content %}
-
     <h1>Buchungsübersicht</h1>
+
+    <div class="input-group mb-3">
+        <label for="Buchungsnummer">Buchungsnummer </label>
+
+        <input type="text" class="form-control" id="buchungsnummer" name="buchungsnummer" placeholder="103318"
+               aria-label="buchungsnummer" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+            <button
+                class="btn btn-info" id="inputGroup-sizing-lg" type="button" >Buchung suchen
+            </button>
+        </div>
+    </div>
+
     <table class="table">
         <thead>
         <tr>
@@ -12,8 +24,7 @@
             <th scope="col">Von</th>
             <th scope="col">Nach</th>
             <th scope="col">Datum</th>
-            <th scope="col">Vorname</th>
-            <th scope="col">Nachname</th>
+            <th scope="col">Passagier</th>
             <th scope="col">Gepaeckstatus</th>
         </tr>
         </thead>
@@ -34,6 +45,11 @@
                 </td>
                 <td>
                     {{ datum }}
+                </td>
+                <td>
+                    {{ rows.vorname }}
+                    {{ rows.nachname }}
+                    <button type="button" class="btn btn-info">Online Check In</button>
                 </td>
             </tr>
         {% endfor %}
