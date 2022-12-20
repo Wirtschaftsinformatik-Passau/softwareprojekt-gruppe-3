@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Changed{% endblock %}
+{% block title %}Startseite{% endblock %}
 {% block content %}
 
 
@@ -30,7 +30,7 @@
                     <div class="form-row">
                         <div class="col">
                             <label for="Von">Von:</label>
-                            <select id="von" name="von" class="form-control">
+                            <select id="von" name="von" class="form-control" required>
                                 <option selected>auswählen...</option>
                                 {% for rows in flughafen_liste %}
                                 <option> {{ rows.stadt }} </option>
@@ -39,7 +39,7 @@
                         </div>
                         <div class="col">
                             <label for="Nach">Nach:</label>
-                            <select id="nach" name="nach" class="form-control">
+                            <select id="nach" name="nach" class="form-control" required>
                                 <option selected>auswählen...</option>
                                 {% for rows in flughafen_liste %}
                                 <option> {{ rows.stadt }} </option>
@@ -49,12 +49,12 @@
                         <div class="col">
                             <label for="Abflugdatum">Abflugdatum:</label>
                             <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum"
-                                   placeholder="24.12.2022">
+                                   placeholder="24.12.2022" required>
                         </div>
                         <div class="col">
                             <label for="AnzahlPersonen">Passagiere:</label>
                             <input type="number" class="form-control" id="AnzahlPersonen" name="AnzahlPersonen"
-                                   placeholder="1" style="width: 4rem">
+                                   placeholder="1" style="width: 4rem" required>
 
                         </div>
                         <div class="col-auto my-4">

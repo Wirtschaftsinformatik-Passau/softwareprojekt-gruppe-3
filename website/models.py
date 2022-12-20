@@ -55,7 +55,6 @@ class Flug(db.Model):
     sollankunftszeit = db.Column(db.DateTime(timezone=True))
     flugnummer = db.Column(db.String(50))
     preis = db.Column(db.Integer)
-    gate = db.Column(db.String(50))
 
 
 class Gepaeck(db.Model):

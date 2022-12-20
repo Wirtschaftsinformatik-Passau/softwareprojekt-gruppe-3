@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Buchung{% endblock %}
 {% block content %}
-        <br>
+    <br>
     <br>
 
     <ul class="nav nav-tabs">
@@ -34,58 +34,123 @@
                     <a class="nav-link active" href="#">Bearbeiten</a>
                 </li>
             </ul>
+
+            <!-- Suchfeld  -->
+
             <div class="card" style="width: 60rem;height: 30rem">
                 <div class="card-body">
                     <div class="container" style="width: 55rem; height: 30rem">
+                        <div class="col-12 col-md-8" align="right">
+                            <form action="" method="post" autocomplete="on">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="tag" id="tag"
+                                               placeholder="Hersteller"/>
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="submit" value="Suchen" class="form-control btn btn-primary "
+                                               name="">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
                         <br>
 
-                         {% if flugzeuge %}
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Hersteller</th>
-                <th scope="col">Modell</th>
-                <th scope="col">Sitzplatzanzahl</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for rows in flugzeuge %}
-                <tr>
-                    <td>
-                        {{ rows.flugzeugid }}
-                    </td>
-                    <td>
-                        {{ rows.hersteller }}
-                    </td>
-                    <td>
-                        {{ rows.modell }}
-                    </td>
-                    <td>
-                        {{ rows.anzahlsitzplaetze }}
-                    </td>
-                    <td>
-                        {{ "" }}
-                    </td>
-                    <td>
-                        <button type="submit" value="submit" class="btn btn-primary" style="width: 8rem; height: 3rem">
-                            bearbeiten
-                        </button>
 
-                    </td>
-                    <td>
-                        <button type="submit" value="submit" class="btn btn-primary" style="width: 8rem; height: 3rem">
-                            löschen
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
+                        {% if flugzeuge %}
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Hersteller</th>
+                                    <th scope="col">Modell</th>
+                                    <th scope="col">Sitzplatzanzahl</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for rows in flugzeuge %}
+                                    <tr>
+                                        <td>
+                                            {{ rows.flugzeugid }}
+                                        </td>
+                                        <td>
+                                            {{ rows.hersteller }}
+                                        </td>
+                                        <td>
+                                            {{ rows.modell }}
+                                        </td>
+                                        <td>
+                                            {{ rows.anzahlsitzplaetze }}
+                                        </td>
+                                        <td>
+                                            {{ rows.status }}
+                                        </td>
+                                        <td>
 
-        </table>
-    {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('views.flugzeug_bearbeiten', id=rows.flugzeugid) }}"
+                                               data-toggle="modal" data-target="#updateModal"
+                                               class="btn btn-warning">Bearbeiten</a>
+
+
+                                            <a href="{{ url_for('views.flugzeug_inaktiv_setzen', id=rows.flugzeugid) }}"
+                                               class="btn btn-danger">Inaktiv setzten</a>
+                                        </td>
+
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+
+                            </table>
+
+                            <!-- Pagination bar -->
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    {% if flugzeuge.has_prev %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ url_for('views.flugzeug_bearbeiten', page=flugzeuge.prev_num) }}">Previous</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link btn disabled" href="#">Previous</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for page in flugzeuge.iter_pages(left_edge=3, right_edge=3) %}
+                                        {% if page %}
+
+                                            {% if page==flugzeuge.page %}
+                                                <li class="page-item active"><a class="page-link"
+                                                                                href="{{ url_for('views.flugzeug_bearbeiten', page=page) }}">{{ page }}</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item"><a class="page-link"
+                                                                         href="{{ url_for('views.flugzeug_bearbeiten', page=page) }}">{{ page }}</a>
+                                                </li>
+                                            {% endif %}
+
+                                        {% else %}
+                                            <li class="page-item disabled" id="example_ellipsis"><a href="#"
+                                                                                                    class="page-link">…</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if flugzeuge.has_next %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ url_for('views.flugzeug_bearbeiten', page=flugzeuge.next_num) }}">Next</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link btn disabled" href="#">Next</a></li>
+                                    {% endif %}
+
+                                </ul>
+                            </nav>
+                        {% endif %}
 
 
                     </div>

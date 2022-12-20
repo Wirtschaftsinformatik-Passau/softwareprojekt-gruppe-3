@@ -75,41 +75,4 @@
         </div>
     </div>
 
-    <br>
-    {% if flugzeuge %}
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Hersteller</th>
-                <th scope="col">Modell</th>
-                <th scope="col">Sitzplatzanzahl</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for rows in flugzeuge %}
-                <tr>
-                    <td>
-                        {{ rows.flugzeugid }}
-                    </td>
-                    <td>
-                        {{ rows.hersteller }}
-                    </td>
-                    <td>
-                        {{ rows.modell }}
-                    </td>
-                    <td>
-                        {{ rows.anzahlsitzplaetze }}
-                    </td>
-                    <td>
-                        {{ "" }}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-
-        </table>
-    {% endif %}
 {% endblock %}

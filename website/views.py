@@ -1,9 +1,12 @@
-from flask import Blueprint, render_template, request, flash, jsonify, url_for
-from flask_login import login_required, current_user
-from werkzeug.security import generate_password_hash
+from datetime import datetime
 
+from flask import Blueprint, render_template, request, flash
+from flask_login import current_user
+from werkzeug.security import generate_password_hash
+import secrets
+from . import db, conn
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto
-from . import db
+from sqlalchemy import select, or_, cast, Date
 
 # store the standard routes for a website where the user can navigate to
 views = Blueprint('views', __name__)
@@ -18,21 +21,18 @@ def home():
     abflug = request.args.get('Abflugdatum')
     passagiere = request.args.get('AnzahlPersonen')
 
-    print(vonID, nachID)
+    print(abflug)
 
     # Datenbankabfrage nach Abflug und Ziel Flughafen sowie Datum und Passagieranzahl < Summe bereits gebuchter Passagiere
 
-    fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID)
+    fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
+        filter(cast(Flug.sollabflugzeit, Date) == abflug)
 
     return render_template("Gast/home.html", fluege=fluege, flughafen_liste=flughafen_liste, user=current_user)
 
 
 @views.route('/home-vp', methods=['GET', 'POST'])
 def flugzeug_erstellen():
-    flugzeuge = Flugzeug.query.with_entities(Flugzeug.hersteller, Flugzeug.modell, Flugzeug.flugzeugid,
-                                             Flugzeug.anzahlsitzplaetze).order_by(Flugzeug.flugzeugid.desc()).limit(
-        5).all()
-
     if request.method == 'POST':
         modell = request.form.get('Modell')
         hersteller = request.form.get('Hersteller')
@@ -41,16 +41,53 @@ def flugzeug_erstellen():
         new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
         db.session.add(new_flugzeug)
         db.session.commit()
-        flash('Flugzeug added!', category='success')
+        flash('Flugzeug angelegt!', category='success')
 
-    return render_template("Verwaltungspersonal/home_vp.html", flugzeuge=flugzeuge, user=current_user)
+    return render_template("Verwaltungspersonal/home_vp.html", user=current_user)
 
 
-@views.route('/flugzeug-bearbeiten', methods=['GET', 'POST'])
-def flugzeug_bearbeiten():
-    flugzeuge = Flugzeug.query.with_entities(Flugzeug.hersteller, Flugzeug.modell, Flugzeug.flugzeugid,
-                                             Flugzeug.anzahlsitzplaetze).order_by(Flugzeug.flugzeugid.desc()) \
-                                            .limit(5).all()
+@views.route('/flugzeug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
+@views.route('/flugzeug-bearbeiten/<int:page>', methods=['GET', 'POST'])
+def flugzeug_bearbeiten(page):
+    page = page
+    pages = 4
+    # nur 5 flugzeuge werden angezeigt über paginate
+
+    flugzeuge = Flugzeug.query.filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
+
+    if request.method == 'POST' and 'tag' in request.form:
+        tag = request.form["tag"]
+        search = "%{}%".format(tag)
+        flugzeuge = Flugzeug.query.filter(Flugzeug.hersteller.like(search)).\
+            filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
+
+        return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge,
+                               user=current_user, tag=tag)
+
+    return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge, user=current_user)
+
+
+@views.route('/flugzeug-bearbeiten/<int:page>', methods=['GET', 'POST'])
+@views.route('/flugzeug-inaktiv-setzen/<int:id>', methods=['GET', 'POST'], defaults={"page": 1})
+def flugzeug_inaktiv_setzen(id, page):
+    page = page
+    pages = 4
+    flugzeug_inaktiv = Flugzeug.query.filter_by(flugzeugid=id).first()
+    flugzeug_inaktiv.status = "inaktiv"
+    db.session.merge(flugzeug_inaktiv)
+    db.session.commit()
+    flugzeuge = Flugzeug.query.filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
+
+    #doppelt da sonst nach inaktiv setzen keine suche mehr möglich
+
+    if request.method == 'POST' and 'tag' in request.form:
+        tag = request.form["tag"]
+        search = "%{}%".format(tag)
+        flugzeuge = Flugzeug.query.filter(Flugzeug.hersteller.like(search)).\
+            filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
+
+        return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge,
+                               user=current_user, tag=tag)
 
     return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge, user=current_user)
 
@@ -58,8 +95,10 @@ def flugzeug_bearbeiten():
 @views.route('/flug-anlegen', methods=['GET', 'POST'])
 def flug_anlegen():
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
+    flugzeug_liste = Flugzeug.query.with_entities(Flugzeug.flugzeugid, Flugzeug.hersteller, Flugzeug.modell)
 
     if request.method == 'POST':
+        flugzeugid = request.form["flugzeugtyp"]
         abflugid = Flughafen.query.filter(Flughafen.stadt == request.form.get('von')) \
             .with_entities(Flughafen.flughafenid)
         zielid = Flughafen.query.filter(Flughafen.stadt == request.form.get('nach')) \
@@ -69,20 +108,25 @@ def flug_anlegen():
         ankunftsdatum = request.form.get('ankunftsdatum') + " " + request.form.get("ankunftszeit")
         flugnummer = request.form.get('fluglinie')
         preis = request.form.get('preis')
-        gate = "A2"
 
-        new_flug = Flug(flugzeugid=1, abflugid=abflugid, zielid=zielid, flugstatus=flugstatus,
+        new_flug = Flug(flugzeugid=flugzeugid, abflugid=abflugid, zielid=zielid, flugstatus=flugstatus,
                         sollabflugzeit=abflugdatum, sollankunftszeit=ankunftsdatum,
                         istabflugzeit=abflugdatum, istankunftszeit=ankunftsdatum,
                         flugnummer=flugnummer,
-                        preis=preis, gate=gate)
+                        preis=preis)
+
         db.session.add(new_flug)
         db.session.commit()
-        flash('Flugzeug added!', category='success')
+        flash('Flug hinzugefügt!', category='success')
 
-        print(abflugid, zielid, flugstatus, abflugdatum, ankunftsdatum, flugnummer, preis, gate)
+    return render_template("Verwaltungspersonal/flug_anlegen.html", flughafen_liste=flughafen_liste, user=current_user,
+                           flugzeug_liste=flugzeug_liste)
 
-    return render_template("Verwaltungspersonal/flug_anlegen.html", flughafen_liste=flughafen_liste, user=current_user)
+
+@views.route('/flug-bearbeiten', methods=['GET', 'POST'])
+def flug_bearbeiten():
+    fluege = Flug.query.all()
+    return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user)
 
 
 @views.route('/accounts-anlegen', methods=['GET', 'POST'])
@@ -106,7 +150,9 @@ def accounts_anlegen():
 
 @views.route('/accounts-bearbeiten', methods=['GET', 'POST'])
 def accounts_bearbeiten():
-    accounts = Nutzerkonto.query.all()
+    accounts = Nutzerkonto.query.filter(
+        or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal'))
+
     return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)
 
 
@@ -115,5 +161,6 @@ def accounts_loeschen(id):
     account = Nutzerkonto.query.get_or_404(id)
     db.session.delete(account)
     db.session.commit()
-    accounts = Nutzerkonto.query.all()
+    accounts = Nutzerkonto.query.filter(
+        or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal'))
     return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)

@@ -33,7 +33,7 @@
                     <a class="nav-link active" aria-current="page" href="#">Anlegen</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Bearbeiten</a>
+                    <a class="nav-link" href="/flug-bearbeiten">Bearbeiten</a>
                 </li>
             </ul>
             <div class="card" style="width: 60rem;">
@@ -45,8 +45,7 @@
                     <div class="form-row">
                         <div class="col-md-4 mb-3">
                             <label for="Von">Von:</label>
-                             <select id="von" name="von" class="form-control">
-                                <option selected>auswählen...</option>
+                             <select id="von" name="von" class="form-control" required>
                                 {% for rows in flughafen_liste %}
                                 <option> {{ rows.stadt }} </option>
                                 {% endfor %}
@@ -57,8 +56,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Nach">Nach:</label>
-                             <select id="nach" name="nach" class="form-control">
-                                <option selected>auswählen...</option>
+                             <select id="nach" name="nach" class="form-control" required>
                                 {% for rows in flughafen_liste %}
                                 <option> {{ rows.stadt }} </option>
                                 {% endfor %}
@@ -67,61 +65,53 @@
                                 Looks good!
                             </div>
                         </div>
+
+                    <!-- value=row.flugzeugid bestimmt welcher flug in die DB eingetragen wird -->
+
                         <div class="col-md-4 mb-3">
                             <label for="Flugzeugtyp">Flugzeugtyp:</label>
-                            <input type="text" class="form-control" id="flugzeugtyp" name="flugzeugtyp" placeholder="Typ"
-                                   required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
+                             <select id="flugzeugtyp" name="flugzeugtyp" class="form-control" required>
+                                {% for rows in flugzeug_liste %}
+                                <option value="{{ rows.flugzeugid }}"> {{ rows.hersteller + " " + rows.modell }} </option>
+                                {% endfor %}
+                            </select>
+
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Abflugdatum">Abflugdatum:</label>
                             <input type="Date" class="form-control" id="abflugdatum" name="abflugdatum" placeholder=""
                                    required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
+
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Ankunftsdatum">Ankunftsdatum:</label>
                             <input type="Date" class="form-control" id="ankunftsdatum" name="ankunftsdatum" placeholder=""
                                    required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
+
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Preis">Preis p.P:</label>
                             <input type="number" class="form-control" id="preis" name="preis" placeholder=""
                                     required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
+
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Abflugzeit">Abflugzeit:</label>
                             <input type="Time" class="form-control" id="abflugzeit" name="abflugzeit" placeholder=""
                                     required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
+
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Ankunftszeit">Ankunftszeit:</label>
                             <input type="Time" class="form-control" id="ankunftszeit" name="ankunftszeit" placeholder=""
                                     required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
+
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Fluglinie">Fluglinie:</label>
                             <input type="text" class="form-control" id="fluglinie" name="fluglinie" placeholder="Fluglinie"
                                     required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
+
                         </div>
 
                     </div>
