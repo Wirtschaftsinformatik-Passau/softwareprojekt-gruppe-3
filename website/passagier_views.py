@@ -7,7 +7,10 @@ from . import db
 
 passagier_views = Blueprint('passagier_views', __name__)
 
-
+"""
+Input: flug_nummer 
+Output: flugstatus - Der Flugstatus eines FLuges, welches die Werte 'pünktlich', 'annuliert' und 'verspätet' annehmen kann
+"""
 @passagier_views.route('/flugstatus_erhalten', methods=['POST', 'GET'])
 def flugstatus_erhalten():
     # Status von der Flugnummer holen, die eingetippt worden ist
@@ -29,11 +32,10 @@ def online_check_in():
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
     input_buchungsnummer = request.form.get('buchungsnummer')
-
     buchung = Buchung.query.filter(Buchung.buchungsnummer == 999)
     #Kennung des Ankunftflughafens
     ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-        Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
+            Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
     #Kennung des Zielflughafens
     ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
         Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
@@ -44,3 +46,7 @@ def buchung_suchen():
 
     return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
                            ziel_flughafen=ziel_flughafen, flug=flug, nutzer=nutzer, gepaeck=gepaeck)
+
+@passagier_views.route('/storno')
+def storno():
+    return render_template('Passagier/storno.html')

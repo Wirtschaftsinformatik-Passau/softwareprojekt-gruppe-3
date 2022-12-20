@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Buchungsuebersicht{% endblock %}
+{% block title %}Buchung suchen{% endblock %}
 {% block content %}
-    <h1>Buchungsübersicht</h1>
+    <h1>Buchung suchen</h1>
 
     <div class="input-group mb-3">
         <label for="buchungsnummer">Buchungsnummer</label>
@@ -45,13 +45,13 @@
         {% endfor %}
         {% for rows in ziel_flughafen %}
             <td>
-            {{ rows.kennung }}
+                {{ rows.kennung }}
             </td>
         {% endfor %}
 
         {% for rows in flug %}
             <td>
-            {{ rows.sollabflugzeit }}
+                {{ rows.sollabflugzeit }}
             </td>
         {% endfor %}
 
@@ -60,16 +60,21 @@
                 {{ rows.vorname }}
                 {{ rows.nachname }}
                 <br>
-                <button onclick="window.location='online_check_in.html'"class="btn btn-info">Online-Check-In</button>
-                <button onclick="window.location='storno.html'"class="btn btn-danger">Storno</button>
-
+                {{ rows.emailadresse }}
+                <br>
+                <a href='online_check_in'>
+                    <button class="btn btn-info">Online-Check-In</button>
+                </a>
+                <a href='/storno'>
+                    <button class="btn btn-danger">Storno</button>
+                </a>
             </td>
         {% endfor %}
         {% for rows in gepaeck %}
             <td>
                 {{ rows.status }}
             </td>
-    {% endfor  %}
+        {% endfor %}
 
 
         <!--<button type="button" class="btn btn-info">Online Check In</button>-->
