@@ -32,6 +32,7 @@ def online_check_in():
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
     input_buchungsnummer = request.form.get('buchungsnummer')
+
     buchung = Buchung.query.filter(Buchung.buchungsnummer == 999)
     #Kennung des Ankunftflughafens
     ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
@@ -50,3 +51,9 @@ def buchung_suchen():
 @passagier_views.route('/storno')
 def storno():
     return render_template('Passagier/storno.html')
+
+
+@passagier_views.route('/gepaecksbestimmungen', methods=['GET'])
+def gepaecksbestimmungen_anzeigen():
+    return render_template("Passagier/gepaecksbestimmungen.html")
+
