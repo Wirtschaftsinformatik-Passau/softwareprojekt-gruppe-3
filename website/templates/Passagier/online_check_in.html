@@ -2,43 +2,55 @@
 
 {% block title %}Online Checkin{% endblock %}
 {% block content %}
-
-    <h4>Personenbezogene Daten</h4>
-    <!-- Vorname und Nachname -->
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text" id="">Vorname</span>
+    <form class="row gx-3 gy-2 align-items-center">
+        <div class="col-sm-3">
+            <h4>Personenbezogene Daten:</h4>
+            <div class="col-auto">
+                <label class="visually-hidden" for="autoSizingInput">Vorname*:</label>
+                <input type="text" class="form-control" id="autoSizingInput" placeholder="Meriem">
+            </div>
+            <div class="col-auto">
+                <label class="visually-hidden" for="autoSizingInputGroup">Nachname*:</label>
+                <input type="text" class="form-control" id="autoSizingInput" placeholder="Abbassi">
+            </div>
         </div>
-        <input type="text" class="form-control">
-        <div class="input-group-prepend">
-            <span class="input-group-text" id="">Nachname</span>
+    </form>
+    <br>
+    <form class="row gx-3 gy-2 align-items-center">
+        <div class="col-sm-3">
+            <h4>Ausweisdaten:</h4>
+            <div class="col-auto">
+                <form class="row row-cols-lg-auto g-3 align-items-center">
+                    <div class="col-12">
+                        <div class="col-12">
+                            <label class="visually-hidden" for="inlineFormSelectPref">Art des Ausweis*:</label>
+                            <select class="form-select" id="inlineFormSelectPref">
+                                <option selected>Pass</option>
+                                <option value="1">Reisepass</option>
+                                <option value="2">Personalausweis</option>
+                            </select>
+                        </div>
+                        <label class="visually-hidden" for="inlineFormInputGroupUsername">Ausweisnummer*:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="inlineFormInputGroupUsername"
+                                   placeholder="Ausweisnummer">
+                        </div>
+                        <label class="visually-hidden" for="inlineFormInputGroupUsername">Ablaufdatum*:</label>
+                        <div class="input-group">
+                            <input type="date" class="form-control" id="inlineFormInputGroupUsername"
+                                   placeholder="22.05.2030">
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <input type="text" class="form-control">
-    </div>
-    <br>
-    <!-- Geburtsdatum -->
-    <div class="input-group-prepend">
-        <span class="input-group-text" id="">Geburtsdatum</span>
-    </div>
-    <input type="Date" class="form-control" id="geburtsdatum" name="geburtsdatum" placeholder=""
-           required>
-    <div class="valid-feedback">
-        Looks good!
-    </div>
-    <!-- Leerzeile einfügen durch <br> -->
-    <!-- Staatsbürgerschaft im Drop-Down-Menü-->
-    <br>
-    <!-- Example split danger button -->
-<div class="btn-group">
-  <button type="button" class="btn btn-secondary">Staatsbürgerschaft</button>
-  <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <div class="dropdown-menu">
-    <a class="dropdown-item" href="#">deutsch</a>
-    <a class="dropdown-item" href="#">englisch</a>
-    <a class="dropdown-item" href="#">polnisch</a>
-  </div>
-</div>
-
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                <p>Hiermit bestätige ich, dass ich <a href='gepäcksbestimmungen.html'>die Vorschriften zur
+                    Gepäckmitnahme</a> gelesen und verstanden habe.</p>
+            </label>
+        </div>
+    </form>
+    <button type="button" class="btn btn-info">Jetzt einchecken</button>
 {% endblock %}
