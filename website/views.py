@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import Blueprint, render_template, request, flash
-from flask_login import current_user
+from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
 import secrets
 from . import db, conn
@@ -31,7 +31,7 @@ def home():
         filter(cast(Flug.sollabflugzeit, Date) == abflug)
 
     return render_template("Gast/home.html", fluege=fluege, flughafen_liste=flughafen_liste, user=current_user,
-                           kuerzel_nach=kuerzel_nach, kuerzel_von=kuerzel_von)
+                           kuerzel_nach=kuerzel_nach, kuerzel_von=kuerzel_von, passagiere=passagiere)
 
 
 @views.route('/flugstatus-überprüfen', methods=['GET', 'POST'])
@@ -53,9 +53,10 @@ def fluglinien_anzeigen(page):
     return render_template("Gast/fluglinien_anzeigen.html", user=current_user, fluege=fluege)
 
 
-@views.route('/flug-buchen', methods=['GET', 'POST'])
-def flug_buchen():
-    return render_template("Passagier/flug_buchen.html", user=current_user)
+@views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
+@login_required
+def flug_buchen(id, anzahlPassagiere):
+    return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id, anzahlPassagiere=anzahlPassagiere)
 
 
 @views.route('/home-vp', methods=['GET', 'POST'])
@@ -79,7 +80,7 @@ def flugzeug_bearbeiten(page):
     page = page
     pages = 4
 
-    # nur 5 flugzeuge werden angezeigt über paginate
+    # nur 4 flugzeuge werden angezeigt über paginate
 
     flugzeuge = Flugzeug.query.filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
 
