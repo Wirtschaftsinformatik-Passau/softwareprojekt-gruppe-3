@@ -3,7 +3,6 @@ from . import db
 from .models import Nutzerkonto
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-import re
 
 # store the standard routes for a website where the user can navigate to
 
@@ -25,6 +24,9 @@ def anmelden():
             elif check_password_hash(nutzer.passwort, passwort) and nutzer.rolle == "Verwaltungspersonal":
                 flash('Erfolgreich angemeldet', category='success')
                 login_user(nutzer, remember=True)
+
+                #redirect to homepage for Verwaltungspersonal
+
                 return redirect(url_for('views.flugzeug_erstellen'))
             else:
                 flash('Falsches Passwort! Versuchen Sie es erneut.', category='error')

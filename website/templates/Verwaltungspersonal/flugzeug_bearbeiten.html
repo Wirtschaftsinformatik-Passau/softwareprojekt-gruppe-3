@@ -59,7 +59,7 @@
 
 
                         {% if flugzeuge %}
-                            <table class="table table-striped">
+                            <table class="table table-striped table-bordered table-sm">
                                 <thead>
                                 <tr>
                                     <th scope="col">ID</th>
@@ -67,7 +67,7 @@
                                     <th scope="col">Modell</th>
                                     <th scope="col">Sitzplatzanzahl</th>
                                     <th scope="col">Status</th>
-                                    <th scope="col"></th>
+
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -88,9 +88,7 @@
                                         <td>
                                             {{ rows.status }}
                                         </td>
-                                        <td>
 
-                                        </td>
                                         <td>
                                             <a href="{{ url_for('views.flugzeug_bearbeiten', id=rows.flugzeugid) }}"
                                                data-toggle="modal" data-target="#updateModal"

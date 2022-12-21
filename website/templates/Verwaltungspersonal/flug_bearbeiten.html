@@ -37,68 +37,129 @@
                 </li>
             </ul>
 
+        <!-- Suchfeld  -->
 
-        <div class="card" style="width: 60rem;">
-            <div class="card-body">
-                <div class="container" style="width: 55rem; height: 20rem">
-                    <br>
+            <div class="card" style="width: 60rem;height: 30rem">
+                <div class="card-body">
+                    <div class="container" style="width: 55rem; height: 30rem">
+                        <div class="col-12 col-md-8" align="right">
+                            <form action="" method="post" autocomplete="on">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="tag" id="tag"
+                                               placeholder="Flugnummer"/>
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="submit" value="Suchen" class="form-control btn btn-primary "
+                                               name="">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
 
-                    {% if fluege %}
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th scope="col">Flugnummer</th>
-                                <th scope="col">Von</th>
-                                <th scope="col">Nach</th>
-                                <th scope="col">Preis</th>
-                                <th scope="col">Datum</th>
-                                <th scope="col">Flugstatus</th>
-                                <th scope="col"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for rows in fluege %}
+                        <br>
+
+
+                        {% if fluege %}
+                            <table class="table table-striped">
+                                <thead>
                                 <tr>
-                                    <td>
-                                        {{ rows.flugnummer }}
-                                    </td>
-                                    <td>
-                                        {{ rows.abflugid }}
-                                    </td>
-                                    <td>
-                                        {{ rows.zielid }}
-                                    </td>
-                                    <td>
-                                        {{ rows.preis }}
-                                    </td>
-                                    <td>
-                                        {{ rows.sollabflugzeit }}
-                                    </td>
-                                    <td>
-                                        {{ rows.flugstatus }}
-                                    </td>
-                                    <td>
-                                        <a href="{{ url_for('views.flugzeug_bearbeiten', id=rows.flugzeugid) }}"
-                                           data-toggle="modal" data-target="#updateModal"
-                                           class="btn btn-warning">Bearbeiten</a>
-
-
-                                        <a href="{{ url_for('views.flugzeug_inaktiv_setzen', id=rows.flugzeugid) }}"
-                                           class="btn btn-danger">Inaktiv setzten</a>
-                                    </td>
-                                    </td>
+                                    <th scope="col">Flugnummer</th>
+                                    <th scope="col">Von</th>
+                                    <th scope="col">Nach</th>
+                                    <th scope="col">Preis</th>
+                                    <th scope="col">Datum</th>
+                                    <th scope="col">Flugstatus</th>
+                                    <th scope="col"></th>
                                 </tr>
-                            {% endfor %}
-                            </tbody>
+                                </thead>
+                                <tbody>
+                                {% for rows in fluege %}
+                                    <tr>
+                                        <td>
+                                            {{ rows.flugnummer }}
+                                        </td>
+                                        <td>
+                                            {{ rows.abflugid }}
+                                        </td>
+                                        <td>
+                                            {{ rows.zielid }}
+                                        </td>
+                                        <td>
+                                            {{ rows.preis }}
+                                        </td>
+                                        <td>
+                                            {{ rows.sollabflugzeit }}
+                                        </td>
+                                        <td>
+                                            {{ rows.flugstatus }}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('views.flug_bearbeiten', id=rows.flugzeugid) }}"
+                                               data-toggle="modal" data-target="#updateModal"
+                                               class="btn btn-warning">Bearbeiten</a>
 
-                        </table>
-                    {% endif %}
+
+                                            <a href="{{ url_for('views.flugzeug_inaktiv_setzen', id=rows.flugzeugid) }}"
+                                               class="btn btn-danger">Inaktiv setzten</a>
+                                        </td>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+
+                            </table>
+                            <!-- Pagination bar -->
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    {% if fluege.has_prev %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ url_for('views.flug_bearbeiten', page=fluege.prev_num) }}">Previous</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link btn disabled" href="#">Previous</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for page in fluege.iter_pages(left_edge=3, right_edge=3) %}
+                                        {% if page %}
+
+                                            {% if page==fluege.page %}
+                                                <li class="page-item active"><a class="page-link"
+                                                                                href="{{ url_for('views.flug_bearbeiten', page=page) }}">{{ page }}</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item"><a class="page-link"
+                                                                         href="{{ url_for('views.flug_bearbeiten', page=page) }}">{{ page }}</a>
+                                                </li>
+                                            {% endif %}
+
+                                        {% else %}
+                                            <li class="page-item disabled" id="example_ellipsis"><a href="#"
+                                                                                                    class="page-link">…</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if fluege.has_next %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ url_for('views.flug_bearbeiten', page=fluege.next_num) }}">Next</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link btn disabled" href="#">Next</a></li>
+                                    {% endif %}
+
+                                </ul>
+                            </nav>
+                        {% endif %}
+
+                    </div>
                 </div>
+
             </div>
 
         </div>
-
-    </div>
     </div>
 
 

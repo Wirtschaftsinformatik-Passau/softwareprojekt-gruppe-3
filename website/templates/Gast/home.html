@@ -15,10 +15,10 @@
             <a class="nav-link" href="/flug-anlegen">Buchungen suchen</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Flugstatus</a>
+            <a class="nav-link" href="/flugstatus-überprüfen">Flugstatus</a>
         </li>
      <li class="nav-item">
-            <a class="nav-link" href="#">Fluglinien</a>
+            <a class="nav-link" href="/fluglinien-anzeigen">Fluglinien</a>
         </li>
     </ul>
 
@@ -49,12 +49,19 @@
                         <div class="col">
                             <label for="Abflugdatum">Abflugdatum:</label>
                             <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum"
-                                   placeholder="24.12.2022" required>
+                                   placeholder="" required>
                         </div>
                         <div class="col">
                             <label for="AnzahlPersonen">Passagiere:</label>
-                            <input type="number" class="form-control" id="AnzahlPersonen" name="AnzahlPersonen"
-                                   placeholder="1" style="width: 4rem" required>
+                            <select  id="AnzahlPersonen" class="form-control"name="AnzahlPersonen"
+                                   style="width: 4rem" required>
+                                <option selected> 1 </option>
+                                <option> 2 </option>
+                                <option> 3 </option>
+                                <option> 4 </option>
+                                <option> 5 </option>
+                                <option> 6 </option>
+                            </select>
 
                         </div>
                         <div class="col-auto my-4">
@@ -76,6 +83,7 @@
                 <th scope="col">Linie</th>
                 <th scope="col">Von</th>
                 <th scope="col">Nach</th>
+                <th scope="col">Datum</th>
                 <th scope="col">Abflug</th>
                 <th scope="col">Ankunft</th>
                 <th scope="col">Preis</th>
@@ -89,23 +97,27 @@
                         {{ rows.flugnummer }}
                     </td>
                     <td>
-                        {{ rows.abflugid }}
+                        {{ kuerzel_von.kennung }}
                     </td>
                     <td>
-                        {{ rows.zielid }}
+                        {{ kuerzel_nach.kennung }}
                     </td>
                     <td>
-                        {{ rows.sollabflugzeit }}
+                        {{ rows.sollabflugzeit.strftime("%d.%m.%Y") }}
                     </td>
                     <td>
-                        {{ rows.sollankunftszeit }}
+                        {{ rows.sollabflugzeit.strftime("%H:%M") }}
                     </td>
                     <td>
-                        {{ rows.preis }}
+
+                        {{ rows.sollankunftszeit.strftime("%H:%M") }}
                     </td>
                     <td>
-                        <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Flug buchen
-                        </button>
+                        {{ rows.preis }}€
+                    </td>
+                    <td>
+                        <a href="{{ url_for('views.flug_buchen', id=rows.flugid) }}"
+                                               class="btn btn-info">Buchen</a>
                     </td>
                 </tr>
             {% endfor %}

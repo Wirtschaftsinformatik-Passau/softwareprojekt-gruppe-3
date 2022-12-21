@@ -11,7 +11,7 @@ class Nutzerkonto(db.Model, UserMixin):
     vorname = db.Column(db.String(150))
     nachname = db.Column(db.String(150))
     emailadresse = db.Column(db.String(150), unique=True)
-    passwort = db.Column(db.String(150))
+    passwort = db.Column(db.String(250))
     rolle = db.Column(db.Enum("Bodenpersonal", "Verwaltungspersonal", "Passagier"))
 
 

@@ -12,6 +12,7 @@ from sqlalchemy import select, or_, cast, Date
 views = Blueprint('views', __name__)
 
 
+# Gast Funktionen
 @views.route('/', methods=['GET', 'POST'])
 def home():
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
@@ -21,14 +22,40 @@ def home():
     abflug = request.args.get('Abflugdatum')
     passagiere = request.args.get('AnzahlPersonen')
 
-    print(abflug)
+    kuerzel_von = Flughafen.query.filter(Flughafen.flughafenid == vonID).first()
+    kuerzel_nach = Flughafen.query.filter(Flughafen.flughafenid == nachID).first()
 
     # Datenbankabfrage nach Abflug und Ziel Flughafen sowie Datum und Passagieranzahl < Summe bereits gebuchter Passagiere
 
     fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
         filter(cast(Flug.sollabflugzeit, Date) == abflug)
 
-    return render_template("Gast/home.html", fluege=fluege, flughafen_liste=flughafen_liste, user=current_user)
+    return render_template("Gast/home.html", fluege=fluege, flughafen_liste=flughafen_liste, user=current_user,
+                           kuerzel_nach=kuerzel_nach, kuerzel_von=kuerzel_von)
+
+
+@views.route('/flugstatus-überprüfen', methods=['GET', 'POST'])
+def flugstatus_überprüfen():
+    abflug = request.args.get('abflugdatum')
+    flugnummer = request.args.get('flugnummer')
+
+    fluege = Flug.query.filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer)
+
+    return render_template("Gast/flugstatus_überprüfen.html", user=current_user, fluege=fluege)
+
+
+@views.route('fluglinien-anzeigen', methods=['GET', 'POST'], defaults={"page": 1})
+@views.route('fluglinien-anzeigen/<int:page>', methods=['GET', 'POST'])
+def fluglinien_anzeigen(page):
+    page = page
+    pages = 4
+    fluege = Flug.query.distinct().paginate(page=page, per_page=pages, error_out=False)
+    return render_template("Gast/fluglinien_anzeigen.html", user=current_user, fluege=fluege)
+
+
+@views.route('/flug-buchen', methods=['GET', 'POST'])
+def flug_buchen():
+    return render_template("Passagier/flug_buchen.html", user=current_user)
 
 
 @views.route('/home-vp', methods=['GET', 'POST'])
@@ -51,6 +78,7 @@ def flugzeug_erstellen():
 def flugzeug_bearbeiten(page):
     page = page
     pages = 4
+
     # nur 5 flugzeuge werden angezeigt über paginate
 
     flugzeuge = Flugzeug.query.filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
@@ -58,7 +86,7 @@ def flugzeug_bearbeiten(page):
     if request.method == 'POST' and 'tag' in request.form:
         tag = request.form["tag"]
         search = "%{}%".format(tag)
-        flugzeuge = Flugzeug.query.filter(Flugzeug.hersteller.like(search)).\
+        flugzeuge = Flugzeug.query.filter(Flugzeug.hersteller.like(search)). \
             filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
 
         return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge,
@@ -78,12 +106,12 @@ def flugzeug_inaktiv_setzen(id, page):
     db.session.commit()
     flugzeuge = Flugzeug.query.filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
 
-    #doppelt da sonst nach inaktiv setzen keine suche mehr möglich
+    # doppelt da sonst nach inaktiv setzen keine suche mehr möglich
 
     if request.method == 'POST' and 'tag' in request.form:
         tag = request.form["tag"]
         search = "%{}%".format(tag)
-        flugzeuge = Flugzeug.query.filter(Flugzeug.hersteller.like(search)).\
+        flugzeuge = Flugzeug.query.filter(Flugzeug.hersteller.like(search)). \
             filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
 
         return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge,
@@ -123,11 +151,26 @@ def flug_anlegen():
                            flugzeug_liste=flugzeug_liste)
 
 
-@views.route('/flug-bearbeiten', methods=['GET', 'POST'])
-def flug_bearbeiten():
-    fluege = Flug.query.all()
+@views.route('/flug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
+@views.route('/flug-bearbeiten/<int:page>', methods=['GET', 'POST'])
+def flug_bearbeiten(page):
+    page = page
+    pages = 4
+    fluege = Flug.query.paginate(page=page, per_page=pages, error_out=False)
+
+    # suche nach Flugnummer
+
+    if request.method == 'POST' and 'tag' in request.form:
+        tag = request.form["tag"]
+        search = "%{}%".format(tag)
+        fluege = Flug.query.filter(Flug.flugnummer.like(search)).paginate(page=page, per_page=pages, error_out=False)
+
+        return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege,
+                               user=current_user, tag=tag)
     return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user)
 
+
+# Funktionen zu Accounte: anzeigen bearbeiten und löschen
 
 @views.route('/accounts-anlegen', methods=['GET', 'POST'])
 def accounts_anlegen():

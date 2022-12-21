@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Startseite{% endblock %}
+{% block content %}
+
+
+    <br>
+    <br>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link"  href="/">Flug suchen</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/flug-anlegen">Buchungen suchen</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/flugstatus-überprüfen">Flugstatus</a>
+        </li>
+     <li class="nav-item">
+            <a class="nav-link active" href="/fluglinien-anzeigen">Fluglinien</a>
+        </li>
+    </ul>
+
+
+    <div class="card" style="width: 68rem;">
+        <div class="card-body">
+            <div class="container" style="width: 60rem; height: 20rem">
+                 {% if fluege %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Linie</th>
+                <th scope="col">Von</th>
+                <th scope="col">Nach</th>
+            </thead>
+            <tbody>
+            {% for rows in fluege %}
+                <tr>
+                <td>
+                        {{ rows.flugnummer }}
+                    </td>
+
+                    <td>
+                        {{ rows.abflugid }}
+                    </td>
+                    <td>
+                     {{ rows.zielid }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+                      <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    {% if fluege.has_prev %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ url_for('views.fluglinien_anzeigen', page=fluege.prev_num) }}">Previous</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link btn disabled" href="#">Previous</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for page in fluege.iter_pages(left_edge=3, right_edge=3) %}
+                                        {% if page %}
+
+                                            {% if page==fluege.page %}
+                                                <li class="page-item active"><a class="page-link"
+                                                                                href="{{ url_for('views.fluglinien_anzeigen', page=page) }}">{{ page }}</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item"><a class="page-link"
+                                                                         href="{{ url_for('views.fluglinien_anzeigen', page=page) }}">{{ page }}</a>
+                                                </li>
+                                            {% endif %}
+
+                                        {% else %}
+                                            <li class="page-item disabled" id="example_ellipsis"><a href="#"
+                                                                                                    class="page-link">…</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if fluege.has_next %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ url_for('views.fluglinien_anzeigen', page=fluege.next_num) }}">Next</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link btn disabled" href="#">Next</a></li>
+                                    {% endif %}
+
+                                </ul>
+                            </nav>
+    {% endif %}
+
+            </div>
+        </div>
+    </div>
+    <br>
+
+{% endblock %}

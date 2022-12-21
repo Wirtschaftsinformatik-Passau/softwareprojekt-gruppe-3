@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Startseite{% endblock %}
+{% block content %}
+      <br>
+    <br>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/">Flug suchen</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/flug-anlegen">Buchungen suchen</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="/flugstatus-überprüfen">Flugstatus</a>
+        </li>
+     <li class="nav-item">
+            <a class="nav-link" href="#">Fluglinien</a>
+        </li>
+    </ul>
+      <div class="card" style="width: 68rem;">
+        <div class="card-body">
+            <div class="container" style="width: 60rem; height: 10rem">
+                <form action="#" method="GET">
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="Von">Flugnummer:</label>
+                            <input type="text" id="flugnummer" name="flugnummer" class="form-control" style="width: 16rem"required>
+
+                        </div>
+
+                        <div class="col">
+                            <label for="abflugdatum">Abflugdatum:</label>
+                            <input type="date" class="form-control" id="abflugdatum" name="abflugdatum"
+                                   placeholder="" style="width: 8rem" required>
+                        </div>
+                        <div class="col">
+                        <div class="col-auto my-4">
+                            <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Flüge
+                                finden
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+     <br>
+
+    {% if fluege %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Linie</th>
+                <th scope="col">Von</th>
+                <th scope="col">Nach</th>
+                <th scope="col">Abflug (Soll)</th>
+                <th scope="col">Ankunft (Soll)</th>
+                <th scope="col">Abflug (Ist)</th>
+                <th scope="col">Ankunft (Ist)</th>
+                <th scope="col">Flugstatus</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for rows in fluege %}
+                <tr>
+                <td>
+                        {{ rows.flugnummer }}
+                    </td>
+                    <td>
+                        {{ rows.abflugid }}
+                    </td>
+                    <td>
+                        {{ rows.zielid }}
+                    </td>
+                    <td>
+                        {{ rows.sollabflugzeit.strftime("%H:%M") }}
+                    </td>
+                    <td>
+                        {{ rows.sollankunftszeit.strftime("%H:%M") }}
+                    </td>
+                    <td>
+                        {{ rows.istabflugzeit.strftime("%H:%M") }}€
+                    </td>
+                    <td>
+
+                        {{ rows.istankunftszeit.strftime("%H:%M") }}
+                    </td>
+                    <td>
+                        {{ rows.flugstatus }}
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    {% endif %}
+{% endblock %}
