@@ -1,4 +1,122 @@
 {% extends "base.html" %}
 {% block title %}Buchung{% endblock %}
 {% block content %}
+    <br>
+    <h3>Buchung</h3>
+
+    {% if anzahlPassagiere == 1 %}
+         <form method="POST">
+
+
+        <div class="card" style="width: 68rem;">
+            <div class="card-body">
+                <div class="container" style="width: 60rem; height: 10rem">
+
+                    <p>Passagier 1</p>
+
+
+
+                        <div class="form-row">
+                            <div class="col">
+                                <label for="vorname">Vorname</label>
+                                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="">
+                            </div>
+                            <div class="col">
+                                <label for="nachname">Nachname:</label>
+                                <input type="text" class="form-control" id="nachname" name="nachname"
+                                       placeholder="">
+                            </div>
+                            <div class="col">
+                                <label for="Anzahl Sitzplätze">Geburtsdatum:</label>
+                                <input type="date" class="form-control" id="geburtsdatum"
+                                       name="geburtsdatum"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+            <button type="submit" class="btn btn-warning" style="height: 3rem">Kostenpflichtig buchen</button>
+         </form>
+
+
+    {% endif %}
+
+    {% if anzahlPassagiere == 2 %}
+
+         <div class="card" style="width: 68rem;">
+            <div class="card-body">
+                <div class="container" style="width: 60rem; height: 10rem">
+
+                     <p>Passagier 1</p>
+
+
+                    <form method="POST">
+                        <div class="form-row">
+                            <div class="col">
+                                <label for="vorname">Vorname</label>
+                                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="">
+                            </div>
+                            <div class="col">
+                                <label for="nachname">Nachname:</label>
+                                <input type="text" class="form-control" id="nachname" name="nachname"
+                                       placeholder="">
+                            </div>
+                            <div class="col">
+                                <label for="Anzahl Sitzplätze">Geburtsdatum:</label>
+                                <input type="date" class="form-control" id="geburtsdatum"
+                                       name="geburtsdatum"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    <br>
+     <div class="card" style="width: 68rem;">
+            <div class="card-body">
+                <div class="container" style="width: 60rem; height: 10rem">
+
+                     <p>Passagier 2</p>
+
+
+
+                   <form method="POST">
+                        <div class="form-row">
+                            <div class="col">
+                                <label for="vorname">Vorname</label>
+                                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="">
+                            </div>
+                            <div class="col">
+                                <label for="nachname">Nachname:</label>
+                                <input type="text" class="form-control" id="nachname" name="nachname"
+                                       placeholder="">
+                            </div>
+                            <div class="col">
+                                <label for="Anzahl Sitzplätze">Geburtsdatum:</label>
+                                <input type="date" class="form-control" id="geburtsdatum"
+                                       name="geburtsdatum"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+                    </form>
+
+
+                </div>
+
+            </div>
+
+        </div>
+         <button type="submit" class="btn btn-warning" style="height: 3rem">Kostenpflichtig buchen</button>
+    {% endif %}
+
 {% endblock %}

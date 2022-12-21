@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
 import secrets
@@ -56,7 +56,8 @@ def fluglinien_anzeigen(page):
 @views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
 def flug_buchen(id, anzahlPassagiere):
-    return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id, anzahlPassagiere=anzahlPassagiere)
+    return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
+                           anzahlPassagiere=anzahlPassagiere)
 
 
 @views.route('/home-vp', methods=['GET', 'POST'])
@@ -96,29 +97,27 @@ def flugzeug_bearbeiten(page):
     return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge, user=current_user)
 
 
-@views.route('/flugzeug-bearbeiten/<int:page>', methods=['GET', 'POST'])
-@views.route('/flugzeug-inaktiv-setzen/<int:id>', methods=['GET', 'POST'], defaults={"page": 1})
-def flugzeug_inaktiv_setzen(id, page):
-    page = page
-    pages = 4
+@views.route('/flugzeug-ändern', methods=['GET', 'POST'])
+def flugzeug_ändern():
+    if request.method == 'POST':
+        flugzeug = Flugzeug.query.get_or_404(request.form.get('id'))
+
+        flugzeug.modell = request.form['modell']
+        flugzeug.hersteller = request.form['hersteller']
+        flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
+        db.session.commit()
+        flash("Flugzeugdaten erfolgreich geändert")
+        return redirect(url_for('views.flugzeug_bearbeiten'))
+
+
+@views.route('/flugzeug-inaktiv-setzen/<int:id>', methods=['GET', 'POST'])
+def flugzeug_inaktiv_setzen(id):
     flugzeug_inaktiv = Flugzeug.query.filter_by(flugzeugid=id).first()
     flugzeug_inaktiv.status = "inaktiv"
     db.session.merge(flugzeug_inaktiv)
     db.session.commit()
-    flugzeuge = Flugzeug.query.filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
 
-    # doppelt da sonst nach inaktiv setzen keine suche mehr möglich
-
-    if request.method == 'POST' and 'tag' in request.form:
-        tag = request.form["tag"]
-        search = "%{}%".format(tag)
-        flugzeuge = Flugzeug.query.filter(Flugzeug.hersteller.like(search)). \
-            filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
-
-        return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge,
-                               user=current_user, tag=tag)
-
-    return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge, user=current_user)
+    return redirect(url_for('views.flugzeug_bearbeiten'))
 
 
 @views.route('/flug-anlegen', methods=['GET', 'POST'])
@@ -168,6 +167,7 @@ def flug_bearbeiten(page):
 
         return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege,
                                user=current_user, tag=tag)
+
     return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user)
 
 
@@ -192,6 +192,7 @@ def accounts_anlegen():
     return render_template("Verwaltungspersonal/accounts_anlegen.html", user=current_user)
 
 
+# Seite mit die das Bearbeiten und löschen ermöglicht
 @views.route('/accounts-bearbeiten', methods=['GET', 'POST'])
 def accounts_bearbeiten():
     accounts = Nutzerkonto.query.filter(
@@ -200,11 +201,26 @@ def accounts_bearbeiten():
     return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)
 
 
+# konkrete Funktion um Accountdaten über Modal zu ändern
+@views.route('/accounts-ändern', methods=['GET', 'POST'])
+def accounts_ändern():
+    if request.method == 'POST':
+        nutzer = Nutzerkonto.query.get_or_404(request.form.get('id'))
+
+        nutzer.vorname = request.form['vorname']
+        nutzer.nachname = request.form['nachname']
+        nutzer.email = request.form['emailadresse']
+        nutzer.rolle = request.form['rolle']
+        db.session.commit()
+        flash("Nutzerdaten erfolgreich geändert")
+
+        return redirect(url_for('views.accounts_bearbeiten'))
+
+
 @views.route('/accounts-loeschen/<int:id>', methods=['GET', 'POST'])
 def accounts_loeschen(id):
     account = Nutzerkonto.query.get_or_404(id)
     db.session.delete(account)
     db.session.commit()
-    accounts = Nutzerkonto.query.filter(
-        or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal'))
-    return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)
+
+    return redirect(url_for('views.accounts_bearbeiten'))
