@@ -48,6 +48,7 @@
     {% endif %}
 
     {% if anzahlPassagiere == 2 %}
+        <form method="POST">
 
          <div class="card" style="width: 68rem;">
             <div class="card-body">
@@ -75,7 +76,7 @@
                             </div>
                         </div>
 
-                    </form>
+
 
                 </div>
             </div>
@@ -89,26 +90,26 @@
 
 
 
-                   <form method="POST">
+
                         <div class="form-row">
                             <div class="col">
-                                <label for="vorname">Vorname</label>
-                                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="">
+                                <label for="vorname1">Vorname</label>
+                                <input type="text" class="form-control" id="vorname1" name="vorname1" placeholder="">
                             </div>
                             <div class="col">
-                                <label for="nachname">Nachname:</label>
-                                <input type="text" class="form-control" id="nachname" name="nachname"
+                                <label for="nachname1">Nachname:</label>
+                                <input type="text" class="form-control" id="nachname1" name="nachname1"
                                        placeholder="">
                             </div>
                             <div class="col">
-                                <label for="Anzahl Sitzplätze">Geburtsdatum:</label>
-                                <input type="date" class="form-control" id="geburtsdatum"
-                                       name="geburtsdatum"
+                                <label for="geburtsdatum1">Geburtsdatum:</label>
+                                <input type="date" class="form-control" id="geburtsdatum1"
+                                       name="geburtsdatum1"
                                        placeholder="">
                             </div>
                         </div>
 
-                    </form>
+
 
 
                 </div>
@@ -117,6 +118,7 @@
 
         </div>
          <button type="submit" class="btn btn-warning" style="height: 3rem">Kostenpflichtig buchen</button>
+        </form>
     {% endif %}
 
 {% endblock %}

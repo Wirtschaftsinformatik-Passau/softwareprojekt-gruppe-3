@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
 import secrets
 from . import db, conn
-from .models import Flug, Flughafen, Flugzeug, Nutzerkonto
+from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier
 from sqlalchemy import select, or_, cast, Date
 
 # store the standard routes for a website where the user can navigate to
@@ -53,13 +53,51 @@ def fluglinien_anzeigen(page):
     return render_template("Gast/fluglinien_anzeigen.html", user=current_user, fluege=fluege)
 
 
+# Passagierfunktionen
 @views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
 def flug_buchen(id, anzahlPassagiere):
+    if request.method == 'POST':
+        neue_buchung = Buchung(nutzerid=current_user.id, flugid=id, buchungsstatus="gebucht",
+                               buchungsnummer=current_user.id + id + 1234)
+        db.session.add(neue_buchung)
+        db.session.commit()
+
+        if anzahlPassagiere == 1:
+            vorname = request.form['vorname']
+            nachname = request.form['nachname']
+            geburtsdatum = request.form['geburtsdatum']
+            neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=vorname, nachname=nachname,
+                                        geburtsdatum=geburtsdatum, passagierstatus="gebucht")
+            db.session.add(neuer_passagier)
+            db.session.commit()
+            flash('Buchung erfolgreich', category='success')
+            return redirect(url_for('views.home'))
+
+        if anzahlPassagiere == 2:
+            vorname = request.form['vorname']
+            nachname = request.form['nachname']
+            geburtsdatum = request.form['geburtsdatum']
+            neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=vorname, nachname=nachname,
+                                        geburtsdatum=geburtsdatum, passagierstatus="gebucht")
+
+            vorname1 = request.form['vorname1']
+            nachname1 = request.form['nachname1']
+            geburtsdatum1 = request.form['geburtsdatum1']
+            neuer_passagier1 = Passagier(buchungsid=neue_buchung.buchungsid, vorname=vorname1, nachname=nachname1,
+                                         geburtsdatum=geburtsdatum1, passagierstatus="gebucht")
+
+            db.session.add(neuer_passagier)
+            db.session.add(neuer_passagier1)
+            db.session.commit()
+            flash('Buchung erfolgreich', category='success')
+            return redirect(url_for('views.home'))
+
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
                            anzahlPassagiere=anzahlPassagiere)
 
 
+# Flugzeug funktionen
 @views.route('/home-vp', methods=['GET', 'POST'])
 def flugzeug_erstellen():
     if request.method == 'POST':
@@ -120,6 +158,7 @@ def flugzeug_inaktiv_setzen(id):
     return redirect(url_for('views.flugzeug_bearbeiten'))
 
 
+# Flug funktionen
 @views.route('/flug-anlegen', methods=['GET', 'POST'])
 def flug_anlegen():
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
