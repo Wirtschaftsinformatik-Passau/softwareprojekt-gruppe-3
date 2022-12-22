@@ -56,7 +56,7 @@
                                 <ul class="pagination">
                                     {% if fluege.has_prev %}
                                         <li class="page-item"><a class="page-link"
-                                                                 href="{{ url_for('views.fluglinien_anzeigen', page=fluege.prev_num) }}">Previous</a>
+                                                                 href="{{ url_for('nutzer_ohne_account_views.fluglinien_anzeigen', page=fluege.prev_num) }}">Previous</a>
                                         </li>
                                     {% else %}
                                         <li class="page-item"><a class="page-link btn disabled" href="#">Previous</a>
@@ -68,11 +68,11 @@
 
                                             {% if page==fluege.page %}
                                                 <li class="page-item active"><a class="page-link"
-                                                                                href="{{ url_for('views.fluglinien_anzeigen', page=page) }}">{{ page }}</a>
+                                                                                href="{{ url_for('nutzer_ohne_account_views.fluglinien_anzeigen', page=page) }}">{{ page }}</a>
                                                 </li>
                                             {% else %}
                                                 <li class="page-item"><a class="page-link"
-                                                                         href="{{ url_for('views.fluglinien_anzeigen', page=page) }}">{{ page }}</a>
+                                                                         href="{{ url_for('nutzer_ohne_account_views.fluglinien_anzeigen', page=page) }}">{{ page }}</a>
                                                 </li>
                                             {% endif %}
 
@@ -85,7 +85,7 @@
 
                                     {% if fluege.has_next %}
                                         <li class="page-item"><a class="page-link"
-                                                                 href="{{ url_for('views.fluglinien_anzeigen', page=fluege.next_num) }}">Next</a>
+                                                                 href="{{ url_for('nutzer_ohne_account_views.fluglinien_anzeigen', page=fluege.next_num) }}">Next</a>
                                         </li>
                                     {% else %}
                                         <li class="page-item"><a class="page-link btn disabled" href="#">Next</a></li>

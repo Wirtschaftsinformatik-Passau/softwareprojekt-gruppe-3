@@ -82,7 +82,7 @@
                                            class="btn btn-warning">Bearbeiten</a>
 
 
-                                        <a href="{{ url_for('views.accounts_loeschen', id=rows.id) }}"
+                                        <a href="{{ url_for('verwaltungspersonal_views.accounts_loeschen', id=rows.id) }}"
                                            class="btn btn-danger">Löschen</a>
                                     </td>
                                 </tr>
@@ -94,7 +94,7 @@
                                 <div id="updateModal{{ rows.id }}" class="modal fade">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
-                                            <form method="POST" action="{{ url_for('views.accounts_ändern') }}">
+                                            <form method="POST" action="{{ url_for('verwaltungspersonal_views.accounts_ändern') }}">
                                                 <div class="modal-header">
                                                     <h4 class="modal-title">Account bearbeiten</h4>
                                                     <button type="button" class="close" data-dismiss="modal"

@@ -15,11 +15,10 @@
     <option name="TEMPLATE_FOLDERS">
       <list>
         <option value="$MODULE_DIR$/website/templates" />
-        <option value="$MODULE_DIR$/website/templates/user_authentification" />
         <option value="$MODULE_DIR$/website/templates/Verwaltungspersonal" />
-        <option value="$MODULE_DIR$/website/templates/Bodenpersonal" />
-        <option value="$MODULE_DIR$/website/templates/Gast" />
         <option value="$MODULE_DIR$/website/templates/Passagier" />
+        <option value="$MODULE_DIR$/website/templates/nutzer_ohne_account" />
+        <option value="$MODULE_DIR$/website/templates/nutzer_mit_account" />
       </list>
     </option>
   </component>

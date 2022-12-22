@@ -116,7 +116,7 @@
                         {{ rows.preis }}€
                     </td>
                     <td>
-                        <a href="{{ url_for('views.flug_buchen', id=rows.flugid, anzahlPassagiere=passagiere)}}"
+                        <a href="{{ url_for('passagier_views.flug_buchen', id=rows.flugid, anzahlPassagiere=passagiere)}}"
                                                class="btn btn-info">Buchen</a>
                     </td>
                 </tr>

@@ -90,12 +90,12 @@
                                         </td>
 
                                         <td>
-                                            <a href="{{ url_for('views.flugzeug_ändern', id=rows.flugzeugid) }}"
+                                            <a href="{{ url_for('verwaltungspersonal_views.flugzeug_ändern', id=rows.flugzeugid) }}"
                                                data-toggle="modal" data-target="#updateModal{{ rows.flugzeugid }}"
                                                class="btn btn-warning">Bearbeiten</a>
 
 
-                                            <a href="{{ url_for('views.flugzeug_inaktiv_setzen', id=rows.flugzeugid) }}"
+                                            <a href="{{ url_for('verwaltungspersonal_views.flugzeug_inaktiv_setzen', id=rows.flugzeugid) }}"
                                                class="btn btn-danger">Inaktiv setzten</a>
                                         </td>
 
@@ -106,7 +106,7 @@
                                     <div id="updateModal{{ rows.flugzeugid }}" class="modal fade bd-example-modal-lg">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
-                                                <form method="POST" action="{{ url_for('views.flugzeug_ändern') }}">
+                                                <form method="POST" action="{{ url_for('verwaltungspersonal_views.flugzeug_ändern') }}">
                                                     <div class="modal-header">
                                                         <h4 class="modal-title">Flugzeug bearbeiten</h4>
                                                         <button type="button" class="close" data-dismiss="modal"
@@ -160,7 +160,7 @@
                                 <ul class="pagination">
                                     {% if flugzeuge.has_prev %}
                                         <li class="page-item"><a class="page-link"
-                                                                 href="{{ url_for('views.flugzeug_bearbeiten', page=flugzeuge.prev_num) }}">Previous</a>
+                                                                 href="{{ url_for('verwaltungspersonal_views.flugzeug_bearbeiten', page=flugzeuge.prev_num) }}">Previous</a>
                                         </li>
                                     {% else %}
                                         <li class="page-item"><a class="page-link btn disabled" href="#">Previous</a>
@@ -172,11 +172,11 @@
 
                                             {% if page==flugzeuge.page %}
                                                 <li class="page-item active"><a class="page-link"
-                                                                                href="{{ url_for('views.flugzeug_bearbeiten', page=page) }}">{{ page }}</a>
+                                                                                href="{{ url_for('verwaltungspersonal_views.flugzeug_bearbeiten', page=page) }}">{{ page }}</a>
                                                 </li>
                                             {% else %}
                                                 <li class="page-item"><a class="page-link"
-                                                                         href="{{ url_for('views.flugzeug_bearbeiten', page=page) }}">{{ page }}</a>
+                                                                         href="{{ url_for('verwaltungspersonal_views.flugzeug_bearbeiten', page=page) }}">{{ page }}</a>
                                                 </li>
                                             {% endif %}
 
@@ -189,7 +189,7 @@
 
                                     {% if flugzeuge.has_next %}
                                         <li class="page-item"><a class="page-link"
-                                                                 href="{{ url_for('views.flugzeug_bearbeiten', page=flugzeuge.next_num) }}">Next</a>
+                                                                 href="{{ url_for('verwaltungspersonal_views.flugzeug_bearbeiten', page=flugzeuge.next_num) }}">Next</a>
                                         </li>
                                     {% else %}
                                         <li class="page-item"><a class="page-link btn disabled" href="#">Next</a></li>
