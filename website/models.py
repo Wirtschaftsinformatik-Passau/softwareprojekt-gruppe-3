@@ -11,7 +11,7 @@ class Nutzerkonto(db.Model, UserMixin):
     vorname = db.Column(db.String(150))
     nachname = db.Column(db.String(150))
     emailadresse = db.Column(db.String(150), unique=True)
-    passwort = db.Column(db.String(250))
+    passwort = db.Column(db.String(255))
     rolle = db.Column(db.Enum("Bodenpersonal", "Verwaltungspersonal", "Passagier"))
 
 
@@ -75,7 +75,7 @@ class Passagier(db.Model):
     geburtsdatum = db.Column(db.DateTime(timezone=True))
     staatsbuergerschaft = db.Column(db.String(30))
     boardingpassnummer = db.Column(db.Integer)
-    passagierstatus = db.Column(db.Enum("eingecheckt", "boarded"))
+    passagierstatus = db.Column(db.Enum("gebucht", "eingecheckt", "boarded"))
 
 
 class Rechnung(db.Model):

@@ -1,12 +1,9 @@
-from datetime import datetime
-
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
-import secrets
-from . import db, conn
-from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier
-from sqlalchemy import select, or_, cast, Date
+from . import db
+from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
+from sqlalchemy import or_, cast, Date
 
 # store the standard routes for a website where the user can navigate to
 views = Blueprint('views', __name__)
@@ -25,7 +22,8 @@ def home():
     kuerzel_von = Flughafen.query.filter(Flughafen.flughafenid == vonID).first()
     kuerzel_nach = Flughafen.query.filter(Flughafen.flughafenid == nachID).first()
 
-    # Datenbankabfrage nach Abflug und Ziel Flughafen sowie Datum und Passagieranzahl < Summe bereits gebuchter Passagiere
+    # Datenbankabfrage nach Abflug und Ziel Flughafen sowie Datum und Passagieranzahl < Summe bereits gebuchter
+    # Passagiere
 
     fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
         filter(cast(Flug.sollabflugzeit, Date) == abflug)
@@ -95,6 +93,41 @@ def flug_buchen(id, anzahlPassagiere):
 
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
                            anzahlPassagiere=anzahlPassagiere)
+
+
+@views.route('/online_check_in', methods=['POST', 'GET'])
+def online_check_in():
+    return render_template("Passagier/online_check_in.html", user=current_user)
+
+
+@views.route('/buchung_suchen', methods=['GET', 'POST'])
+def buchung_suchen():
+    input_buchungsnummer = request.form.get('buchungsnummer')
+
+    buchung = Buchung.query.filter(Buchung.buchungsnummer == 999)
+    # Kennung des Ankunftflughafens
+    ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
+        Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
+    # Kennung des Zielflughafens
+    ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
+        Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
+    nutzer = Nutzerkonto.query.filter(
+        Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsnummer == 999)
+    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == 999)
+    gepaeck = Gepaeck.query.all()
+
+    return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
+                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer, gepaeck=gepaeck)
+
+
+@views.route('/storno')
+def storno():
+    return render_template('Passagier/storno.html', user=current_user)
+
+
+@views.route('/gepaecksbestimmungen', methods=['GET'])
+def gepaecksbestimmungen_anzeigen():
+    return render_template("Passagier/gepaecksbestimmungen.html", user=current_user)
 
 
 # Flugzeug funktionen

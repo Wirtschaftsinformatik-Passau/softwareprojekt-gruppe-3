@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %} Profil {% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h3>Nutzer Informationen</h3>
+    <br>
+    <p>NutzerID:      {{ user.id }} </p>
+    <p >Vorname:      {{ user.vorname }} </p>
+    <p>Nachname:      {{ user.nachname }}</p>
+    <p>E-Mail-Adresse:     {{ user.emailadresse }}</p>
+    <br>
+    <button class="btn btn-primary" onclick="location.href='{{ url_for('views.home') }}'">Zurück zur Startseite</button>
+    <button class="btn btn-primary" onclick="location.href='{{ url_for('auth.passwort_aendern') }}'">Passwort ändern? Hier klicken</button>
+</div>
+    {% endblock %}

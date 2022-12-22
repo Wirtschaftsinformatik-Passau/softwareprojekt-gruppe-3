@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Buchung suchen{% endblock %}
+{% block content %}
+    <br>
+    <br>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Flug suchen</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/buchung_suchen">Buchungen suchen</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/flugstatus-überprüfen">Flugstatus</a>
+        </li>
+     <li class="nav-item">
+            <a class="nav-link" href="/fluglinien-anzeigen">Fluglinien</a>
+        </li>
+    </ul>
+
+    <div class="input-group mb-3">
+        <label for="buchungsnummer">Buchungsnummer</label>
+        <input type="text" class="form-control" id="buchungsnummer" name="buchungsnummer" placeholder="999"
+               aria-label="buchungsnummer" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+            <button
+                    class="btn btn-info" id="inputGroup-sizing-lg" type="button">Buchung suchen
+            </button>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Buchungsnummer</th>
+            <th scope="col">Buchungsstatus</th>
+            <th scope="col">Von</th>
+            <th scope="col">Nach</th>
+            <th scope="col">Datum</th>
+            <th scope="col">Passagier</th>
+            <th scope="col">Gepaeckstatus</th>
+        </tr>
+        </thead>
+
+        {% for rows in buchung %}
+
+            <td>
+                {{ rows.buchungsid }}
+            </td>
+            <td>
+                {{ rows.buchungsstatus }}
+            </td>
+        {% endfor %}
+        {% for rows in ankunft_flughafen %}
+            <td>
+                {{ rows.kennung }}
+            </td>
+
+        {% endfor %}
+        {% for rows in ziel_flughafen %}
+            <td>
+                {{ rows.kennung }}
+            </td>
+        {% endfor %}
+
+        {% for rows in flug %}
+            <td>
+                {{ rows.sollabflugzeit }}
+            </td>
+        {% endfor %}
+
+        {% for rows in nutzer %}
+            <td>
+                {{ rows.vorname }}
+                {{ rows.nachname }}
+                <br>
+                {{ rows.emailadresse }}
+                <br>
+                <a href='/online_check_in'>
+                    <button class="btn btn-info">Online-Check-In</button>
+                </a>
+                <a href='/storno'>
+                    <button class="btn btn-danger">Storno</button>
+                </a>
+            </td>
+        {% endfor %}
+        {% for rows in gepaeck %}
+            <td>
+                {{ rows.status }}
+            </td>
+        {% endfor %}
+
+        </td>
+        </tr>
+
+    </table>
+{% endblock %}

@@ -28,16 +28,17 @@
     >
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbar">
-        <div class="navbar-nav">
-            {% if user.is_authenticated %}
-                <a class="nav-item nav-link" id="home" href="/">Startseite</a>
+    <div  class="collapse navbar-collapse" id="navbar">
+        <div  class="navbar-nav">
+              {% if current_user.is_authenticated %}
+                <a   class="nav-item nav-link" id="home" href="/">Startseite</a>
+                <a class="nav-item nav-link" id="Profil" href="/Profil">Profil</a>
                 <a class="nav-item nav-link" id="logout" href="/logout">Abmelden</a>
             {% else %}
                 <a class="nav-item nav-link" id="home" href="/">Startseite</a>
-                <a class="nav-item nav-link" id="anmelden" href="/anmelden">Einloggen</a>
+                <a class="nav-item nav-link" id="anmelden" href="/anmelden">Anmelden</a>
                 <a class="nav-item nav-link" id="registrieren" href="/registrieren">Registrieren</a>
-            {% endif %}
+              {% endif %}
 
 
         </div>
