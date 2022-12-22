@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block title %}Passwort_aendern{% endblock %} {% block content
+%}
+<form method="POST">
+  <br>
+  <h3 align="center">Passwort ändern</h3>
+  <div class="form-group">
+    <label for="current_password">Altes Passwort*:</label>
+    <input
+      type="password"
+      id="current_password"
+      name="current_password"
+      class="form-control"
+      placeholder=""
+      required
+    />
+    <br>
+    <label for="new_password">Neues Passwort*:</label>
+    <input
+      type="password"
+      id="new_password"
+      name="new_password"
+      class="form-control"
+      placeholder=""
+      required
+    />
+    <br />
+      <label for="confirm_password">Passwort wiederholen*:</label>
+    <input
+      type="password"
+      id="confirm_password"
+      name="confirm_password"
+      class="form-control"
+      placeholder=""
+      required
+    />
+    <br>
+
+    <div align="center">
+      <button class="btn btn-primary" type="submit">Passwort ändern</button>
+    </div>
+  </div>
+</form>
+<br>
+
+    <button class="btn btn-primary" onclick="location.href='{{ url_for('views.home') }}'">Abbrechen</button>
+
+{% endblock %}

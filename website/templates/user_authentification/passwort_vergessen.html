@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}passwort_vergessen{% endblock %}
+{% block content %}
+ <h1>Password Recovery</h1>
+  <form action="/password-recovery" method="post">
+    <label for="email">Email Adresse:</label><br>
+    <input type="email" id="email" name="email"><br>
+    <input type="submit" value="Neues Passwort jetzt anfordern">
+  </form>
+{% endblock %}

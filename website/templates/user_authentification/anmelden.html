@@ -1,12 +1,42 @@
- <h1>Willkommen zurück!</h1>
-<form action="" method = "POST">
-    <p>Email Adresse*:  <input type = "email" name = "emailAdresse"  required/></p>
-    <p>Passwort*:  <input type = "password" name = "passwort"   required/></p>
-    <p><input type = "submit" value = "Jetzt Einloggen" /></p>
-    <p> <input type = "submit" value = "Passwort vergessen? Hier Klicken!" /></p>
+{% extends "base.html" %} {% block title %}Anmelden{% endblock %} {% block content
+%}
+<form method="POST">
+  <br>
+  <h3 align="center">Anmelden</h3>
+  <div class="form-group">
+    <label for="emailadresse">Email Adresse*:</label>
+    <input
+      type="text"
+      id="emailadresse"
+      name="emailadresse"
+      class="form-control"
+      placeholder=""
+      required
+    />
+    <br>
+    <label for="passwort">Passwort*:</label>
+    <input
+      type="password"
+      id="passwort"
+      name="passwort"
+      class="form-control"
+      placeholder=""
+      required
+    />
 
+
+
+    <br />
+    <br>
+
+    <div align="center">
+      <button class="btn btn-primary" type="submit">Anmelden</button>
+    </div>
+  </div>
 </form>
-
-<!--<h3>Sie sind noch nicht registriert?</h3>-->
-<!--<h3><a href = "{{url_for('auth.registrieren') }}">Zum Registrieren hier klicken</a></h3>-->
-
+<br>
+<br>
+<br>
+<p>Sie sind noch nicht registriert?</p>
+<p><a href = "{{url_for('auth.registrieren') }}">Zum Registrieren hier klicken</a></p>
+{% endblock %}

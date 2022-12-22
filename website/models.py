@@ -50,11 +50,11 @@ class Gepaeck(db.Model):
     status = db.Column(db.Enum("gebucht", "storniert", "eingecheckt"))
 
 class Nutzerkonto(db.Model,UserMixin):
-    nutzerid = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     vorname = db.Column(db.String(150))
     nachname = db.Column(db.String(150))
     emailadresse = db.Column(db.String(150),unique=True)
-    passwort = db.Column(db.String(150))
+    passwort = db.Column(db.String(255))
     rolle = db.Column(db.Enum("Bodenpersonal", "Verwaltungspersonal", "Passagier"))
 
 

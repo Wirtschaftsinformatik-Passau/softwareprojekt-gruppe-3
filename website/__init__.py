@@ -19,20 +19,19 @@ def create_app():
     db.init_app(app)
     from .views import views
     from .auth import auth
-    from .models import Flughafen, Flugzeug
+
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
-
-    from .models import Nutzerkonto
+    from .models import Flughafen, Flugzeug, Nutzerkonto
     login_manager = LoginManager()
     login_manager.login_view = "auth.anmelden"  # if the user is not logged in then he will be directed to login page
     login_manager.init_app(app)
 
     @login_manager.user_loader
-    def load_user(nutzerid):
-        return Nutzerkonto.query.get(int(nutzerid))
+    def load_user(id):
+        return Nutzerkonto.query.get(int(id))
 
 
 

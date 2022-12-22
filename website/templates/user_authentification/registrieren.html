@@ -1,15 +1,67 @@
-{% extends "base.html" %}
-{% block title %}registrieren{% endblock %}
-{% block content %}
-    <h1>Hier Registrieren:</h1>
-<form action="{{ url_for('auth.registrieren') }}" method = "POST">
-    <p><input type = "text" name = "vorname" placeholder="Vorname*" required/></p>
-    <p><input type = "text" name = "nachname" placeholder="Nachname*" required/></p>
-    <p><input type = "email" name = "emailadresse" placeholder="Email Adresse*" required/></p>
-    <p><input type = "password" name = "passwort1" placeholder="Passwort*" required /></p>
-    <p>  <input type = "password" name = "passwort2" placeholder="Passwort wiederholen*" required />  </p>
-  <p> <input type = "submit" value = "Jetzt Registrieren" /></p>
-</form>
+{% extends "base.html" %} {% block title %}Registrieren{% endblock %} {% block
+content %}
+
+
+    <form method="POST">
+        <h3 align="center">Registrieren</h3>
+        <div class="form-group">
+            <label for="Vorname">Vorname*:</label>
+            <input
+                    type="text"
+                    class="form-control"
+                    id="vorname"
+                    name="vorname"
+                    placeholder=""
+                    required
+            />
+        </div>
+        <div class="form-group">
+            <label for="Nachname">Nachname*:</label>
+            <input
+                    type="text"
+                    class="form-control"
+                    id="nachname"
+                    name="nachname"
+                    placeholder=""
+                    required
+            />
+        </div>
+        <div class="form-group">
+            <label for="emailadresse">Email Adresse*:</label>
+            <input
+                    type="email"
+                    class="form-control"
+                    id="emailadresse"
+                    name="emailadresse"
+                    placeholder=""
+                    required
+            />
+        </div>
+        <div class="form-group">
+            <label for="passwort1">Passwort*:</label>
+            <input
+                    type="password"
+                    class="form-control"
+                    id="passwort1"
+                    name="passwort1"
+                    placeholder=""
+                    required
+            />
+        </div>
+        <div class="form-group">
+            <label for="passwort2">Passwort bestätigen*:</label>
+            <input
+                    type="password"
+                    class="form-control"
+                    id="passwort2"
+                    name="passwort2"
+                    placeholder=""
+                    required
+            />
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary">Jetzt registrieren</button>
+    </form>
 {% endblock %}
 
 

@@ -17,6 +17,9 @@
         <li class="nav-item">
             <a class="nav-link" href="#">Flugstatus</a>
         </li>
+     <li class="nav-item">
+            <a class="nav-link" href="#">Fluglinien</a>
+        </li>
     </ul>
 
 
@@ -70,6 +73,7 @@
         <table class="table">
             <thead>
             <tr>
+                <th scope="col">Linie</th>
                 <th scope="col">Von</th>
                 <th scope="col">Nach</th>
                 <th scope="col">Abflug</th>
@@ -81,6 +85,9 @@
             <tbody>
             {% for rows in fluege %}
                 <tr>
+                <td>
+                        {{ rows.flugnummer }}
+                    </td>
                     <td>
                         {{ rows.abflugid }}
                     </td>
