@@ -1,5 +1,7 @@
-{% extends "base.html" %} {% block title %}Anmelden{% endblock %} {% block content
-%}
+{% extends "base.html" %} {% block title %}Anmelden{% endblock %}
+
+
+{% block content%}
 <form method="POST">
   <br>
   <h3 align="center">Anmelden</h3>
@@ -23,6 +25,7 @@
       placeholder=""
       required
     />
+    <a href="#" data-toggle="modal" data-target="#passwordRecoveryModal">Passwort vergessen?</a>
 
 
 
@@ -39,5 +42,7 @@
 <br>
 <p>Sie sind noch nicht registriert?</p>
 <p><a href = "{{url_for('nutzer_ohne_account_views.registrieren') }}">Zum Registrieren hier klicken</a></p>
+
+{% include 'nutzer_mit_account/passwort_vergessen.html' %}
 {% endblock %}
 
