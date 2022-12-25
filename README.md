@@ -4,26 +4,57 @@
 
 ### Projektziele
 
-[Beschreiben Sie hier in einer kurzen Zusammenfassung den Hintergrund und die Ziele Ihrer Anwendung: Airline.]
+Ziel des Projekts ist die Erstellung eines Flugbuchungssystems für eine regionale Airline. Das Flugbuchungssystem soll alle unter "Funktionen" aufgeführte Funktionen beinhalten. Um die Funktionalität des Systems gewährleisten zu können, wurden die zu entwickelnden Funktionen unterschiedlichen Zielgruppen zugeordnet. Die Zielgruppen lauten "Nutzer ohne Account", "Preisvergleichsportal", "Nutzer mit Account", "Passagier", "Bodenpersonal" und "Verwaltungspersonal".
 
 ### Funktionen
 
-[Beschreiben Sie die Funktionen ihrer Applikation. Beziehen Sie sich dabei auf Ihr Pflichtenheft und stellen Sie eine Verbindung zu den entsprechneden Files oder Directories her.]
+Die Funktionen sind nach Zielgruppen geordnet. Da sich die Funktionen mancher Zielgruppen überschneiden, stehen diese in Beziehung zueinander. Folgende Zielgruppenbeziehungen existieren:
+
+* "Preisvergleichsportal" extends "Nutzer ohne Account"
+* "Passagier" extends "Nutzer ohne Account"
+* "Passaier" extends "Nutzer mit Account"
+* "Bodenpersonal" extends "Nutzer mit Account"
+* "Verwaltungspersonal" extends "Nutzer mit Account"
+
+Im Folgenden ist die Funktionsaufteilung nach Zielgruppen dargestellt.
+
+* Nutzer ohne Account: Startseite anzeigen, Flug suchen, Flugstatus überprüfen, Fluglinien einsehen, Registrieren
+* Preisverleichsportal: REST-API
+* Nutzer mit Account: Einloggen, Passwort ändern, Passwort vergessen, Profil anzeigen
+* Passagier: Flug buchen, Buchungen suchen, Online-Check-In, Buchung stornieren
+* Bodenpersonal: Startseite des Bodenpersonals anzeigen, Passagier suchen, Check-In, Auslastung der Flüge prüfen
+* Verwaltungspersonal: Startseite (Verwaltung) anzeigen, Flugzeuge anlegen, Flugzeuge bearbeiten, Flüge anlegen, Flüge bearbeiten, Reporting einsehen, Log-Datei einsehen, Personalaccounts anlegen, Personalaccounts bearbeiten
+
+Die Login-Funktionen werden aktuell im Branch "user_authentication" entwickelt.
 
 
 ## Team
 
 ### Vorstellung
 
-[Beschreiben Sie hier die einzelnen Teammitglieder mit Namen, E-Mail-Adresse und Github-Nutzernamen.]
-gauer03@ads.uni-passau.de
-lippma05@ads.uni-passau.de
-abbass01@ads.uni-passau.de
-vrdolj02@ads.uni-passau.de
-gerste04@ads.uni-passau.de
+Clara Gauer, gauer03@ads.uni-passau.de, gauerla
+
+Dani Lippmann, lippma05@ads.uni-passau.de, danilippmann
+
+Meriem Abbassi, abbass01@ads.uni-passau.de, Meriem-01
+
+Marin Vrdoljak, vrdolj02@ads.uni-passau.de, marinvrdoljak
+
+Claudius Gerstenkorn, gerste04@ads.uni-passau.de, ClaudiusGerstenkorn
+
+
 ### Zuständigkeiten
 
-[Beschreiben Sie die Verteilung der Aufgaben und Zusändigkeiten innerhalb Ihres Teams.]
+Clara Gauer: Projektmanagement, Technische Koordination, Backend-Development, Frontend-Development
+
+Dani Lippmann: Backend-Development, Frontend-Development
+
+Meriem Abbassi: Data-Development, Backend-Development, Frontend-Development
+
+Marin Vrdoljak: Projektdokumentation, Technische Systemdokumentation, Präsentationen
+
+Claudius Gerstenkorn: Unit-Testing
+
 
 ## Guidelines zur Nutzung dieses Repositorys
 
