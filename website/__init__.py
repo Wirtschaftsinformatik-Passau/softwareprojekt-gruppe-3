@@ -1,8 +1,7 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail, Message
-import random
+from flask_mail import Mail
 
 conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("merie", "1234", "localhost", "airline")
 db = SQLAlchemy()
@@ -24,11 +23,13 @@ def create_app():
     from .nutzer_mit_account_views import nutzer_mit_account_views
     from .passagier_views import passagier_views
     from .verwaltungspersonal_views import verwaltungspersonal_views
+    from .bodenpersonal_views import bodenpersonal_views
 
     app.register_blueprint(nutzer_ohne_account_views, url_prefix='/')
     app.register_blueprint(nutzer_mit_account_views, url_prefix='/')
     app.register_blueprint(passagier_views, url_prefix='/')
     app.register_blueprint(verwaltungspersonal_views, url_prefix='/')
+    app.register_blueprint(bodenpersonal_views, url_prefix='/')
 
     from .models import Flughafen, Flugzeug, Nutzerkonto, Passagier, Gepaeck
     login_manager = LoginManager()

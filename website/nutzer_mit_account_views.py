@@ -137,4 +137,3 @@ def passwort_vergessen():
 
 
 
-#action="{{ url_for('Nutzer_mit_account_views.passwort_vergessen') }}
