@@ -45,12 +45,13 @@ def anmelden():
     return render_template("nutzer_mit_account/anmelden.html")
 
 
-@nutzer_mit_account_views.route('/logout')
+@nutzer_mit_account_views.route('/logout',methods=['GET'])
 @login_required
 def logout():
     logout_user()
-    flash('Du bist jetzt abgemeldet!', category='success')
+    flash("Sie sind jetzt ausgeloggt!",category="error")
     return redirect(url_for('nutzer_mit_account_views.anmelden'))
+
 
 
 @nutzer_mit_account_views.route('/profil', methods=['GET'])
@@ -101,7 +102,7 @@ def passwort_vergessen():
     emailadresse = request.form.get('emailadresse')
     user = Nutzerkonto.query.filter_by(emailadresse=emailadresse).first()
     if user:
-        special_characters = '!@#$%^&*()_+-'
+        special_characters = '!@#$%^&*/_+-'
         neues_passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
         while not (any(c.isdigit() for c in neues_passwort) and any(c in special_characters for c in neues_passwort)):
             neues_passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
