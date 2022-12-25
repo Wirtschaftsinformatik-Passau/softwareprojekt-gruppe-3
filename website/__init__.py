@@ -33,7 +33,7 @@ def create_app():
 
     from .models import Flughafen, Flugzeug, Nutzerkonto, Passagier, Gepaeck
     login_manager = LoginManager()
-    login_manager.login_view = "auth.anmelden"  # if the user is not logged in then he will be directed to login page
+    login_manager.login_view = "nutzer_mit_account_views.anmelden"  # if the user is not logged in then he will be directed to login page
     login_manager.init_app(app)
     mail.init_app(app)
 

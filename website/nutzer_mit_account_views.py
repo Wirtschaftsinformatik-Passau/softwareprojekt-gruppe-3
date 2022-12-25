@@ -45,11 +45,11 @@ def anmelden():
     return render_template("nutzer_mit_account/anmelden.html")
 
 
-@nutzer_mit_account_views.route('/logout',methods=['GET'])
+@nutzer_mit_account_views.route('/logout', methods=['GET'])
 @login_required
 def logout():
     logout_user()
-    flash("Sie sind jetzt ausgeloggt!",category="error")
+    flash("Sie sind jetzt ausgeloggt!", category="error")
     return redirect(url_for('nutzer_mit_account_views.anmelden'))
 
 
