@@ -5,7 +5,11 @@ from . import db
 from .models import Nutzerkonto
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-import re, string
+import re
+from . import mail
+from flask_mail import Mail, Message
+import random
+import string
 
 # store the standard routes for a website where the user can navigate to
 nutzer_mit_account_views = Blueprint('nutzer_mit_account_views', __name__)
@@ -41,12 +45,13 @@ def anmelden():
     return render_template("nutzer_mit_account/anmelden.html")
 
 
-@nutzer_mit_account_views.route('/logout')
+@nutzer_mit_account_views.route('/logout',methods=['GET'])
 @login_required
 def logout():
     logout_user()
-    flash('Du bist jetzt abgemeldet!', category='success')
+    flash("Sie sind jetzt ausgeloggt!",category="error")
     return redirect(url_for('nutzer_mit_account_views.anmelden'))
+
 
 
 @nutzer_mit_account_views.route('/profil', methods=['GET'])
@@ -92,4 +97,44 @@ def passwort_aendern():
 
     return render_template("nutzer_mit_account/passwort_aendern.html")
 
-# passwort_vergessen
+@nutzer_mit_account_views.route('/passwort_vergessen', methods=['POST'])
+def passwort_vergessen():
+    emailadresse = request.form.get('emailadresse')
+    user = Nutzerkonto.query.filter_by(emailadresse=emailadresse).first()
+    if user:
+        special_characters = '!@#$%^&*/_+-'
+        neues_passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
+        while not (any(c.isdigit() for c in neues_passwort) and any(c in special_characters for c in neues_passwort)):
+            neues_passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
+
+        passwort_hash = generate_password_hash(neues_passwort)
+        user.passwort = passwort_hash
+        db.session.commit()
+        msg = Message('Passwort wiederherstellen', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+        msg.html = render_template('nutzer_mit_account/passwort_vergessen_email.html', password=neues_passwort,
+                                       user=user)
+        mail.send(msg)
+
+        flash('Ein neues Passwort wurde an Ihre E-Mail-Adresse gesendet.', category='success')
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
+    flash('Die Email Adresse existiert nicht!', 'error')
+    return render_template("nutzer_mit_account/anmelden.html")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
