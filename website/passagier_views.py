@@ -8,6 +8,12 @@ from sqlalchemy import or_, cast, Date
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
 
+check_in_user=""
+def set_check_in_user(user):
+    check_in_user = user
+
+def get_check_in_user():
+    return check_in_user
 # Passagierfunktionen
 @passagier_views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
@@ -52,14 +58,9 @@ def flug_buchen(id, anzahlPassagiere):
                            anzahlPassagiere=anzahlPassagiere)
 
 
-@passagier_views.route('/online_check_in', methods=['POST', 'GET'])
-def online_check_in():
-    get_user()
-    return render_template("Passagier/online_check_in.html", user=current_user)
-
 @passagier_views.route('/protected')
 @login_required
-def get_user():
+def get_logged_in_user():
   # Get the currently logged-in user
   user = current_user
   print(user.vorname, user.nachname)
@@ -77,12 +78,21 @@ def buchung_suchen():
         Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer)
     nutzer = Nutzerkonto.query.filter(
         Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsnummer == input_buchungsnummer)
+    set_check_in_user(nutzer)
     flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == input_buchungsnummer)
     gepaeck = Gepaeck.query.all()
 
     return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
                            ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer, gepaeck=gepaeck)
 
+
+@passagier_views.route('/online_check_in', methods=['POST', 'GET'])
+def online_check_in():
+    #get_check_in_user()
+    get_logged_in_user() #gibt Vor- und Nachname des Nutzers zurück
+    #Prüfung ob eingeloggter Nutzer auch Passagier ist
+    #geburtsdatum = Passagier.query.filter(current_user.vorname == Passagier.vorname).where(current_user.nachname == Passagier.nachname).where(Nutzerkonto.rolle=="Passagier")
+    return render_template("Passagier/online_check_in.html", user=current_user)
 
 @passagier_views.route('/storno')
 def storno():
