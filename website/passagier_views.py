@@ -59,18 +59,18 @@ def online_check_in():
 
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
-    input_buchungsnummer = request.form.get('buchungsnummer')
+    input_buchungsnummer = request.args.get('buchungsnummer')
 
-    buchung = Buchung.query.filter(Buchung.buchungsnummer == 999)
+    buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer)
     # Kennung des Ankunftflughafens
     ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-        Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
+        Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer)
     # Kennung des Zielflughafens
     ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-        Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
+        Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer)
     nutzer = Nutzerkonto.query.filter(
-        Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsnummer == 999)
-    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == 999)
+        Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsnummer == input_buchungsnummer)
+    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == input_buchungsnummer)
     gepaeck = Gepaeck.query.all()
 
     return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
