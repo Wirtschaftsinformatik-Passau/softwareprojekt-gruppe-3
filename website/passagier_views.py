@@ -4,52 +4,54 @@ from werkzeug.security import generate_password_hash
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy import or_, cast, Date
+import string
+import random
 
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
+
+
+# Id generator für Buchungsnummer
+def id_generator(size=8, chars=string.ascii_uppercase):
+    return ''.join(random.choice(chars) for _ in range(size))
+
 
 # Passagierfunktionen
 @passagier_views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
 def flug_buchen(id, anzahlPassagiere):
+    buchung_preis = Flug.query.filter_by(flugid=id).first().preis * anzahlPassagiere
+    print(buchung_preis)
+
     if request.method == 'POST':
+        # neue Buchung erstellen
         neue_buchung = Buchung(nutzerid=current_user.id, flugid=id, buchungsstatus="gebucht",
-                               buchungsnummer=current_user.id + id + 1234)
+                               buchungsnummer=id_generator())
+
         db.session.add(neue_buchung)
         db.session.commit()
 
-        if anzahlPassagiere == 1:
-            vorname = request.form['vorname']
-            nachname = request.form['nachname']
-            geburtsdatum = request.form['geburtsdatum']
-            neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=vorname, nachname=nachname,
-                                        geburtsdatum=geburtsdatum, passagierstatus="gebucht")
-            db.session.add(neuer_passagier)
-            db.session.commit()
-            flash('Buchung erfolgreich', category='success')
-            return redirect(url_for('views.home'))
+        # liste mit den passagierdaten erstellen, maximale länge = 3 -> für jeden passagier neuer eintrag
 
-        if anzahlPassagiere == 2:
-            vorname = request.form['vorname']
-            nachname = request.form['nachname']
-            geburtsdatum = request.form['geburtsdatum']
-            neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=vorname, nachname=nachname,
-                                        geburtsdatum=geburtsdatum, passagierstatus="gebucht")
+        passagier_data = []
 
-            vorname1 = request.form['vorname1']
-            nachname1 = request.form['nachname1']
-            geburtsdatum1 = request.form['geburtsdatum1']
-            neuer_passagier1 = Passagier(buchungsid=neue_buchung.buchungsid, vorname=vorname1, nachname=nachname1,
-                                         geburtsdatum=geburtsdatum1, passagierstatus="gebucht")
+        max_items_per_list = 3
 
-            db.session.add(neuer_passagier)
-            db.session.add(neuer_passagier1)
-            db.session.commit()
-            flash('Buchung erfolgreich', category='success')
-            return redirect(url_for('views.home'))
+        for key, value in request.form.items():
+            passagier_data.append(value)
+            if len(passagier_data) == max_items_per_list:
+                neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=passagier_data[0],
+                                            nachname=passagier_data[1], geburtsdatum=passagier_data[2])
+                db.session.add(neuer_passagier)
+                db.session.commit()
+                passagier_data = []
+
+        flash('Buchung erfolgreich', category='success')
+
+        return redirect(url_for('nutzer_ohne_account_views.home'))
 
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
-                           anzahlPassagiere=anzahlPassagiere)
+                           anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
 
 
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])

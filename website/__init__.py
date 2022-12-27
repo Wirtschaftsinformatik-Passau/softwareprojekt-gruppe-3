@@ -1,8 +1,9 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+import help
 
-conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("clara", "1234", "localhost", "airline")
+conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("root", help.pss, "localhost", "airlinedb")
 db = SQLAlchemy()
 
 
@@ -24,7 +25,7 @@ def create_app():
 
     from .models import Flughafen, Flugzeug, Nutzerkonto, Passagier, Gepaeck
     login_manager = LoginManager()
-    login_manager.login_view = "auth.anmelden"  # if the user is not logged in then he will be directed to login page
+    login_manager.login_view = "nutzer_mit_account_views.anmelden"  # if the user is not logged in then he will be directed to login page
     login_manager.init_app(app)
 
     @login_manager.user_loader

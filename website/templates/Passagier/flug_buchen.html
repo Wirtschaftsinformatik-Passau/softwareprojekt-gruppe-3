@@ -2,123 +2,69 @@
 {% block title %}Buchung{% endblock %}
 {% block content %}
     <br>
-    <h3>Buchung</h3>
+    <h3>Flug buchen</h3>
 
-    {% if anzahlPassagiere == 1 %}
-         <form method="POST">
-
-
-        <div class="card" style="width: 68rem;">
-            <div class="card-body">
-                <div class="container" style="width: 60rem; height: 10rem">
-
-                    <p>Passagier 1</p>
-
-
-
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="vorname">Vorname</label>
-                                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="">
-                            </div>
-                            <div class="col">
-                                <label for="nachname">Nachname:</label>
-                                <input type="text" class="form-control" id="nachname" name="nachname"
-                                       placeholder="">
-                            </div>
-                            <div class="col">
-                                <label for="Anzahl Sitzplätze">Geburtsdatum:</label>
-                                <input type="date" class="form-control" id="geburtsdatum"
-                                       name="geburtsdatum"
-                                       placeholder="">
-                            </div>
-                        </div>
-
-
-
-                </div>
-
-            </div>
-
-        </div>
-            <button type="submit" class="btn btn-warning" style="height: 3rem">Kostenpflichtig buchen</button>
-         </form>
-
-
-    {% endif %}
-
-    {% if anzahlPassagiere == 2 %}
         <form method="POST">
 
-         <div class="card" style="width: 68rem;">
-            <div class="card-body">
-                <div class="container" style="width: 60rem; height: 10rem">
+            {% for count in range(anzahlPassagiere) %}
 
-                     <p>Passagier 1</p>
+                <div class="card" style="width: 68rem;">
+                    <div class="card-body">
+                        <div class="container-fluid" style="width: 60rem; height: 10rem">
+
+                            <p>Passagier {{ count + 1 }}</p>
 
 
-                    <form method="POST">
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="vorname">Vorname</label>
-                                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="">
+                            <div class="form-row">
+                                <div class="col">
+                                    <label for="vorname{{ count + 1 }}">Vorname</label>
+                                    <input type="text" class="form-control" id="vorname{{ count + 1 }}"
+                                           name="vorname{{ count + 1 }}" placeholder=""
+                                           required>
+                                </div>
+                                <div class="col">
+                                    <label for="nachname{{ count + 1 }}">Nachname:</label>
+                                    <input type="text" class="form-control" id="nachname{{ count + 1 }}"
+                                           name="nachname{{ count + 1 }}"
+                                           placeholder="" required>
+                                </div>
+                                <div class="col">
+                                    <label for="geburtsdatum{{ count + 1 }}">Geburtsdatum:</label>
+                                    <input type="date" class="form-control" id="geburtsdatum{{ count + 1 }}"
+                                           name="geburtsdatum{{ count + 1 }}"
+                                           placeholder="" required>
+                                </div>
                             </div>
-                            <div class="col">
-                                <label for="nachname">Nachname:</label>
-                                <input type="text" class="form-control" id="nachname" name="nachname"
-                                       placeholder="">
-                            </div>
-                            <div class="col">
-                                <label for="Anzahl Sitzplätze">Geburtsdatum:</label>
-                                <input type="date" class="form-control" id="geburtsdatum"
-                                       name="geburtsdatum"
-                                       placeholder="">
-                            </div>
+
+
                         </div>
 
+                    </div>
 
+                </div>
+                <br>
+
+            {% endfor %}
+
+            <!-- Anzeige für Gesamtbetrag -->
+
+            <div class="card" style="width: 50rem;">
+                <div class="card-body" style="height: 4rem">
+                    <h5>Gesamtbetrag: &emsp;{{ preis }}€ </h5>
 
                 </div>
             </div>
-        </div>
-    <br>
-     <div class="card" style="width: 68rem;">
-            <div class="card-body">
-                <div class="container" style="width: 60rem; height: 10rem">
 
-                     <p>Passagier 2</p>
+            <!-- Anzeige für Button -->
 
-
-
-
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="vorname1">Vorname</label>
-                                <input type="text" class="form-control" id="vorname1" name="vorname1" placeholder="">
-                            </div>
-                            <div class="col">
-                                <label for="nachname1">Nachname:</label>
-                                <input type="text" class="form-control" id="nachname1" name="nachname1"
-                                       placeholder="">
-                            </div>
-                            <div class="col">
-                                <label for="geburtsdatum1">Geburtsdatum:</label>
-                                <input type="date" class="form-control" id="geburtsdatum1"
-                                       name="geburtsdatum1"
-                                       placeholder="">
-                            </div>
-                        </div>
-
-
-
-
-                </div>
+            <div class="col-md-12 text-right">
+                <button type="submit" class="btn btn-danger" style="height: 3rem">Kostenpflichtig buchen
+                </button>
 
             </div>
-
-        </div>
-         <button type="submit" class="btn btn-warning" style="height: 3rem">Kostenpflichtig buchen</button>
         </form>
-    {% endif %}
+
+
+
 
 {% endblock %}
