@@ -15,22 +15,33 @@
         <li class="nav-item">
             <a class="nav-link" href="/flugstatus-überprüfen">Flugstatus</a>
         </li>
-     <li class="nav-item">
+        <li class="nav-item">
             <a class="nav-link" href="/fluglinien-anzeigen">Fluglinien</a>
         </li>
     </ul>
 
     <div class="input-group mb-3">
-    <form action="#" method="GET">
-        <label for="buchungsnummer">Buchungsnummer</label>
-        <input type="text" class="form-control" id="buchungsnummer" name="buchungsnummer" placeholder=""
-               aria-label="buchungsnummer" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-            <button
-                    type="submit" class="btn btn-info" id="inputGroup-sizing-lg" style="height: 3rem">Buchung suchen
-            </button>
-        </div>
-    </form>
+        <form action="#" method="GET">
+            <table>
+
+                <td>
+                    <div class="col">
+                        <label for="buchungsnummer">Buchungsnummer</label>
+                        <input type="text" class="form-control input-lg" id="buchungsnummer" name="buchungsnummer" placeholder=""
+                               aria-label="buchungsnummer" aria-describedby="basic-addon2" >
+                    </div>
+                </td>
+                <td>
+                    <br>
+                    <div class="col">
+                        <button
+                                type="submit" class="btn btn-primary" id="inputGroup-sizing-lg" style="height: 3rem">
+                            Buchung suchen
+                        </button>
+                    </div>
+                </td> <!-- td damit es nebeneinandersteht-->
+            </table>
+        </form>
     </div>
 
     <table class="table">
@@ -81,7 +92,7 @@
                 {{ rows.emailadresse }}
                 <br>
                 <a href='/online_check_in'>
-                    <button class="btn btn-info">Online-Check-In</button>
+                    <button class="btn btn-primary">Online-Check-In</button>
                 </a>
                 <a href='/storno'>
                     <button class="btn btn-danger">Storno</button>
