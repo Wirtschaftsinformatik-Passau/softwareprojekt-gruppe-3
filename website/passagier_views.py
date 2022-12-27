@@ -54,8 +54,15 @@ def flug_buchen(id, anzahlPassagiere):
 
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])
 def online_check_in():
+    get_user()
     return render_template("Passagier/online_check_in.html", user=current_user)
 
+@passagier_views.route('/protected')
+@login_required
+def get_user():
+  # Get the currently logged-in user
+  user = current_user
+  print(user.vorname, user.nachname)
 
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():

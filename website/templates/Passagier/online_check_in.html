@@ -6,13 +6,18 @@
         <div class="col-sm-3">
             <h4>Personenbezogene Daten:</h4>
             <div class="col-auto">
-                <label class="visually-hidden" for="autoSizingInput">Vorname*:</label>
-                <input type="text" class="form-control" id="autoSizingInput" placeholder="Meriem">
+                <label class="visually-hidden" for="autoSizingInput">Vorname:</label>
+                <td>
+                    {{ user.vorname }}
+                </td>
             </div>
             <div class="col-auto">
-                <label class="visually-hidden" for="autoSizingInputGroup">Nachname*:</label>
-                <input type="text" class="form-control" id="autoSizingInput" placeholder="Abbassi">
+                <label class="visually-hidden" for="autoSizingInputGroup">Nachname:</label>
+                <td>
+               {{ user.nachname }}
+                </td>
             </div>
+
         </div>
     </form>
     <br>
