@@ -90,15 +90,11 @@ def get_logged_in_user():
 def online_check_in():
     #get_check_in_user()
     #get_logged_in_user() #gibt Vor- und Nachname des Nutzers zurück
-    #passagier = Passagier.query.filter(Passagier.buchungsid == get_buchungsnummer())
-    #passagier = Passagier.query.filter(text(input_buchungsnummer))
-    passagier = Passagier.query.all()
-    print(input_buchungsid)
-    print(passagier)
-    #print(passagier.vorname)
-    #print(passagier.vorname)
+    #FEHLERMLEDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
+    passagier = Passagier.query.filter(get_buchungsid() == Passagier.buchungsid).first()
+
     #FEHLT: Prüfung ob eingeloggter Nutzer auch Passagier ist
-    return render_template("Passagier/online_check_in.html", user=current_user, passagier=passagier)
+    return render_template("Passagier/online_check_in.html", passagier=passagier)
 
 @passagier_views.route('/storno')
 def storno():
