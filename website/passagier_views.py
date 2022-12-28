@@ -98,13 +98,27 @@ def online_check_in():
     ausweissnummer = request.args.get("ausweissnummer")
     db.session.commit()
     ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
+    db.session.add(passagier)
     db.session.commit()
     print(ausweisgueltigkeit)
     print(ausweissnummer)
     print(ausweistyp)
+    return render_template("Passagier/online_check_in.html", passagier=passagier)
+
+"""
+    if request.method == 'POST':
+        nutzer = Nutzerkonto.query.get_or_404(request.form.get('id'))
+
+        nutzer.vorname = request.form['vorname']
+        nutzer.nachname = request.form['nachname']
+        nutzer.email = request.form['emailadresse']
+        nutzer.rolle = request.form['rolle']
+        db.session.commit()
+        flash("Nutzerdaten erfolgreich geändert")
+        """
 
     #FEHLT: Prüfung ob eingeloggter Nutzer auch Passagier ist
-    return render_template("Passagier/online_check_in.html", passagier=passagier, ausweisgueltigkeit=ausweisgueltigkeit, ausweistyp=ausweistyp, ausweissnummer=ausweissnummer)
+        #return render_template("Passagier/online_check_in.html", passagier=passagier)
 
 @passagier_views.route('/storno')
 def storno():

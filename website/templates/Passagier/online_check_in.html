@@ -35,7 +35,7 @@
     </form>
     <br>
     <form class="row gx-3 gy-2 align-items-center">
-        <form action="/online_check_in" method="POST">
+        <form action="/online_check_in?ausweistyp&ausweissnummer&ausweisgueltigkeit" method="POST">
             <div class="col-sm-3">
                 <h4>Ausweisdaten:</h4>
                 <div class="col-auto">
@@ -54,7 +54,7 @@
                                 <input type="text" class="form-control" id="ausweissnummer" name="ausweissnummer"
                                        placeholder="Ausweisnummer">
                             </div>
-                            <label class="visually-hidden" for="ablaufdatum">Ablaufdatum*:</label>
+                            <label class="visually-hidden" for="ausweisgueltigkeit">Ablaufdatum*:</label>
                             <div class="input-group">
                                 <input type="date" class="form-control" id="ausweisgueltigkeit" name="ausweisgueltigkeit"
                                        placeholder="22.05.2030">

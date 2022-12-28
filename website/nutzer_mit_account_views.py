@@ -81,7 +81,6 @@ def passwort_aendern():
         if new_password != confirm_password:
             flash('Neues Passwort und Passwort wiederholen stimmen nicht überein.', category='error')
             return render_template("nutzer_mit_account/passwort_aendern.html")
-
             # Check that the old password is correct
         if not check_password_hash(current_user.passwort, current_password):
             flash('Altes Passwort ist falsch!.', category='error')
