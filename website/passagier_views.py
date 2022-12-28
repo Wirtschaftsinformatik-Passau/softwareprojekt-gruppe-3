@@ -54,8 +54,10 @@ def flug_buchen(id, anzahlPassagiere):
 # Passagierfunktionen
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
+    #globale Definition, damit sich die BuchungsID im Online Check In gemerkt wird
     global input_buchungsid
     input_buchungsid=request.args.get('buchungsid')
+    #ANMERKUNG: input_buchungsid wird verwendet, damit im Online Check in auf den Passagier zugegriffen werden kann
 
     buchung = Buchung.query.filter(Buchung.buchungsid == input_buchungsid)
     # Kennung des Ankunftflughafens
@@ -88,13 +90,21 @@ def get_logged_in_user():
 
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])
 def online_check_in():
-    #get_check_in_user()
-    #get_logged_in_user() #gibt Vor- und Nachname des Nutzers zurück
-    #FEHLERMLEDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
+    #FEHLERMELDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
     passagier = Passagier.query.filter(get_buchungsid() == Passagier.buchungsid).first()
+    #MÖGLICHER ERROR Checkin: NutzerID & PassagierID, wenn die Buchung dieselbe ist.
+    ausweistyp = request.args.get("ausweistyp")
+    db.session.commit()
+    ausweissnummer = request.args.get("ausweissnummer")
+    db.session.commit()
+    ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
+    db.session.commit()
+    print(ausweisgueltigkeit)
+    print(ausweissnummer)
+    print(ausweistyp)
 
     #FEHLT: Prüfung ob eingeloggter Nutzer auch Passagier ist
-    return render_template("Passagier/online_check_in.html", passagier=passagier)
+    return render_template("Passagier/online_check_in.html", passagier=passagier, ausweisgueltigkeit=ausweisgueltigkeit, ausweistyp=ausweistyp, ausweissnummer=ausweissnummer)
 
 @passagier_views.route('/storno')
 def storno():
