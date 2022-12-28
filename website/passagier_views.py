@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
+from sqlalchemy.sql import text
 from sqlalchemy import or_, cast, Date
 
 # store the standard routes for a website where the user can navigate to
@@ -53,29 +54,29 @@ def flug_buchen(id, anzahlPassagiere):
 # Passagierfunktionen
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
-    global input_buchungsnummer
-    input_buchungsnummer=request.args.get('buchungsnummer')
+    global input_buchungsid
+    input_buchungsid=request.args.get('buchungsid')
 
-    buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer)
+    buchung = Buchung.query.filter(Buchung.buchungsid == input_buchungsid)
     # Kennung des Ankunftflughafens
     ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-        Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer)
+        Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsid == input_buchungsid)
     # Kennung des Zielflughafens
     ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-        Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer)
+        Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsid == input_buchungsid)
     nutzer = Nutzerkonto.query.filter(
-        Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsnummer == input_buchungsnummer)
-    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == input_buchungsnummer)
+        Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsid == input_buchungsid)
+    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsid == input_buchungsid)
     gepaeck = Gepaeck.query.all()
 
     return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
                            ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer, gepaeck=gepaeck)
 
-def set_buchungsnummer(input_buchungsnummer):
-    buchungsnummer = input_buchungsnummer
+def set_buchungsid(input_buchungsid):
+    buchungsid = input_buchungsid
 
-def get_buchungsnummer():
-    return input_buchungsnummer
+def get_buchungsid():
+    return input_buchungsid
 
 @passagier_views.route('/protected')
 @login_required
@@ -89,8 +90,13 @@ def get_logged_in_user():
 def online_check_in():
     #get_check_in_user()
     #get_logged_in_user() #gibt Vor- und Nachname des Nutzers zurück
-    passagier = Passagier.query.filter(Passagier.buchungsid == get_buchungsnummer())
-    print(get_buchungsnummer())
+    #passagier = Passagier.query.filter(Passagier.buchungsid == get_buchungsnummer())
+    #passagier = Passagier.query.filter(text(input_buchungsnummer))
+    passagier = Passagier.query.all()
+    print(input_buchungsid)
+    print(passagier)
+    #print(passagier.vorname)
+    #print(passagier.vorname)
     #FEHLT: Prüfung ob eingeloggter Nutzer auch Passagier ist
     return render_template("Passagier/online_check_in.html", user=current_user, passagier=passagier)
 
