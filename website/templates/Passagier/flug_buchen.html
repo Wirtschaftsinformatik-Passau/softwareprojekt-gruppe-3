@@ -2,7 +2,7 @@
 {% block title %}Buchung{% endblock %}
 {% block content %}
     <br>
-    <h3>Flug buchen</h3>
+
 
     <form method="POST">
 
@@ -49,7 +49,7 @@
 
                                 <p><i>Handgepäck (inklusive)</i><br>
                                 <div class="row">
-                                    <label for="anzahlgepaeck{{ count + 1 }}"><i>Zusatzgepäck (+40€)  :&emsp;</i> </label><select
+                                    <label for="anzahlgepaeck{{ count + 1 }}"><div style="text-indent:16px;"><i>Zusatzgepäck (+40€)  :&emsp;</i></div> </label><select
                                         id="anzahlgepaeck{{ count + 1 }}" class="form-control"
                                         name="anzahlgepaeck{{ count + 1 }}"
                                         style="width: 4rem" required>
