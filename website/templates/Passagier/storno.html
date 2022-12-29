@@ -1,5 +1,24 @@
-{% extends "base.html" %}
 
-{% block title %}Buchung suchen{% endblock %}
-{% block content %}
-{% endblock %}
+<!-- Modal for logout confirmation -->
+<div class="modal" tabindex="-1" role="dialog" id="logoutModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Abmelden</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{ 'Hiermit melden Sie sich ab und beenden die Sitzung.' }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+        <!-- Form that submits a request to the /logout route when submitted -->
+        <form action="{{ url_for('nutzer_mit_account_views.logout') }}" method="GET">
+          <button type="submit" class="btn btn-primary">Abmelden</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
