@@ -100,6 +100,12 @@ def online_check_in():
     ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
     db.session.add(passagier)
     db.session.commit()
+    #IF STATEMENTS
+    #datentypen
+    #nichtleere Felder
+    #if ausweißtyp personalausweis and len(ausweisnummer) < MINDESTLÄNGE_AUSWEISNUMMER -> falsch
+    #if geburtsdatum.date() > datetime.now() -> falsch
+    #if ausweisgueltigkeit.date() < datetime.now() -> falsch
     print(ausweisgueltigkeit)
     print(ausweissnummer)
     print(ausweistyp)
