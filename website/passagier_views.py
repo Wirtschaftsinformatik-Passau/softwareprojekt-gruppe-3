@@ -90,15 +90,16 @@ def get_logged_in_user():
 
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])
 def online_check_in():
+    #zurückändern in buchungsnummer -> testen mit mehreren passagieren
     #FEHLERMELDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
     passagier = Passagier.query.filter(get_buchungsid() == Passagier.buchungsid).first()
     #MÖGLICHER ERROR Checkin: NutzerID & PassagierID, wenn die Buchung dieselbe ist.
-    ausweistyp = request.args.get("ausweistyp")
+    passagier.ausweistyp = request.args.get("ausweistyp")
     db.session.commit()
-    ausweissnummer = request.args.get("ausweissnummer")
+    passagier.ausweissnummer = request.args.get("ausweissnummer")
     db.session.commit()
-    ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
-    db.session.add(passagier)
+    passagier.ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
+    #db.session.add(passagier)
     db.session.commit()
     #IF STATEMENTS
     #datentypen
@@ -106,9 +107,9 @@ def online_check_in():
     #if ausweißtyp personalausweis and len(ausweisnummer) < MINDESTLÄNGE_AUSWEISNUMMER -> falsch
     #if geburtsdatum.date() > datetime.now() -> falsch
     #if ausweisgueltigkeit.date() < datetime.now() -> falsch
-    print(ausweisgueltigkeit)
-    print(ausweissnummer)
-    print(ausweistyp)
+    print(passagier.ausweisgueltigkeit)
+    print(passagier.ausweissnummer)
+    print(passagier.ausweistyp)
     return render_template("Passagier/online_check_in.html", passagier=passagier)
 
 """
