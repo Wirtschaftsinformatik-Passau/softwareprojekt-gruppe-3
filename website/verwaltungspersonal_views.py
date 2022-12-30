@@ -122,7 +122,7 @@ def flug_bearbeiten(page):
     return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user)
 
 
-# Funktionen zu Accounte: anzeigen bearbeiten und löschen
+# Funktionen zu Accounts: anzeigen bearbeiten und löschen
 
 @verwaltungspersonal_views.route('/accounts-anlegen', methods=['GET', 'POST'])
 def accounts_anlegen():

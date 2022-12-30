@@ -21,11 +21,13 @@ def id_generator(size=8, chars=string.ascii_uppercase):
 @passagier_views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
 def flug_buchen(id, anzahlPassagiere):
-    buchung_preis = Flug.query.filter_by(flugid=id).first().preis * anzahlPassagiere
+    flug_data = Flug.query.filter_by(flugid=id).first()
+    passagier_anzahl = 0
+    buchung_preis = flug_data.preis * anzahlPassagiere
     print(buchung_preis)
-    zusatzgepaeck_counter = 0
 
     if request.method == 'POST':
+        zusatzgepaeck_counter = 0
         # neue Buchung erstellen
         neue_buchung = Buchung(nutzerid=current_user.id, flugid=id, buchungsstatus="gebucht",
                                buchungsnummer=id_generator())
@@ -36,6 +38,7 @@ def flug_buchen(id, anzahlPassagiere):
         # liste mit den passagierdaten erstellen, maximale länge = 4 -> für jeden passagier neuer eintrag
 
         passagier_data = []
+        passagier_data_list = []
 
         max_items_per_list = 4
 
@@ -47,25 +50,31 @@ def flug_buchen(id, anzahlPassagiere):
             if len(passagier_data) == max_items_per_list:
                 neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=passagier_data[0],
                                             nachname=passagier_data[1], geburtsdatum=passagier_data[2],
-                                            boardingpassnummer=neue_buchung.buchungsnummer + str(random.randint(10, 99)))
+                                            boardingpassnummer=neue_buchung.buchungsnummer + str(
+                                                random.randint(10, 99)))
 
                 db.session.add(neuer_passagier)
                 db.session.commit()
 
-                # für jeden Passagier wird für die Anzahl an ausgewählte Gepäckstücken ein eintrag erstellt
+                # für jeden Passagier wird für die Anzahl an ausgewählte Gepäckstücken ein Eintrag erstellt
 
                 for count in range(int(passagier_data[3])):
                     neues_gepaeck = Gepaeck(passagierid=neuer_passagier.passagierid, gewicht=40, status="gebucht")
                     db.session.add(neues_gepaeck)
                     db.session.commit()
                     zusatzgepaeck_counter = zusatzgepaeck_counter + 1
+
+                passagier_data_list.append(passagier_data)
+                passagier_anzahl = passagier_anzahl + 1
                 passagier_data = []
 
-        #neuen preis berechnen
+        # neuen preis berechnen
 
-        rechnungs_preis = (Flug.query.filter_by(flugid=id).first().preis * anzahlPassagiere) + (zusatzgepaeck_counter * 40)
+        rechnungs_preis = (Flug.query.filter_by(flugid=id).first().preis * anzahlPassagiere) + (
+                zusatzgepaeck_counter * 40)
 
-        #neue rechnung erstellen
+        # neue rechnung erstellen
+        # brutto und netto / summer der MwSt
 
         neue_rechnung = Rechnung(buchungsid=neue_buchung.buchungsid,
                                  rechnungsnummer=date.today().strftime("%d%m%Y") + neue_buchung.buchungsnummer,
@@ -77,7 +86,11 @@ def flug_buchen(id, anzahlPassagiere):
 
         flash('Buchung erfolgreich', category='success')
 
-        return redirect(url_for('nutzer_ohne_account_views.home'))
+        return render_template("Passagier/buchungsbestaetigung.html", user=current_user,
+                               rechnungsnummer=neue_rechnung.rechnungsnummer,
+                               buchungsnummer=neue_buchung.buchungsnummer,
+                               passagiere=passagier_data_list, flug=flug_data, passagier_anzahl=passagier_anzahl,
+                               preis=rechnungs_preis, gepaeck=zusatzgepaeck_counter)
 
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)

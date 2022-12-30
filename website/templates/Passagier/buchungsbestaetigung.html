@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Buchungsbestätigung{% endblock %}
+{% block content %}
+
+    <h2>Buchungsbestätigung <p style="color: cornflowerblue;"><i>AirPassau</i></p></h2>
+
+<p>
+Rechnungsnummer : {{ rechnungsnummer }} <br>
+Buchungsnummer: {{ buchungsnummer }} <br>
+<b>Passagiere:</b> <br>
+
+    {% for count in range(passagier_anzahl) %}
+    Passagier {{ count + 1 }}: {{ passagiere[count][0] }} {{ passagiere[count][1] }}<br>
+    {% endfor %}<br>
+<b>Fluginformationen:</b><br>
+Flugnummer: {{ flug.flugnummer }}<br>
+Strecke: {{ flug.abflugid }} - {{ flug.zielid }}<br>
+    Datum: {{ flug.sollabflugzeit }} - {{ flug.sollankunftszeit }}<br>
+Zusatzgepäck: {{ gepaeck }} x 40€<br>
+Handgepäck: {{ passagier_anzahl }} x inklusive<br><br>
+    <b>Gesamtpreis: {{ preis }}€<br></b>
+</p>
+
+
+
+{% endblock %}
