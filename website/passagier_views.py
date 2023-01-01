@@ -2,54 +2,95 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
 from . import db
-from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
-from sqlalchemy.sql import text
+from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
 from sqlalchemy import or_, cast, Date
+import string
+import random
+from datetime import date
 
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
 
+# Id generator für Buchungsnummer
+def id_generator(size=8, chars=string.ascii_uppercase):
+    return ''.join(random.choice(chars) for _ in range(size))
+
 @passagier_views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
 def flug_buchen(id, anzahlPassagiere):
+    flug_data = Flug.query.filter_by(flugid=id).first()
+    passagier_anzahl = 0
+    buchung_preis = flug_data.preis * anzahlPassagiere
+    print(buchung_preis)
+
     if request.method == 'POST':
+        zusatzgepaeck_counter = 0
+        # neue Buchung erstellen
         neue_buchung = Buchung(nutzerid=current_user.id, flugid=id, buchungsstatus="gebucht",
-                               buchungsnummer=current_user.id + id + 1234)
+                               buchungsnummer=id_generator())
+
         db.session.add(neue_buchung)
         db.session.commit()
 
-        if anzahlPassagiere == 1:
-            vorname = request.form['vorname']
-            nachname = request.form['nachname']
-            geburtsdatum = request.form['geburtsdatum']
-            neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=vorname, nachname=nachname,
-                                        geburtsdatum=geburtsdatum, passagierstatus="gebucht")
-            db.session.add(neuer_passagier)
-            db.session.commit()
-            flash('Buchung erfolgreich', category='success')
-            return redirect(url_for('views.home'))
+        # liste mit den passagierdaten erstellen, maximale länge = 4 -> für jeden passagier neuer eintrag
 
-        if anzahlPassagiere == 2:
-            vorname = request.form['vorname']
-            nachname = request.form['nachname']
-            geburtsdatum = request.form['geburtsdatum']
-            neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=vorname, nachname=nachname,
-                                        geburtsdatum=geburtsdatum, passagierstatus="gebucht")
+        passagier_data = []
+        passagier_data_list = []
 
-            vorname1 = request.form['vorname1']
-            nachname1 = request.form['nachname1']
-            geburtsdatum1 = request.form['geburtsdatum1']
-            neuer_passagier1 = Passagier(buchungsid=neue_buchung.buchungsid, vorname=vorname1, nachname=nachname1,
-                                         geburtsdatum=geburtsdatum1, passagierstatus="gebucht")
+        max_items_per_list = 4
 
-            db.session.add(neuer_passagier)
-            db.session.add(neuer_passagier1)
-            db.session.commit()
-            flash('Buchung erfolgreich', category='success')
-            return redirect(url_for('views.home'))
+        # schleife iteriert über bis alle liste 4 einträge hat. dann wird ein neues passagier erstellt sowie für jeden
+        # Passagier die anzahl an ausgewählten gepäckstücken
+
+        for key, value in request.form.items():
+            passagier_data.append(value)
+            if len(passagier_data) == max_items_per_list:
+                neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=passagier_data[0],
+                                            nachname=passagier_data[1], geburtsdatum=passagier_data[2],
+                                            boardingpassnummer=neue_buchung.buchungsnummer + str(
+                                                random.randint(10, 99)))
+
+                db.session.add(neuer_passagier)
+                db.session.commit()
+
+                # für jeden Passagier wird für die Anzahl an ausgewählte Gepäckstücken ein Eintrag erstellt
+
+                for count in range(int(passagier_data[3])):
+                    neues_gepaeck = Gepaeck(passagierid=neuer_passagier.passagierid, gewicht=40, status="gebucht")
+                    db.session.add(neues_gepaeck)
+                    db.session.commit()
+                    zusatzgepaeck_counter = zusatzgepaeck_counter + 1
+
+                passagier_data_list.append(passagier_data)
+                passagier_anzahl = passagier_anzahl + 1
+                passagier_data = []
+
+        # neuen preis berechnen
+
+        rechnungs_preis = (Flug.query.filter_by(flugid=id).first().preis * anzahlPassagiere) + (
+                zusatzgepaeck_counter * 40)
+
+        # neue rechnung erstellen
+        # brutto und netto / summer der MwSt
+
+        neue_rechnung = Rechnung(buchungsid=neue_buchung.buchungsid,
+                                 rechnungsnummer=date.today().strftime("%d%m%Y") + neue_buchung.buchungsnummer,
+                                 status="bezahlt",
+                                 betrag=rechnungs_preis,
+                                 rechnungsinhalt="Ihre Rechnung")
+        db.session.add(neue_rechnung)
+        db.session.commit()
+
+        flash('Buchung erfolgreich', category='success')
+
+        return render_template("Passagier/buchungsbestaetigung.html", user=current_user,
+                               rechnungsnummer=neue_rechnung.rechnungsnummer,
+                               buchungsnummer=neue_buchung.buchungsnummer,
+                               passagiere=passagier_data_list, flug=flug_data, passagier_anzahl=passagier_anzahl,
+                               preis=rechnungs_preis, gepaeck=zusatzgepaeck_counter)
 
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
-                           anzahlPassagiere=anzahlPassagiere)
+                           anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
 
 # Passagierfunktionen
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
