@@ -11,6 +11,7 @@ from datetime import date
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
 
+PREIS_FÜR_EIN_AUFGABEGEPÄCK = 40
 # Id generator für Buchungsnummer
 def id_generator(size=8, chars=string.ascii_uppercase):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -68,7 +69,7 @@ def flug_buchen(id, anzahlPassagiere):
         # neuen preis berechnen
 
         rechnungs_preis = (Flug.query.filter_by(flugid=id).first().preis * anzahlPassagiere) + (
-                zusatzgepaeck_counter * 40)
+                zusatzgepaeck_counter * PREIS_FÜR_EIN_AUFGABEGEPÄCK)
 
         # neue rechnung erstellen
         # brutto und netto / summer der MwSt
@@ -96,30 +97,31 @@ def flug_buchen(id, anzahlPassagiere):
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
     #globale Definition, damit sich die BuchungsID im Online Check In gemerkt wird
-    global input_buchungsid
-    input_buchungsid=request.args.get('buchungsid')
+    global input_buchungsnummer
+    input_buchungsnummer=request.args.get('buchungsnummer')
     #ANMERKUNG: input_buchungsid wird verwendet, damit im Online Check in auf den Passagier zugegriffen werden kann
 
-    buchung = Buchung.query.filter(Buchung.buchungsid == input_buchungsid)
+    buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer)
     # Kennung des Ankunftflughafens
     ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-        Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsid == input_buchungsid)
+        Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer)
     # Kennung des Zielflughafens
     ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-        Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsid == input_buchungsid)
+        Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer)
     nutzer = Nutzerkonto.query.filter(
-        Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsid == input_buchungsid)
-    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsid == input_buchungsid)
+        Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsid == input_buchungsnummer)
+    passagier = Passagier.query.filter(Buchung.buchungsnummer == input_buchungsnummer).where(Buchung.buchungsid == Passagier.buchungsid)
+    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == input_buchungsnummer)
     gepaeck = Gepaeck.query.all()
 
     return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
-                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer, gepaeck=gepaeck)
+                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer, gepaeck=gepaeck, passagier=passagier)
 
-def set_buchungsid(input_buchungsid):
-    buchungsid = input_buchungsid
+def set_buchungsnummer(input_buchungsnummer):
+    buchungsnummer = input_buchungsnummer
 
-def get_buchungsid():
-    return input_buchungsid
+def get_buchungsnummer():
+    return input_buchungsnummer
 
 @passagier_views.route('/protected')
 @login_required
@@ -133,7 +135,7 @@ def get_logged_in_user():
 def online_check_in():
     #zurückändern in buchungsnummer -> testen mit mehreren passagieren
     #FEHLERMELDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
-    passagier = Passagier.query.filter(get_buchungsid() == Passagier.buchungsid).first()
+    passagier = Passagier.query.filter(get_buchungsnummer() == Passagier.buchungsid).first()
     #MÖGLICHER ERROR Checkin: NutzerID & PassagierID, wenn die Buchung dieselbe ist.
     passagier.ausweistyp = request.args.get("ausweistyp")
     db.session.commit()

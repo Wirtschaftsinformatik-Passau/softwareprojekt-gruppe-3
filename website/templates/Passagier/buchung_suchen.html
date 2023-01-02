@@ -26,9 +26,10 @@
 
                 <td>
                     <div class="col">
-                        <label for="buchungsid">Buchungsnummer</label>
-                        <input type="text" class="form-control input-lg" id="buchungsid" name="buchungsid" placeholder=""
-                               aria-label="buchungsid" aria-describedby="basic-addon2" >
+                        <label for="buchungsnummer">Buchungsnummer</label>
+                        <input type="text" class="form-control input-lg" id="buchungsnummer" name="buchungsnummer"
+                               placeholder="WPYTUYDH"
+                               aria-label="buchungsnummer" aria-describedby="basic-addon2">
                     </div>
                 </td>
                 <td>
@@ -56,58 +57,47 @@
             <th scope="col">Gepaeckstatus</th>
         </tr>
         </thead>
-
         {% for rows in buchung %}
-
-            <td>
-                {{ rows.buchungsid }}
-            </td>
-            <td>
-                {{ rows.buchungsstatus }}
-            </td>
-        {% endfor %}
-        {% for rows in ankunft_flughafen %}
-            <td>
-                {{ rows.kennung }}
-            </td>
-
-        {% endfor %}
-        {% for rows in ziel_flughafen %}
-            <td>
-                {{ rows.kennung }}
-            </td>
-        {% endfor %}
-
-        {% for rows in flug %}
-            <td>
-                {{ rows.sollabflugzeit }}
-            </td>
-        {% endfor %}
-
-        {% for rows in nutzer %}
-            <td>
-                {{ rows.vorname }}
-                {{ rows.nachname }}
-                <br>
-                {{ rows.emailadresse }}
-                <br>
-                <!--siehe flugzeug bearbeiten mit übergabe info route bei button-->
-                <a href='/online_check_in'>
-                    <button class="btn btn-primary">Online-Check-In</button>
-                </a>
-                <a href='/storno'>
-                    <button class="btn btn-danger">Storno</button>
-                </a>
+            <tr>
+                <td>{{ rows.buchungsnummer }}</td>
+                <td>{{ rows.buchungsstatus }}</td>
+                {% for ankunft in ankunft_flughafen %}
+                    <td>{{ ankunft.kennung }}</td>
+                {% endfor %}
+                {% for ziel in ziel_flughafen %}
+                    <td>{{ ziel.kennung }}</td>
+                {% endfor %}
+                {% for flug_row in flug %}
+                    <td>{{ flug_row.sollabflugzeit }}</td>
+                {% endfor %}
+            </tr>
+            {% for passagier_row in passagier %}
+                <tr>
+                    <td colspan="5"></td>
+                    <td>
+                        {{ passagier_row.vorname }}
+                        {{ passagier_row.nachname }}
+                        <br>
+                        <a href='/online_check_in'>
+                            <button class="btn btn-primary">Online-Check-In</button>
+                        </a>
+                        <a href='/storno'>
+                            <button class="btn btn-danger">Storno</button>
+                        </a>
+                    </td>
+                    </td>
+                </tr>
+            {% endfor %}
+            {% for nutzer in nutzer %}
+                <tr>
+                    <br>
+                    {{ nutzer_row.emailadresse }}
+                    <br>
+                </tr>
+            {% endfor %}
+            <!--siehe flugzeug bearbeiten mit übergabe info route bei button-->
             </td>
         {% endfor %}
-        {% for rows in gepaeck %}
-            <td>
-                {{ rows.status }}
-            </td>
-        {% endfor %}
-
-        </td>
-        </tr>
 
     </table>
 {% endblock %}
