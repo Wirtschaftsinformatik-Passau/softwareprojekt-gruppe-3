@@ -14,6 +14,8 @@ import pprint
 passagier_views = Blueprint('passagier_views', __name__)
 
 PREIS_FÜR_EIN_AUFGABEGEPÄCK = 40
+MIN_ZIFFERN_REISEPASS = 9
+MIN_ZIFFERN_AUSWEIS = 4
 
 
 # Id generator für Buchungsnummer
@@ -161,6 +163,18 @@ def online_check_in(vorname=None):
             db.session.add(passagier)
             db.session.commit()
             print(ausweistyp)
+
+            """
+        IF STATEMENT FÜR LÄNGE AUSWEISNUMMER
+        
+        if passagier.ausweistyp=="Reisepass":
+            if not len(passagier.ausweissnummer)> MIN_ZIFFERN_REISEPASS:
+                flash("Bitte überprüfen Sie die Ausweisnummer")
+        elif passagier.ausweistyp=="Ausweis":
+            if not len(passagier.ausweisnummer)>MIN_ZIFFERN_AUSWEIS:
+                flash("Bitte überprüfen Sie die Ausweisnummer")
+        else:
+        """
         if not passagier.ausweissnummer:
             ausweissnummer = request.args.get("ausweissnummer")
             db.session.add(passagier)
