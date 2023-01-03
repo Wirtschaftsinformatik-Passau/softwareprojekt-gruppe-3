@@ -105,6 +105,8 @@ def flug_anlegen():
 @verwaltungspersonal_views.route('/flug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/flug-bearbeiten/<int:page>', methods=['GET', 'POST'])
 def flug_bearbeiten(page):
+    flughafen_liste = Flughafen.query.all()
+    flugzeug_liste = Flugzeug.query.with_entities(Flugzeug.flugzeugid, Flugzeug.hersteller, Flugzeug.modell)
     page = page
     pages = 4
     fluege = Flug.query.paginate(page=page, per_page=pages, error_out=False)
@@ -119,11 +121,44 @@ def flug_bearbeiten(page):
         return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege,
                                user=current_user, tag=tag)
 
-    return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user)
+    return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user, flugzeug_liste=flugzeug_liste,
+                           flughafen_liste=flughafen_liste)
+
+
+@verwaltungspersonal_views.route('/flug-annulieren/<int:id>', methods=['GET', 'POST'])
+def flug_annulieren(id):
+    flug = Flug.query.get_or_404(id)
+    flug.flugstatus = 'annulliert'
+    db.session.commit()
+    flash('Flug wurde erfolgreich annulliert', category='success')
+    return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+
+
+@verwaltungspersonal_views.route('/flug-ändern/', methods=['GET', 'POST'])
+def flug_ändern():
+    if request.method == 'POST':
+        flug = Flug.query.get_or_404(request.form.get('id'))
+
+        flug.abflugid = request.form['von']
+        flug.zielid = request.form['nach']
+        flug.flugzeugid = request.form['flugzeugtyp']
+        flug.preis = request.form['preis']
+        flug.sollabflugzeit = request.form['abflugdatum'] + " " + request.form['sollabflugzeit']
+        flug.sollankunftszeit = request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit']
+        flug.istabflugzeit = request.form['abflugdatum'] + " " + request.form['istabflugzeit']
+        flug.istankunftszeit = request.form['ankunftsdatum'] + " " + request.form['istankunftszeit']
+        flug.flugnummer = request.form['fluglinie']
+
+        if flug.istankunftszeit > flug.sollankunftszeit:
+            flug.flugstatus = "verspätet"
+
+        db.session.commit()
+        flash("Flugdaten erfolgreich geändert", category='success')
+
+    return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
 
 # Funktionen zu Accounte: anzeigen bearbeiten und löschen
-
 @verwaltungspersonal_views.route('/accounts-anlegen', methods=['GET', 'POST'])
 def accounts_anlegen():
     if request.method == 'POST':
@@ -175,5 +210,3 @@ def accounts_loeschen(id):
     db.session.commit()
 
     return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
-
-
