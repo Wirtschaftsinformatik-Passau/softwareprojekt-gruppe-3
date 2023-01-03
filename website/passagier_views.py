@@ -1,3 +1,4 @@
+from sqlalchemy.sql.expression import text
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
@@ -12,9 +13,12 @@ from datetime import date
 passagier_views = Blueprint('passagier_views', __name__)
 
 PREIS_FÜR_EIN_AUFGABEGEPÄCK = 40
+
+
 # Id generator für Buchungsnummer
 def id_generator(size=8, chars=string.ascii_uppercase):
     return ''.join(random.choice(chars) for _ in range(size))
+
 
 @passagier_views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
@@ -93,13 +97,13 @@ def flug_buchen(id, anzahlPassagiere):
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
 
+
 # Passagierfunktionen
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
-    #globale Definition, damit sich die BuchungsID im Online Check In gemerkt wird
+    # globale Definition, damit sich die BuchungsID im Online Check In gemerkt wird
     global input_buchungsnummer
-    input_buchungsnummer=request.args.get('buchungsnummer')
-    #ANMERKUNG: input_buchungsid wird verwendet, damit im Online Check in auf den Passagier zugegriffen werden kann
+    input_buchungsnummer = request.args.get('buchungsnummer')
 
     buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer)
     # Kennung des Ankunftflughafens
@@ -110,49 +114,65 @@ def buchung_suchen():
         Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer)
     nutzer = Nutzerkonto.query.filter(
         Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsid == input_buchungsnummer)
-    passagier = Passagier.query.filter(Buchung.buchungsnummer == input_buchungsnummer).where(Buchung.buchungsid == Passagier.buchungsid)
+    passagier = Passagier.query.filter(Buchung.buchungsnummer == input_buchungsnummer).where(
+        Buchung.buchungsid == Passagier.buchungsid)
     flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == input_buchungsnummer)
     gepaeck = Gepaeck.query.all()
 
     return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
-                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer, gepaeck=gepaeck, passagier=passagier)
+                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
+                           gepaeck=gepaeck,
+                           passagier=passagier)
+
 
 def set_buchungsnummer(input_buchungsnummer):
     buchungsnummer = input_buchungsnummer
 
+
 def get_buchungsnummer():
     return input_buchungsnummer
+
 
 @passagier_views.route('/protected')
 @login_required
 def get_logged_in_user():
-  # Get the currently logged-in user
-  user = current_user
-  print(user.vorname, user.nachname)
+    # Get the currently logged-in user
+    user = current_user
+    print(user.vorname, user.nachname)
 
 
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])
-def online_check_in():
-    #zurückändern in buchungsnummer -> testen mit mehreren passagieren
-    #FEHLERMELDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
-    passagier = Passagier.query.filter(get_buchungsnummer() == Passagier.buchungsid).first()
-    #MÖGLICHER ERROR Checkin: NutzerID & PassagierID, wenn die Buchung dieselbe ist.
-    passagier.ausweistyp = request.args.get("ausweistyp")
-    db.session.commit()
-    passagier.ausweissnummer = request.args.get("ausweissnummer")
-    db.session.commit()
-    passagier.ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
-    #db.session.add(passagier)
-    db.session.commit()
-    #IF STATEMENTS
-    #datentypen
-    #nichtleere Felder
-    #if ausweißtyp personalausweis and len(ausweisnummer) < MINDESTLÄNGE_AUSWEISNUMMER -> falsch
-    #if geburtsdatum.date() > datetime.now() -> falsch
-    #if ausweisgueltigkeit.date() < datetime.now() -> falsch
-    print(passagier.ausweisgueltigkeit)
-    print(passagier.ausweissnummer)
-    print(passagier.ausweistyp)
+def online_check_in(vorname=None):
+    # zurückändern in buchungsnummer -> testen mit mehreren passagieren
+    # FEHLERMELDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
+    passagier = Passagier.query.filter(Passagier.buchungsid == Buchung.buchungsid).where(
+        Buchung.buchungsnummer == input_buchungsnummer).all()
+    first_passenger = passagier[0]
+    second_passenger = passagier[1]
+    print(first_passenger)
+    print(second_passenger)
+
+    # MÖGLICHER ERROR Checkin: NutzerID & PassagierID, wenn die Buchung dieselbe ist.
+    for p in passagier:
+        if not p.ausweistyp:
+            p.ausweistyp = request.args.get("ausweistyp")
+            db.session.commit()
+    for p in passagier:
+        if not p.ausweissnummer:
+            p.ausweissnummer = request.args.get("ausweissnummer")
+            db.session.commit()
+    for p in passagier:
+        if not p.ausweisgueltigkeit:
+            p.ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
+            db.session.commit()
+
+
+# IF STATEMENTS
+# datentypen
+# nichtleere Felder
+# if ausweißtyp personalausweis and len(ausweisnummer) < MINDESTLÄNGE_AUSWEISNUMMER -> falsch
+# if geburtsdatum.date() > datetime.now() -> falsch
+# if ausweisgueltigkeit.date() < datetime.now() -> falsch
     return render_template("Passagier/online_check_in.html", passagier=passagier)
 
 """
@@ -167,8 +187,9 @@ def online_check_in():
         flash("Nutzerdaten erfolgreich geändert")
         """
 
-    #FEHLT: Prüfung ob eingeloggter Nutzer auch Passagier ist
-        #return render_template("Passagier/online_check_in.html", passagier=passagier)
+
+# FEHLT: Prüfung ob eingeloggter Nutzer auch Passagier ist
+# return render_template("Passagier/online_check_in.html", passagier=passagier)
 
 @passagier_views.route('/storno')
 def storno():

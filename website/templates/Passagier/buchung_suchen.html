@@ -26,9 +26,9 @@
 
                 <td>
                     <div class="col">
-                        <label for="buchungsnummer">Buchungsnummer</label>
-                        <input type="text" class="form-control input-lg" id="buchungsnummer" name="buchungsnummer"
-                               placeholder="WPYTUYDH"
+                            <label for="buchungsnummer">Buchungsnummer</label>
+                            <input type="text" class="form-control input-lg" id="buchungsnummer" name="buchungsnummer"
+                               placeholder=""
                                aria-label="buchungsnummer" aria-describedby="basic-addon2">
                     </div>
                 </td>
@@ -46,6 +46,7 @@
     </div>
 
     <table class="table">
+
         <thead>
         <tr>
             <th scope="col">Buchungsnummer</th>
@@ -72,15 +73,15 @@
                 {% endfor %}
             </tr>
             {% for passagier_row in passagier %}
+                <tr aria-rowspan="0"</tr>
                 <tr>
                     <td colspan="5"></td>
                     <td>
                         {{ passagier_row.vorname }}
                         {{ passagier_row.nachname }}
                         <br>
-                        <a href='/online_check_in'>
-                            <button class="btn btn-primary">Online-Check-In</button>
-                        </a>
+                        <a href="{{ url_for('passagier_views.online_check_in', buchungsnummer=buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
+                                               class="btn btn-primary">Online Check In</a>
                         <a href='/storno'>
                             <button class="btn btn-danger">Storno</button>
                         </a>

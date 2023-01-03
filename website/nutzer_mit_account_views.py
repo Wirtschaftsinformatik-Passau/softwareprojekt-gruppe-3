@@ -101,7 +101,7 @@ def passwort_vergessen():
     emailadresse = request.form.get('emailadresse')
     user = Nutzerkonto.query.filter_by(emailadresse=emailadresse).first()
     if user:
-        special_characters = '!@#$%^&*/_+-'
+        special_characters = '!@#$%^&*/_+-.'
         neues_passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
         while not (any(c.isdigit() for c in neues_passwort) and any(c in special_characters for c in neues_passwort)):
             neues_passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
