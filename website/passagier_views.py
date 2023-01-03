@@ -98,7 +98,6 @@ def flug_buchen(id, anzahlPassagiere):
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
 
 
-
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])
 def online_check_in():
     return render_template("Passagier/online_check_in.html", user=current_user)
