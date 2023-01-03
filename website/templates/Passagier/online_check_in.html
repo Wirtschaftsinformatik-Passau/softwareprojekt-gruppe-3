@@ -9,17 +9,13 @@
                 <div class="col-auto">
                     <label class="visually-hidden" for="autoSizingInput">Vorname:</label>
                     <td>
-                        {% for p in passagier %}
-                            {% if passagier.first %}
-                            {{ p.vorname }}
-                            {% endif %}
-                        {% endfor %}
+                        {{ vorname }}
                     </td>
                 </div>
                 <div class="col-auto">
                     <label class="visually-hidden" for="autoSizingInputGroup">Nachname:</label>
                     <td>
-                        {{ passagier.nachname }}
+                        {{ nachname }}
                     </td>
                 </div>
                 <div class="col-auto">

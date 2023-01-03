@@ -147,6 +147,10 @@ def online_check_in(vorname=None):
     # FEHLERMELDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
     passagier = Passagier.query.filter(Passagier.buchungsid == Buchung.buchungsid).where(
         Buchung.buchungsnummer == input_buchungsnummer).all()
+    buchungsnummer = request.args.get('buchungsnummer')
+    vorname = request.args.get('vorname')
+    nachname = request.args.get('nachname')
+    print(vorname)
     first_passenger = passagier[0]
     second_passenger = passagier[1]
     print(first_passenger)
@@ -173,7 +177,7 @@ def online_check_in(vorname=None):
 # if ausweißtyp personalausweis and len(ausweisnummer) < MINDESTLÄNGE_AUSWEISNUMMER -> falsch
 # if geburtsdatum.date() > datetime.now() -> falsch
 # if ausweisgueltigkeit.date() < datetime.now() -> falsch
-    return render_template("Passagier/online_check_in.html", passagier=passagier)
+    return render_template("Passagier/online_check_in.html", passagier=passagier, vorname=vorname, nachname=nachname)
 
 """
     if request.method == 'POST':
