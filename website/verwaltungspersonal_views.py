@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
-from sqlalchemy import or_, cast, Date
+from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
 
 # store the standard routes for a website where the user can navigate to
@@ -113,7 +113,9 @@ def flug_bearbeiten(page):
 
     # alle flüge von gestern bis in die Zukunft
 
-    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).paginate(page=page, per_page=pages, error_out=False)
+    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).paginate(page=page,
+                                                                                               per_page=pages,
+                                                                                               error_out=False)
 
     # suche nach Flugnummer
 
@@ -125,7 +127,8 @@ def flug_bearbeiten(page):
         return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege,
                                user=current_user, tag=tag)
 
-    return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user, flugzeug_liste=flugzeug_liste,
+    return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user,
+                           flugzeug_liste=flugzeug_liste,
                            flughafen_liste=flughafen_liste)
 
 
@@ -183,10 +186,24 @@ def accounts_anlegen():
 
 
 # Seite mit die das Bearbeiten und löschen ermöglicht
-@verwaltungspersonal_views.route('/accounts-bearbeiten', methods=['GET', 'POST'])
-def accounts_bearbeiten():
+@verwaltungspersonal_views.route('/accounts-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
+@verwaltungspersonal_views.route('/accounts-bearbeiten/<int:page>', methods=['GET', 'POST'])
+def accounts_bearbeiten(page):
+    page = page
+    pages = 4
     accounts = Nutzerkonto.query.filter(
-        or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal'))
+        or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal')) \
+        .paginate(page=page, per_page=pages, error_out=False)
+
+    if request.method == 'POST' and 'tag' in request.form:
+        tag = request.form["tag"]
+        search = "%{}%".format(tag)
+        accounts = Nutzerkonto.query.filter(
+            and_(Nutzerkonto.nachname.like(search),
+                 or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal'))).paginate(
+                page=page, per_page=pages, error_out=False)
+
+        return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)
 
     return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)
 
