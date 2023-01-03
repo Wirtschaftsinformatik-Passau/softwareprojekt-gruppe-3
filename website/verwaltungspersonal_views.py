@@ -75,7 +75,7 @@ def flugzeug_inaktiv_setzen(id):
 @verwaltungspersonal_views.route('/flug-anlegen', methods=['GET', 'POST'])
 def flug_anlegen():
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
-    flugzeug_liste = Flugzeug.query.with_entities(Flugzeug.flugzeugid, Flugzeug.hersteller, Flugzeug.modell)
+    flugzeug_liste = Flugzeug.query.filter(Flugzeug.status == "aktiv").with_entities(Flugzeug.flugzeugid, Flugzeug.hersteller, Flugzeug.modell)
 
     if request.method == 'POST':
         flugzeugid = request.form["flugzeugtyp"]

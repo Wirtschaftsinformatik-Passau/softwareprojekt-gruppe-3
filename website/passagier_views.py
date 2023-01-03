@@ -8,6 +8,7 @@ from sqlalchemy import or_, cast, Date
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
 
+
 # Passagierfunktionen
 @passagier_views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required

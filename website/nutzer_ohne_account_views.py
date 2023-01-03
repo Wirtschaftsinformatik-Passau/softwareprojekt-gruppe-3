@@ -5,9 +5,11 @@ from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy import or_, cast, Date
 import re
+from datetime import date
 
 # store the standard routes for a website where the user can navigate to
 nutzer_ohne_account_views = Blueprint('nutzer_ohne_account_views', __name__)
+
 
 @nutzer_ohne_account_views.route('/registrieren', methods=['GET', 'POST'])
 def registrieren():
@@ -45,6 +47,7 @@ def registrieren():
 
     return render_template("nutzer_ohne_account/registrieren.html", user=current_user)
 
+
 # nutzer_ohne_account Funktionen
 @nutzer_ohne_account_views.route('/', methods=['GET', 'POST'])
 def home():
@@ -64,18 +67,21 @@ def home():
     fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
         filter(cast(Flug.sollabflugzeit, Date) == abflug)
 
-    return render_template("nutzer_ohne_account/home.html", fluege=fluege, flughafen_liste=flughafen_liste, user=current_user,
+    return render_template("nutzer_ohne_account/home.html", fluege=fluege, flughafen_liste=flughafen_liste,
+                           user=current_user,
                            kuerzel_nach=kuerzel_nach, kuerzel_von=kuerzel_von, passagiere=passagiere)
 
 
 @nutzer_ohne_account_views.route('/flugstatus-überprüfen', methods=['GET', 'POST'])
 def flugstatus_überprüfen():
+
     abflug = request.args.get('abflugdatum')
     flugnummer = request.args.get('flugnummer')
 
     fluege = Flug.query.filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer)
 
-    return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege)
+    return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege,
+                           abflug=abflug, flugnummer=flugnummer, today=date.today())
 
 
 @nutzer_ohne_account_views.route('fluglinien-anzeigen', methods=['GET', 'POST'], defaults={"page": 1})
@@ -83,6 +89,5 @@ def flugstatus_überprüfen():
 def fluglinien_anzeigen(page):
     page = page
     pages = 4
-    fluege = Flug.query.distinct().paginate(page=page, per_page=pages, error_out=False)
+    fluege = Flug.query.distinct(Flug.flugnummer).paginate(page=page, per_page=pages, error_out=False)
     return render_template("nutzer_ohne_account/fluglinien_anzeigen.html", user=current_user, fluege=fluege)
-
