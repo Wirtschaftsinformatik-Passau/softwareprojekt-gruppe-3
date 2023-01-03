@@ -8,6 +8,7 @@ from sqlalchemy import or_, cast, Date
 import string
 import random
 from datetime import date
+import pprint
 
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
@@ -143,27 +144,38 @@ def get_logged_in_user():
 
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])
 def online_check_in(vorname=None):
-    # zurückändern in buchungsnummer -> testen mit mehreren passagieren
-    # FEHLERMELDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
+    #Übergabe jener Variablen aus der Buchung_suchen Funktion.
+    #Abhängig von dem Button auf den geklickt wird, wird der eine oder andere Passagier ausgesucht
     buchungsnummer = request.args.get('buchungsnummer')
     vorname = request.args.get('vorname')
     nachname = request.args.get('nachname')
+
+    #die restlichen Daten müssen nun mit jenem Passagier übereinstimmen, welcher denselben Vornamen hat.
+    #Das wird erreicht durch die Überprüfung, welche Reihe zu dem Passagier gehört, auf dessen Button geklickt wurde
     passagier = Passagier.query.filter(Passagier.vorname == vorname).first()
 
+    print(passagier , "passagier print")
+    if passagier:
+        if not passagier.ausweistyp:
+            ausweistyp = request.args.get("ausweistyp")
+            db.session.add(passagier)
+            db.session.commit()
+            print(ausweistyp)
+        if not passagier.ausweissnummer:
+            ausweissnummer = request.args.get("ausweissnummer")
+            db.session.add(passagier)
+            db.session.commit()
+            print(ausweissnummer)
+        if not passagier.ausweisgueltigkeit:
+            ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
+            db.session.commit()
+            print(ausweisgueltigkeit)
+            print(request.args)
+    else:
+        flash('doenst exist')
 
-    # MÖGLICHER ERROR Checkin: NutzerID & PassagierID, wenn die Buchung dieselbe ist.
+    return render_template("Passagier/online_check_in.html", passagier=passagier, vorname=vorname, nachname=nachname)
 
-    if not passagier.ausweistyp:
-        passagier.ausweistyp = request.args.get("ausweistyp")
-        db.session.commit()
-
-    if not passagier.ausweissnummer:
-        passagier.ausweissnummer = request.args.get("ausweissnummer")
-        db.session.commit()
-
-    if not passagier.ausweisgueltigkeit:
-        passagier.ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
-        db.session.commit()
 
 
 # IF STATEMENTS
@@ -172,19 +184,7 @@ def online_check_in(vorname=None):
 # if ausweißtyp personalausweis and len(ausweisnummer) < MINDESTLÄNGE_AUSWEISNUMMER -> falsch
 # if geburtsdatum.date() > datetime.now() -> falsch
 # if ausweisgueltigkeit.date() < datetime.now() -> falsch
-    return render_template("Passagier/online_check_in.html", passagier=passagier, vorname=vorname, nachname=nachname)
 
-"""
-    if request.method == 'POST':
-        nutzer = Nutzerkonto.query.get_or_404(request.form.get('id'))
-
-        nutzer.vorname = request.form['vorname']
-        nutzer.nachname = request.form['nachname']
-        nutzer.email = request.form['emailadresse']
-        nutzer.rolle = request.form['rolle']
-        db.session.commit()
-        flash("Nutzerdaten erfolgreich geändert")
-        """
 
 
 # FEHLT: Prüfung ob eingeloggter Nutzer auch Passagier ist

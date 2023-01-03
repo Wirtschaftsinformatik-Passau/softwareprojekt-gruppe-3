@@ -80,7 +80,7 @@
                         {{ passagier_row.vorname }}
                         {{ passagier_row.nachname }}
                         <br>
-                        <a href="{{ url_for('passagier_views.online_check_in', buchungsnummer=buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
+                        <a href="{{ url_for('passagier_views.online_check_in', buchungsnummer=rows.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
                                                class="btn btn-primary">Online Check In</a>
                         <a href='/storno'>
                             <button class="btn btn-danger">Storno</button>
