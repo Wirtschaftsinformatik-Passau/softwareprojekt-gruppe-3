@@ -145,30 +145,25 @@ def get_logged_in_user():
 def online_check_in(vorname=None):
     # zurückändern in buchungsnummer -> testen mit mehreren passagieren
     # FEHLERMELDUNG war: 'Query' object has no attribute 'buchungsid'-> LÖSUNG: .first() hinzufügen
-    passagier = Passagier.query.filter(Passagier.buchungsid == Buchung.buchungsid).where(
-        Buchung.buchungsnummer == input_buchungsnummer).all()
     buchungsnummer = request.args.get('buchungsnummer')
     vorname = request.args.get('vorname')
     nachname = request.args.get('nachname')
-    print(vorname)
-    first_passenger = passagier[0]
-    second_passenger = passagier[1]
-    print(first_passenger)
-    print(second_passenger)
+    passagier = Passagier.query.filter(Passagier.vorname == vorname).first()
+
 
     # MÖGLICHER ERROR Checkin: NutzerID & PassagierID, wenn die Buchung dieselbe ist.
-    for p in passagier:
-        if not p.ausweistyp:
-            p.ausweistyp = request.args.get("ausweistyp")
-            db.session.commit()
-    for p in passagier:
-        if not p.ausweissnummer:
-            p.ausweissnummer = request.args.get("ausweissnummer")
-            db.session.commit()
-    for p in passagier:
-        if not p.ausweisgueltigkeit:
-            p.ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
-            db.session.commit()
+
+    if not passagier.ausweistyp:
+        passagier.ausweistyp = request.args.get("ausweistyp")
+        db.session.commit()
+
+    if not passagier.ausweissnummer:
+        passagier.ausweissnummer = request.args.get("ausweissnummer")
+        db.session.commit()
+
+    if not passagier.ausweisgueltigkeit:
+        passagier.ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
+        db.session.commit()
 
 
 # IF STATEMENTS
