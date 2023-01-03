@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy import or_, cast, Date
+from datetime import date, timedelta
 
 # store the standard routes for a website where the user can navigate to
 verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
@@ -106,10 +107,13 @@ def flug_anlegen():
 @verwaltungspersonal_views.route('/flug-bearbeiten/<int:page>', methods=['GET', 'POST'])
 def flug_bearbeiten(page):
     flughafen_liste = Flughafen.query.all()
-    flugzeug_liste = Flugzeug.query.with_entities(Flugzeug.flugzeugid, Flugzeug.hersteller, Flugzeug.modell)
+    flugzeug_liste = Flugzeug.query.all()
     page = page
     pages = 4
-    fluege = Flug.query.paginate(page=page, per_page=pages, error_out=False)
+
+    # alle flüge von gestern bis in die Zukunft
+
+    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).paginate(page=page, per_page=pages, error_out=False)
 
     # suche nach Flugnummer
 
