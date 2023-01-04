@@ -48,7 +48,7 @@ class Flug(db.Model):
     flugzeugid = db.Column(db.Integer, db.ForeignKey('flugzeug.flugzeugid'))
     abflugid = db.Column(db.Integer, db.ForeignKey('flughafen.flughafenid'))
     zielid = db.Column(db.Integer, db.ForeignKey('flughafen.flughafenid'))
-    flugstatus = db.Column(db.Enum("pünktlich", "annuliert", "verspätet"))
+    flugstatus = db.Column(db.Enum("pünktlich", "annulliert", "verspätet"))
     istabflugzeit = db.Column(db.DateTime(timezone=True))
     istankunftszeit = db.Column(db.DateTime(timezone=True))
     sollabflugzeit = db.Column(db.DateTime(timezone=True))

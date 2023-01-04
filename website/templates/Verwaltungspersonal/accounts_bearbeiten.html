@@ -44,9 +44,24 @@
             <div class="card" style="width: 60rem;height: 30rem">
                 <div class="card-body">
                     <div class="container" style="width: 55rem; height: 30rem">
+                    <div class="col-12 col-md-8" align="right">
+                            <form action="" method="post" autocomplete="on">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="tag" id="tag"
+                                               placeholder="Nachname"/>
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="submit" value="Suchen" class="form-control btn btn-primary "
+                                               name="">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                         <br>
 
                         <!-- table data -->
+                    {% if accounts %}
 
                         <table class="table table-striped">
                             <thead>
@@ -150,6 +165,50 @@
                             </tbody>
 
                         </table>
+                    <!-- Pagination bar -->
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    {% if accounts.has_prev %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ url_for('verwaltungspersonal_views.accounts_bearbeiten', page=accounts.prev_num) }}">Previous</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link btn disabled" href="#">Previous</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for page in accounts.iter_pages(left_edge=3, right_edge=3) %}
+                                        {% if page %}
+
+                                            {% if page==accounts.page %}
+                                                <li class="page-item active"><a class="page-link"
+                                                                                href="{{ url_for('verwaltungspersonal_views.accounts_bearbeiten', page=page) }}">{{ page }}</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item"><a class="page-link"
+                                                                         href="{{ url_for('verwaltungspersonal_views.accounts_bearbeiten', page=page) }}">{{ page }}</a>
+                                                </li>
+                                            {% endif %}
+
+                                        {% else %}
+                                            <li class="page-item disabled" id="example_ellipsis"><a href="#"
+                                                                                                    class="page-link">…</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if accounts.has_next %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ url_for('verwaltungspersonal_views.accounts_bearbeiten', page=accounts.next_num) }}">Next</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link btn disabled" href="#">Next</a></li>
+                                    {% endif %}
+
+                                </ul>
+                            </nav>
+                        {% endif %}
 
 
                     </div>
