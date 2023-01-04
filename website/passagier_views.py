@@ -7,7 +7,7 @@ from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, 
 from sqlalchemy import or_, cast, Date
 import string
 import random
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 import pprint
 
 # store the standard routes for a website where the user can navigate to
@@ -100,13 +100,14 @@ def flug_buchen(id, anzahlPassagiere):
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
 
-
+now = None
 # Passagierfunktionen
-@passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
+@passagier_views.route('/buchung_suchen', methods=['POST'])
 def buchung_suchen():
     # globale Definition, damit sich die BuchungsID im Online Check In gemerkt wird
     global input_buchungsnummer
     input_buchungsnummer = request.args.get('buchungsnummer')
+    can_check_in_24h = False
 
     buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer)
     # Kennung des Ankunftflughafens
@@ -119,17 +120,25 @@ def buchung_suchen():
         Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsid == input_buchungsnummer)
     passagier = Passagier.query.filter(Buchung.buchungsnummer == input_buchungsnummer).where(
         Buchung.buchungsid == Passagier.buchungsid)
-    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == input_buchungsnummer)
+    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == input_buchungsnummer).first()
     gepaeck = Gepaeck.query.all()
+    print(flug, "flug print")
+
+    sollabflugzeit = None
+    if request.method == 'POST':
+        sollabflugzeit = request.form.get('sollabflugszeit')
+        print(sollabflugzeit, "sollabflugszeit print")
+    now = datetime.now()
+
 
     return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
                            ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
-                           gepaeck=gepaeck,
-                           passagier=passagier)
+                           gepaeck=gepaeck, passagier=passagier, sollabflugzeit=sollabflugzeit, now=now)
 
 
 def set_buchungsnummer(input_buchungsnummer):
     buchungsnummer = input_buchungsnummer
+
 
 
 def get_buchungsnummer():
@@ -156,15 +165,13 @@ def online_check_in():
     # Das wird erreicht durch die Überprüfung, welche Reihe zu dem Passagier gehört, auf dessen Button geklickt wurde
     passagier = Passagier.query.filter(Passagier.vorname == vorname).where(Passagier.nachname == nachname).first()
     if request.method == 'POST':
-        print(passagier, "passagier print")
-        passagier.nachname = nachname
-        passagier.vorname = vorname
+        passagier.staatsbuergerschaft = request.form['staatsbuergerschaft']
         passagier.ausweistyp = request.form['ausweistyp']
-        if passagier.ausweistyp == 'Reisepass':
-            if passagier.ausweisnummer
+
         passagier.ausweisnummer = request.form['ausweisnummer']
         passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
         passagier.passagierstatus = "eingechecket"
+
         db.session.commit()
         flash("Check-In erfolgreich")
 

@@ -4,8 +4,8 @@
 {% block content %}
     <form class="row gx-3 gy-2 align-items-center">
         <div class="row align-items-start"> <!-- zwei spalten ankündigen-->
-            <form method="GET">
-                <div class="col"> <!--erste spalte-->
+            <div class="col"> <!--erste spalte-->
+                <form method="GET">
                     <br>
                     <h4>Personenbezogene Daten:</h4>
                     <div class="col-auto">
@@ -26,18 +26,32 @@
                             {{ passagier.geburtsdatum }}
                         </td>
                     </div>
+                </form> <!--end of GET request-->
+
+                <form method="POST">
                     <div class="col-auto">
                         <label class="visually-hidden" for="autoSizingInputGroup">Staatsbürgerschaft:</label>
                         <td>
-                            {{ passagier.staatsbuergerschaft }}
+                            <select class="form-select" id="staatsbuergerschaft" name="staatsbuergerschaft">
+                                <option value="1">deutsch</option>
+                                <option value="2">kroatisch</option>
+                                <option value="1">tunesich</option>
+                                <option value="2">polnisch</option>
+                                <option value="1">tschechisch</option>
+                                <option value="2">japanisch</option>
+                                <option value="1">togolesisch</option>
+                                <option value="2">argentinisch</option>
+                                <option value="1">chilenisch</option>
+                                <option value="2">israelisch</option>
+                            </select>
                         </td>
                     </div>
-                </div>
-            </form> <!--end of GET request-->
+                </form>
+            </div>
             <div class="col"> <!--zweite spalte-->
                 <br>
-                <form method="POST">
-                    <h4>Ausweisdaten:</h4>
+                <h4>Ausweisdaten:</h4>
+
 
                     <label class="visually-hidden" for="ausweistyp">Art des Ausweis*:</label>
                     <select class="form-select" id="ausweistyp" name="ausweistyp">
@@ -68,8 +82,39 @@
                         <button type="submit" class="btn btn-danger" style="height: 3rem">Jetzt einchecken
                         </button>
                     </div>
-                </form>
+            </div>
+
+                <label class="visually-hidden" for="ausweistyp">Art des Ausweis*:</label>
+                <select class="form-select" id="ausweistyp" name="ausweistyp">
+                    <option value="1">Reisepass</option>
+                    <option value="2">Personalausweis</option>
+                </select>
+                <br>
+                <label class="visually-hidden" for="ausweisnummer">Ausweisnummer*:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="ausweisnummer" name="ausweisnummer"
+                           placeholder="Ausweisnummer" required>
+                </div>
+                <label class="visually-hidden" for="ausweisgueltigkeit">Ablaufdatum*:</label>
+                <div class="input-group">
+                    <input type="date" class="form-control" id="ausweisgueltigkeit"
+                           name="ausweisgueltigkeit"
+                           placeholder="22.05.2030" required>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" required>
+                    <label class="form-check-label" for="flexCheckDefault">
+                        <p>Hiermit bestätige ich, dass ich <a href='/gepaecksbestimmungen'>die Vorschriften
+                            zur
+                            Gepäckmitnahme</a> gelesen und verstanden habe.</p>
+                    </label>
+                </div>
+                <div class="col-md-12 text-right">
+                    <button type="submit" class="btn btn-danger" style="height: 3rem">Jetzt einchecken
+                    </button>
+                </div>
             </div>
         </div>
     </form>
+
 {% endblock %}
