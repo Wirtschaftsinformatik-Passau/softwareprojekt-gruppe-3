@@ -68,7 +68,7 @@ class Passagier(db.Model):
     passagierid = db.Column(db.Integer, primary_key=True)
     buchungsid = db.Column(db.Integer, db.ForeignKey('buchung.buchungsid'))
     ausweistyp = db.Column(db.Enum("Ausweis", "Reisepass"), nullable=True)
-    ausweissnummer = db.Column(db.String(10), nullable=True)
+    ausweisnummer = db.Column(db.String(10), nullable=True)
     ausweisgueltigkeit = db.Column(db.DateTime(timezone=True), nullable=True)
     vorname = db.Column(db.String(50))
     nachname = db.Column(db.String(50))

@@ -160,7 +160,9 @@ def online_check_in():
         passagier.nachname = nachname
         passagier.vorname = vorname
         passagier.ausweistyp = request.form['ausweistyp']
-        passagier.ausweissnummer = request.form['ausweissnummer']
+        if passagier.ausweistyp == 'Reisepass':
+            if passagier.ausweisnummer
+        passagier.ausweisnummer = request.form['ausweisnummer']
         passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
         passagier.passagierstatus = "eingechecket"
         db.session.commit()
