@@ -145,51 +145,28 @@ def get_logged_in_user():
 
 
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])
-def online_check_in(vorname=None):
-    #Übergabe jener Variablen aus der Buchung_suchen Funktion.
-    #Abhängig von dem Button auf den geklickt wird, wird der eine oder andere Passagier ausgesucht
+def online_check_in():
+    # Übergabe jener Variablen aus der Buchung_suchen Funktion.
+    # Abhängig von dem Button auf den geklickt wird, wird der eine oder andere Passagier ausgesucht
     buchungsnummer = request.args.get('buchungsnummer')
     vorname = request.args.get('vorname')
     nachname = request.args.get('nachname')
 
-    #die restlichen Daten müssen nun mit jenem Passagier übereinstimmen, welcher denselben Vornamen hat.
-    #Das wird erreicht durch die Überprüfung, welche Reihe zu dem Passagier gehört, auf dessen Button geklickt wurde
-    passagier = Passagier.query.filter(Passagier.vorname == vorname).first()
-
-    print(passagier , "passagier print")
-    if passagier:
-        if not passagier.ausweistyp:
-            ausweistyp = request.args.get("ausweistyp")
-            db.session.add(passagier)
-            db.session.commit()
-            print(ausweistyp)
-
-            """
-        IF STATEMENT FÜR LÄNGE AUSWEISNUMMER
-        
-        if passagier.ausweistyp=="Reisepass":
-            if not len(passagier.ausweissnummer)> MIN_ZIFFERN_REISEPASS:
-                flash("Bitte überprüfen Sie die Ausweisnummer")
-        elif passagier.ausweistyp=="Ausweis":
-            if not len(passagier.ausweisnummer)>MIN_ZIFFERN_AUSWEIS:
-                flash("Bitte überprüfen Sie die Ausweisnummer")
-        else:
-        """
-        if not passagier.ausweissnummer:
-            ausweissnummer = request.args.get("ausweissnummer")
-            db.session.add(passagier)
-            db.session.commit()
-            print(ausweissnummer)
-        if not passagier.ausweisgueltigkeit:
-            ausweisgueltigkeit = request.args.get("ausweisgueltigkeit")
-            db.session.commit()
-            print(ausweisgueltigkeit)
-            print(request.args)
-    else:
-        flash('doenst exist')
+    # die restlichen Daten müssen nun mit jenem Passagier übereinstimmen, welcher denselben Vornamen hat.
+    # Das wird erreicht durch die Überprüfung, welche Reihe zu dem Passagier gehört, auf dessen Button geklickt wurde
+    passagier = Passagier.query.filter(Passagier.vorname == vorname).where(Passagier.nachname == nachname).first()
+    if request.method == 'POST':
+        print(passagier, "passagier print")
+        passagier.nachname = nachname
+        passagier.vorname = vorname
+        passagier.ausweistyp = request.form['ausweistyp']
+        passagier.ausweissnummer = request.form['ausweissnummer']
+        passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
+        passagier.passagierstatus = "eingechecket"
+        db.session.commit()
+        flash("Check-In erfolgreich")
 
     return render_template("Passagier/online_check_in.html", passagier=passagier, vorname=vorname, nachname=nachname)
-
 
 
 # IF STATEMENTS
@@ -198,7 +175,6 @@ def online_check_in(vorname=None):
 # if ausweißtyp personalausweis and len(ausweisnummer) < MINDESTLÄNGE_AUSWEISNUMMER -> falsch
 # if geburtsdatum.date() > datetime.now() -> falsch
 # if ausweisgueltigkeit.date() < datetime.now() -> falsch
-
 
 
 # FEHLT: Prüfung ob eingeloggter Nutzer auch Passagier ist
