@@ -100,14 +100,15 @@ def flug_buchen(id, anzahlPassagiere):
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
 
+
 now = None
+
+
 # Passagierfunktionen
 @passagier_views.route('/buchung_suchen', methods=['POST', 'GET'])
 def buchung_suchen():
-    # globale Definition, damit sich die BuchungsID im Online Check In gemerkt wird
-    global input_buchungsnummer
+    input_buchungsnummer = 1
     input_buchungsnummer = request.args.get('buchungsnummer')
-    can_check_in_24h = False
 
     buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer)
     # Kennung des Ankunftflughafens
@@ -120,29 +121,36 @@ def buchung_suchen():
         Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsid == input_buchungsnummer)
     passagier = Passagier.query.filter(Buchung.buchungsnummer == input_buchungsnummer).where(
         Buchung.buchungsid == Passagier.buchungsid)
-    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == input_buchungsnummer).first()
+    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == input_buchungsnummer)
     gepaeck = Gepaeck.query.all()
-    print(flug, "flug print")
 
+    now = datetime.now()
+    difference = flug[0].sollabflugzeit - now
+    check_in_possible = True
+    if timedelta(hours=24) >= difference >= timedelta(hours=0):
+    now = datetime.now()
+    smaller_than_24 = now - timedelta(hours=24)
+    print(smaller_than_24)
+    greater_than_24 = now + timedelta(hours=0)
+    print(greater_than_24)
+
+    return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
+                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
+                           gepaeck=gepaeck, passagier=passagier, now=now,
+                           greater_than_24=greater_than_24, smaller_than_24=smaller_than_24)
+
+
+"""
     sollabflugzeit = None
     if request.method == 'POST':
         sollabflugzeit = request.form.get('sollabflugszeit')
         print(sollabflugzeit, "sollabflugszeit print")
     now = datetime.now()
-
-
-    return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
-                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
-                           gepaeck=gepaeck, passagier=passagier, sollabflugzeit=sollabflugzeit, now=now)
+    """
 
 
 def set_buchungsnummer(input_buchungsnummer):
     buchungsnummer = input_buchungsnummer
-
-
-
-def get_buchungsnummer():
-    return input_buchungsnummer
 
 
 @passagier_views.route('/protected')
