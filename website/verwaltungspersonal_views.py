@@ -172,6 +172,9 @@ def flug_ändern():
         if flug.istankunftszeit > flug.sollankunftszeit:
             flug.flugstatus = "verspätet"
 
+        elif flug.istankunftszeit == flug.sollankunftszeit:
+            flug.flugstatus = "pünktlich"
+
         db.session.commit()
         flash("Flugdaten erfolgreich geändert", category='success')
 
