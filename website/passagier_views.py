@@ -102,7 +102,7 @@ def flug_buchen(id, anzahlPassagiere):
 
 now = None
 # Passagierfunktionen
-@passagier_views.route('/buchung_suchen', methods=['POST'])
+@passagier_views.route('/buchung_suchen', methods=['POST', 'GET'])
 def buchung_suchen():
     # globale Definition, damit sich die BuchungsID im Online Check In gemerkt wird
     global input_buchungsnummer
