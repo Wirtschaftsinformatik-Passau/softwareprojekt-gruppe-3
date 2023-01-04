@@ -1,13 +1,12 @@
 import random
 import string
-
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
 from sqlalchemy import or_, cast, Date
-from datetime import date
+from datetime import date, datetime
 
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
@@ -23,6 +22,7 @@ def id_generator(size=8, chars=string.ascii_uppercase):
 @passagier_views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
 def flug_buchen(id, anzahlPassagiere):
+    flughafen_liste = Flughafen.query.all()
     flug_data = Flug.query.filter_by(flugid=id).first()
     passagier_anzahl = 0
     buchung_preis = flug_data.preis * anzahlPassagiere
@@ -50,6 +50,7 @@ def flug_buchen(id, anzahlPassagiere):
         for key, value in request.form.items():
             passagier_data.append(value)
             if len(passagier_data) == max_items_per_list:
+
                 neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=passagier_data[0],
                                             nachname=passagier_data[1], geburtsdatum=passagier_data[2],
                                             boardingpassnummer=neue_buchung.buchungsnummer + str(
@@ -92,7 +93,7 @@ def flug_buchen(id, anzahlPassagiere):
                                rechnungsnummer=neue_rechnung.rechnungsnummer,
                                buchungsnummer=neue_buchung.buchungsnummer,
                                passagiere=passagier_data_list, flug=flug_data, passagier_anzahl=passagier_anzahl,
-                               preis=rechnungs_preis, gepaeck=zusatzgepaeck_counter)
+                               preis=rechnungs_preis, gepaeck=zusatzgepaeck_counter, flughafen_liste=flughafen_liste)
 
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)

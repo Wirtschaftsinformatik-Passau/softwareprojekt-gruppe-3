@@ -73,10 +73,18 @@
                         {{ rows.flugnummer }}
                     </td>
                     <td>
-                        {{ rows.abflugid }}
+                        {% for e in flughafen_liste %}
+                             {% if e.flughafenid == rows.abflugid %}
+                                 {{e.name + " (" + e.kennung + ")"}}
+                             {% endif %}
+                         {% endfor %}
                     </td>
                     <td>
-                        {{ rows.zielid }}
+                        {% for e in flughafen_liste %}
+                             {% if e.flughafenid == rows.zielid %}
+                                 {{e.name + " (" + e.kennung + ")"}}
+                             {% endif %}
+                         {% endfor %}
                     </td>
                     <td>
                         {{ rows.sollabflugzeit.strftime("%H:%M") }}
