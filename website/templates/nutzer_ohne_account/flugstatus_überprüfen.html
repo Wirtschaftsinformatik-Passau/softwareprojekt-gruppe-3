@@ -26,14 +26,15 @@
                     <div class="form-row">
                         <div class="col">
                             <label for="Von">Flugnummer:</label>
-                            <input type="text" id="flugnummer" name="flugnummer" class="form-control" style="width: 16rem"required>
+                            <input type="text" id="flugnummer" name="flugnummer" class="form-control" style="width: 16rem"
+                                   value="{% if not flugnummer %}MP1{% else %} {{ flugnummer }}{% endif %}" required>
 
                         </div>
 
                         <div class="col">
                             <label for="abflugdatum">Abflugdatum:</label>
                             <input type="date" class="form-control" id="abflugdatum" name="abflugdatum"
-                                   placeholder="" style="width: 8rem" required>
+                                   placeholder="" style="width: 8rem" value="{% if not abflug %}{{ today }}{% else %} {{ abflug }}{% endif %}" required>
                         </div>
                         <div class="col">
                         <div class="col-auto my-4">
@@ -72,10 +73,18 @@
                         {{ rows.flugnummer }}
                     </td>
                     <td>
-                        {{ rows.abflugid }}
+                        {% for e in flughafen_liste %}
+                             {% if e.flughafenid == rows.abflugid %}
+                                 {{e.name + " (" + e.kennung + ")"}}
+                             {% endif %}
+                         {% endfor %}
                     </td>
                     <td>
-                        {{ rows.zielid }}
+                        {% for e in flughafen_liste %}
+                             {% if e.flughafenid == rows.zielid %}
+                                 {{e.name + " (" + e.kennung + ")"}}
+                             {% endif %}
+                         {% endfor %}
                     </td>
                     <td>
                         {{ rows.sollabflugzeit.strftime("%H:%M") }}

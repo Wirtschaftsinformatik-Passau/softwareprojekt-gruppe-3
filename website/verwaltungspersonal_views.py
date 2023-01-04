@@ -3,7 +3,8 @@ from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
-from sqlalchemy import or_, cast, Date
+from sqlalchemy import or_, cast, Date, and_
+from datetime import date, timedelta
 
 # store the standard routes for a website where the user can navigate to
 verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
@@ -16,11 +17,13 @@ def flugzeug_erstellen():
         modell = request.form.get('Modell')
         hersteller = request.form.get('Hersteller')
         anzahlsitzplaetze = request.form.get('anzahlsitzplaetze')
-
-        new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
-        db.session.add(new_flugzeug)
-        db.session.commit()
-        flash('Flugzeug angelegt!', category='success')
+        if int(anzahlsitzplaetze) < 0:
+            flash('Die Anzahl der Sitzplätze muss größer oder gleich 0 sein!', category="error")
+        else:
+            new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
+            db.session.add(new_flugzeug)
+            db.session.commit()
+            flash('Flugzeug angelegt!', category='success')
 
     return render_template("Verwaltungspersonal/home_vp.html", user=current_user)
 
@@ -51,12 +54,21 @@ def flugzeug_bearbeiten(page):
 def flugzeug_ändern():
     if request.method == 'POST':
         flugzeug = Flugzeug.query.get_or_404(request.form.get('id'))
+        anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
+            filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).\
+            filter(Flug.flugzeugid == request.form.get('id')).\
+            filter(Flug.flugstatus != "annuliert").count()
+
+        print(anzahl_passagiere)
 
         flugzeug.modell = request.form['modell']
         flugzeug.hersteller = request.form['hersteller']
-        flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
-        db.session.commit()
-        flash("Flugzeugdaten erfolgreich geändert")
+        if int(request.form['anzahlsitzplaetze']) < 0:
+            flash('Die Anzahl der Sitzplätze muss größer oder gleich 0 sein!', category="error")
+        else:
+            flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
+            db.session.commit()
+            flash("Flugzeugdaten erfolgreich geändert")
         return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
 
@@ -74,7 +86,9 @@ def flugzeug_inaktiv_setzen(id):
 @verwaltungspersonal_views.route('/flug-anlegen', methods=['GET', 'POST'])
 def flug_anlegen():
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
-    flugzeug_liste = Flugzeug.query.with_entities(Flugzeug.flugzeugid, Flugzeug.hersteller, Flugzeug.modell)
+    flugzeug_liste = Flugzeug.query.filter(Flugzeug.status == "aktiv").with_entities(Flugzeug.flugzeugid,
+                                                                                     Flugzeug.hersteller,
+                                                                                     Flugzeug.modell)
 
     if request.method == 'POST':
         flugzeugid = request.form["flugzeugtyp"]
@@ -105,9 +119,16 @@ def flug_anlegen():
 @verwaltungspersonal_views.route('/flug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/flug-bearbeiten/<int:page>', methods=['GET', 'POST'])
 def flug_bearbeiten(page):
+    flughafen_liste = Flughafen.query.all()
+    flugzeug_liste = Flugzeug.query.all()
     page = page
     pages = 4
-    fluege = Flug.query.paginate(page=page, per_page=pages, error_out=False)
+
+    # alle flüge von gestern bis in die Zukunft
+
+    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).paginate(page=page,
+                                                                                               per_page=pages,
+                                                                                               error_out=False)
 
     # suche nach Flugnummer
 
@@ -119,11 +140,45 @@ def flug_bearbeiten(page):
         return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege,
                                user=current_user, tag=tag)
 
-    return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user)
+    return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user,
+                           flugzeug_liste=flugzeug_liste,
+                           flughafen_liste=flughafen_liste)
+
+
+@verwaltungspersonal_views.route('/flug-annulieren/<int:id>', methods=['GET', 'POST'])
+def flug_annulieren(id):
+    flug = Flug.query.get_or_404(id)
+    flug.flugstatus = 'annulliert'
+    db.session.commit()
+    flash('Flug wurde erfolgreich annulliert', category='success')
+    return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+
+
+@verwaltungspersonal_views.route('/flug-ändern/', methods=['GET', 'POST'])
+def flug_ändern():
+    if request.method == 'POST':
+        flug = Flug.query.get_or_404(request.form.get('id'))
+
+        flug.abflugid = request.form['von']
+        flug.zielid = request.form['nach']
+        flug.flugzeugid = request.form['flugzeugtyp']
+        flug.preis = request.form['preis']
+        flug.sollabflugzeit = request.form['abflugdatum'] + " " + request.form['sollabflugzeit']
+        flug.sollankunftszeit = request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit']
+        flug.istabflugzeit = request.form['abflugdatum'] + " " + request.form['istabflugzeit']
+        flug.istankunftszeit = request.form['ankunftsdatum'] + " " + request.form['istankunftszeit']
+        flug.flugnummer = request.form['fluglinie']
+
+        if flug.istankunftszeit > flug.sollankunftszeit:
+            flug.flugstatus = "verspätet"
+
+        db.session.commit()
+        flash("Flugdaten erfolgreich geändert", category='success')
+
+    return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
 
 # Funktionen zu Accounte: anzeigen bearbeiten und löschen
-
 @verwaltungspersonal_views.route('/accounts-anlegen', methods=['GET', 'POST'])
 def accounts_anlegen():
     if request.method == 'POST':
@@ -144,10 +199,24 @@ def accounts_anlegen():
 
 
 # Seite mit die das Bearbeiten und löschen ermöglicht
-@verwaltungspersonal_views.route('/accounts-bearbeiten', methods=['GET', 'POST'])
-def accounts_bearbeiten():
+@verwaltungspersonal_views.route('/accounts-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
+@verwaltungspersonal_views.route('/accounts-bearbeiten/<int:page>', methods=['GET', 'POST'])
+def accounts_bearbeiten(page):
+    page = page
+    pages = 4
     accounts = Nutzerkonto.query.filter(
-        or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal'))
+        or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal')) \
+        .paginate(page=page, per_page=pages, error_out=False)
+
+    if request.method == 'POST' and 'tag' in request.form:
+        tag = request.form["tag"]
+        search = "%{}%".format(tag)
+        accounts = Nutzerkonto.query.filter(
+            and_(Nutzerkonto.nachname.like(search),
+                 or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal'))).paginate(
+            page=page, per_page=pages, error_out=False)
+
+        return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)
 
     return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)
 
@@ -175,5 +244,3 @@ def accounts_loeschen(id):
     db.session.commit()
 
     return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
-
-

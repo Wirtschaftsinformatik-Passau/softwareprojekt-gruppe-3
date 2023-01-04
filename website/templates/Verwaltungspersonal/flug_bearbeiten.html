@@ -37,7 +37,7 @@
                 </li>
             </ul>
 
-        <!-- Suchfeld  -->
+            <!-- Suchfeld  -->
 
             <div class="card" style="width: 60rem;height: 30rem">
                 <div class="card-body">
@@ -64,11 +64,12 @@
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th scope="col">Flugnummer</th>
                                     <th scope="col">Von</th>
+                                    <th scope="col">Abflugzeit</th>
                                     <th scope="col">Nach</th>
+                                    <th scope="col">Ankunftszeit</th>
+                                    <th scope="col">Flugzeug</th>
                                     <th scope="col">Preis</th>
-                                    <th scope="col">Datum</th>
                                     <th scope="col">Flugstatus</th>
                                     <th scope="col"></th>
                                 </tr>
@@ -76,35 +77,204 @@
                                 <tbody>
                                 {% for rows in fluege %}
                                     <tr>
+                                    <td>
+                                        {% for e in flughafen_liste %}
+                                            {% if e.flughafenid == rows.abflugid %}
+                                            {{ e.kennung }}
+                                            {% endif %}
+                                            {% endfor %}
+                                        </td>
+
                                         <td>
-                                            {{ rows.flugnummer }}
+                                            {{ rows.sollabflugzeit.strftime("%Y.%m.%d %H:%M") }}
                                         </td>
                                         <td>
-                                            {{ rows.abflugid }}
+                                           {% for e in flughafen_liste %}
+                                            {% if e.flughafenid == rows.zielid %}
+                                            {{ e.kennung }}
+                                            {% endif %}
+                                            {% endfor %}
+                                        </td>
+
+                                        <td>
+                                            {{ rows.sollankunftszeit.strftime("%H:%M") }}
                                         </td>
                                         <td>
-                                            {{ rows.zielid }}
+                                            {% for e in flugzeug_liste %}
+                                            {% if e.flugzeugid == rows.flugzeugid %}
+                                            {{ e.hersteller + " " + e.modell }}
+                                            {% endif %}
+                                            {% endfor %}
                                         </td>
                                         <td>
                                             {{ rows.preis }}
                                         </td>
                                         <td>
-                                            {{ rows.sollabflugzeit }}
-                                        </td>
-                                        <td>
                                             {{ rows.flugstatus }}
                                         </td>
+
                                         <td>
-                                            <a href="{{ url_for('verwaltungspersonal_views.flug_bearbeiten', id=rows.flugzeugid) }}"
-                                               data-toggle="modal" data-target="#updateModal"
+                                            <a href="/flug_ändern/{{ rows.flugid }}"
+                                               data-toggle="modal" data-target="#updateModal{{ rows.flugid }}"
                                                class="btn btn-warning">Bearbeiten</a>
 
 
-                                            <a href="{{ url_for('verwaltungspersonal_views.flugzeug_inaktiv_setzen', id=rows.flugzeugid) }}"
-                                               class="btn btn-danger">Inaktiv setzten</a>
+
                                         </td>
                                         </td>
                                     </tr>
+                                    <div id="updateModal{{ rows.flugid }}" class="modal fade">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form method="POST"
+                                                      action="{{ url_for('verwaltungspersonal_views.flug_ändern') }}">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">Flug bearbeiten</h4>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-hidden="true">
+                                                            &times;
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-row">
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="Von">Von:</label>
+                                                            <input type="hidden" name="id" value="{{ rows.flugid }}">
+                                                                <select id="von" name="von" class="form-control"
+                                                                        required>
+                                                                    {% for e in flughafen_liste %}
+                                                                        <option value="{{ e.flughafenid }}" {% if e.flughafenid == rows.abflugid %}selected{% endif %}> {{ e.stadt }} </option>
+                                                                    {% endfor %}
+                                                                </select>
+
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="Nach">Nach:</label>
+                                                                <select id="nach" name="nach" class="form-control"
+                                                                        required>
+                                                                    {% for e in flughafen_liste %}
+
+                                                                        <option value="{{ e.flughafenid }}" {% if e.flughafenid == rows.zielid %}selected{% endif %}> {{ e.stadt }} </option>
+
+                                                                    {% endfor %}
+                                                                </select>
+
+                                                            </div>
+
+                                                            <!-- value=row.flugzeugid bestimmt welcher flug in die DB eingetragen wird -->
+
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="Flugzeugtyp">Flugzeugtyp:</label>
+                                                                <select id="flugzeugtyp" name="flugzeugtyp"
+                                                                        class="form-control" required>
+
+
+                                                                    {% for e in flugzeug_liste %}
+
+                                                                        <option value="{{ e.flugzeugid }}" {% if e.flugzeugid == rows.flugzeugid %}selected{% endif %}> {{ e.hersteller + " " + e.modell }} </option>
+
+                                                                    {% endfor %}
+
+
+                                                                </select>
+
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="Abflugdatum">Abflugdatum:</label>
+                                                                <input type="date" class="form-control" id="abflugdatum"
+                                                                       name="abflugdatum"
+                                                                       value="{{ rows.sollabflugzeit.strftime("%Y-%m-%d") }}"
+                                                                       required>
+
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="Ankunftsdatum">Ankunftsdatum:</label>
+                                                                <input type="Date" class="form-control"
+                                                                       id="ankunftsdatum"
+                                                                       name="ankunftsdatum"
+                                                                       value="{{ rows.sollankunftszeit.strftime("%Y-%m-%d")  }}"
+                                                                       required>
+
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="Preis">Preis p.P:</label>
+                                                                <input type="number" class="form-control" id="preis"
+                                                                       name="preis"
+                                                                       value="{{ rows.preis }}"
+                                                                       required>
+
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="SollAbflugzeit">Abflugzeit (Soll):</label>
+                                                                <input type="Time" class="form-control" id="sollabflugzeit"
+                                                                       name="sollabflugzeit"
+                                                                       value="{{ rows.sollabflugzeit.strftime("%H:%M")  }}"
+                                                                       required>
+
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="Ankunftszeit">Ankunftszeit (Soll):</label>
+                                                                <input type="Time" class="form-control"
+                                                                       id="sollankunftszeit"
+                                                                       name="sollankunftszeit"
+                                                                       value="{{ rows.sollankunftszeit.strftime("%H:%M")  }}"
+                                                                       required>
+
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="Fluglinie">Fluglinie:</label>
+                                                                <input type="text" class="form-control" id="fluglinie"
+                                                                       name="fluglinie"
+                                                                       value="{{ rows.flugnummer }}"
+                                                                       required>
+
+                                                            </div>
+                                                        <div class="col-md-4 mb-3">
+                                                                <label for="IstAbflugzeit">Abflugzeit (Ist):</label>
+                                                                <input type="Time" class="form-control" id="istabflugzeit"
+                                                                       name="istabflugzeit"
+                                                                       value="{{ rows.istabflugzeit.strftime("%H:%M") }}"
+                                                                       required>
+
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label for="IstAnkunftszeit">Ankunftszeit (Ist):</label>
+                                                                <input type="Time" class="form-control"
+                                                                       id="istankunftszeit"
+                                                                       name="istankunftszeit"
+                                                                       value="{{ rows.istankunftszeit.strftime("%H:%M")  }}"
+                                                                       required>
+
+                                                            </div>
+                                                        <div class="col-md-4 mb-3">
+                                                                <label for="flugstatus">Flugstatus:</label>
+                                                                <input type="text" class="form-control"
+                                                                       id="flugstatus"
+                                                                       name="flugstatus"
+                                                                       value="{{ rows.flugstatus }}"
+                                                                       required readonly>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <a href="{{ url_for('verwaltungspersonal_views.flug_annulieren', id=rows.flugid) }}"
+                                               class="btn btn-danger">Annulieren</a>
+
+                                                            <input type="submit" class="btn btn-info" value="Speichern">
+
+
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+
+
                                 {% endfor %}
                                 </tbody>
 

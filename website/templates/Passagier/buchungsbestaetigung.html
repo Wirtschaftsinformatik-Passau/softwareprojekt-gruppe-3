@@ -15,8 +15,17 @@ Buchungsnummer: {{ buchungsnummer }} <br>
     {% endfor %}<br>
 <b>Fluginformationen:</b><br>
 Flugnummer: {{ flug.flugnummer }}<br>
-Strecke: {{ flug.abflugid }} - {{ flug.zielid }}<br>
-    Datum: {{ flug.sollabflugzeit }} - {{ flug.sollankunftszeit }}<br>
+Strecke: {% for e in flughafen_liste %}
+    {% if e.flughafenid == flug.abflugid %}
+        {{e.name + " (" + e.kennung + ")"}}
+    {% endif %}
+{% endfor %} -
+    {% for e in flughafen_liste %}
+        {% if e.flughafenid == flug.zielid %}
+            {{e.name + " (" + e.kennung + ")"}}
+        {% endif %}
+    {% endfor %}<br>
+    Datum: {{ flug.sollabflugzeit.strftime("%d.%m.%Y %H:%M") }} - {{ flug.sollankunftszeit.strftime("%d.%m.%Y %H:%M") }}<br>
 Zusatzgepäck: {{ gepaeck }} x 40€<br>
 Handgepäck: {{ passagier_anzahl }} x inklusive<br><br>
     <b>Gesamtpreis: {{ preis }}€<br></b>
