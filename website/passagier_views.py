@@ -2,7 +2,9 @@ import random
 import string
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
+from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash
+from . import mail
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
 from sqlalchemy import or_, cast, Date
@@ -52,7 +54,8 @@ def flug_buchen(id, anzahlPassagiere):
             if len(passagier_data) == max_items_per_list:
 
                 neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=passagier_data[0],
-                                            nachname=passagier_data[1], geburtsdatum=passagier_data[2], passagierstatus="gebucht",
+                                            nachname=passagier_data[1], geburtsdatum=passagier_data[2],
+                                            passagierstatus="gebucht",
                                             boardingpassnummer=neue_buchung.buchungsnummer + str(
                                                 random.randint(10, 99)))
 
@@ -89,11 +92,12 @@ def flug_buchen(id, anzahlPassagiere):
 
         flash('Buchung erfolgreich', category='success')
 
-        return render_template("Passagier/buchungsbestaetigung.html", user=current_user,
-                               rechnungsnummer=neue_rechnung.rechnungsnummer,
-                               buchungsnummer=neue_buchung.buchungsnummer,
-                               passagiere=passagier_data_list, flug=flug_data, passagier_anzahl=passagier_anzahl,
-                               preis=rechnungs_preis, gepaeck=zusatzgepaeck_counter, flughafen_liste=flughafen_liste)
+        return redirect(
+            url_for('passagier_views.buchungsbestaetigung', user=current_user, buchungsid=neue_buchung.buchungsid,
+                    rechnungsnummer=neue_rechnung.rechnungsnummer, flugid=id,
+                    buchungsnummer=neue_buchung.buchungsnummer,
+                    passagiere=passagier_data_list, flug=flug_data, passagier_anzahl=passagier_anzahl,
+                    preis=rechnungs_preis, gepaeck=zusatzgepaeck_counter))
 
     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
@@ -103,16 +107,28 @@ def flug_buchen(id, anzahlPassagiere):
 def buchungsbestaetigung():
     rechnungsnummer = request.args['rechnungsnummer']
     buchungsnummer = request.args['buchungsnummer']
-    passagiere = request.args['passagiere']
-    flug = request.args['flug']
-    passagier_anzahl = request.args['passagier_anzahl']
-    preis = request.args['preis']
-    gepaeck = request.args['gepaeck']
-    flughafen_liste = request.args['flughafen_liste']
+    buchungsid = int(request.args['buchungsid'])
+    flugid = int(request.args['flugid'])
+    passagier_anzahl = int(request.args['passagier_anzahl'])
+    flughafen_liste = Flughafen.query.all()
+    gepaeck = int(request.args['gepaeck'])
+    preis = int(request.args['preis'])
+    emailadresse = Nutzerkonto.query.get_or_404(current_user.id).emailadresse
+    flug_data = Flug.query.filter_by(flugid=flugid).first()
+
+    passagiere = Passagier.query.join(Buchung).filter(Passagier.buchungsid == buchungsid).all()
+
+    msg = Message('Buchungsbestaetigung', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+    msg.html = render_template("Passagier/buchungsbestaetigung_email.html", user=current_user,
+                               rechnungsnummer=rechnungsnummer,
+                               buchungsnummer=buchungsnummer,
+                               passagiere=passagiere, flug=flug_data, passagier_anzahl=passagier_anzahl, preis=preis,
+                               gepaeck=gepaeck, flughafen_liste=flughafen_liste)
+    mail.send(msg)
 
     return render_template("Passagier/buchungsbestaetigung.html", user=current_user, rechnungsnummer=rechnungsnummer,
                            buchungsnummer=buchungsnummer,
-                           passagiere=passagiere, flug=flug, passagier_anzahl=passagier_anzahl, preis=preis,
+                           passagiere=passagiere, flug=flug_data, passagier_anzahl=passagier_anzahl, preis=preis,
                            gepaeck=gepaeck, flughafen_liste=flughafen_liste)
 
 
@@ -127,7 +143,7 @@ def online_check_in():
 
     # die restlichen Daten müssen nun mit jenem Passagier übereinstimmen, welcher denselben Vornamen hat.
     # Das wird erreicht durch die Überprüfung, welche Reihe zu dem Passagier gehört, auf dessen Button geklickt wurde
-    passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname).\
+    passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
         where(Passagier.nachname == nachname).first()
 
     if request.method == 'POST':
@@ -142,7 +158,8 @@ def online_check_in():
 
         return redirect(url_for('passagier_views.buchung_suchen'))
 
-    return render_template("Passagier/online_check_in.html", user=current_user, passagier=passagier, vorname=vorname, nachname=nachname)
+    return render_template("Passagier/online_check_in.html", user=current_user, passagier=passagier, vorname=vorname,
+                           nachname=nachname)
 
 
 def is_flight_within_days(flight_time, num_days):
@@ -218,7 +235,7 @@ def buchung_suchen():
                                    passagier=passagier, storno_text=storno_text, storno_possbile=storno_possbile
                                    )
 
-    # hier kann speziell gesucht werden
+    # hier kann speziell nach nummer gesucht gesucht werden (muss aber mit nutzer id des angemedletetn nutzer zusammenhängen)
 
     elif buchung.nutzerid == current_user.id:
 
@@ -236,10 +253,14 @@ def buchung_suchen():
             Buchung.buchungsnummer == input_buchungsnummer).first()
         check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
 
+        # check if passagier is schon eingecheckt oder boarded
+
         storno_possbile = True
         for i in passagier:
             if i.passagierstatus == "eingecheckt" or i.passagierstatus == "boarded":
                 storno_possbile = False
+
+        # check wie weit weg der abflugzeitpunkt ist
 
         if is_flight_within_days(flug.sollabflugzeit, 7):
             storno_text = "Ihr Flug ist in weniger als sieben Tagen. Wenn Sie Ihre Buchung jetzt stornieren, " \
@@ -269,6 +290,7 @@ def storno(stor_buchungsnummer):
         buchung.buchungsstatus = "storniert"
         db.session.commit()
         flash('Buchung erfolgreich storniert', category='success')
+
         buchungsnummer = buchung.buchungsnummer
         rechnungsnummer = Rechnung.query.where(Rechnung.buchungsid == buchung.buchungsid).first().rechnungsnummer
 
