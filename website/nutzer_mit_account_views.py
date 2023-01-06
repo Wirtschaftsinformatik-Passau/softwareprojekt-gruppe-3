@@ -16,6 +16,7 @@ nutzer_mit_account_views = Blueprint('nutzer_mit_account_views', __name__)
 
 MINIMALE_PASSWORTLÄNGE = 8
 
+
 @nutzer_mit_account_views.route('anmelden', methods=['GET', 'POST'])
 def anmelden():
     if request.method == 'POST':
@@ -51,7 +52,6 @@ def logout():
     logout_user()
     flash("Sie sind jetzt ausgeloggt!", category="error")
     return redirect(url_for('nutzer_mit_account_views.anmelden'))
-
 
 
 @nutzer_mit_account_views.route('/profil', methods=['GET'])
@@ -93,9 +93,11 @@ def passwort_aendern():
         # logout user after password_aendern and then he would be redirected to the home page
         logout_user()
         flash('Passwort wurde erfolgreich geändert! Jetzt erneut anmelden.', category='success')
-        return redirect(url_for('nutzer_mit_account_views.anmelden'))  # maybe it'd better to be redirected to the anmelden page!!
+        return redirect(
+            url_for('nutzer_mit_account_views.anmelden'))  # maybe it'd better to be redirected to the anmelden page!!
 
     return render_template("nutzer_mit_account/passwort_aendern.html")
+
 
 @nutzer_mit_account_views.route('/passwort_vergessen', methods=['POST'])
 def passwort_vergessen():
@@ -112,29 +114,10 @@ def passwort_vergessen():
         db.session.commit()
         msg = Message('Passwort wiederherstellen', sender='airpassau.de@gmail.com', recipients=[emailadresse])
         msg.html = render_template('nutzer_mit_account/passwort_vergessen_email.html', password=neues_passwort,
-                                       user=user)
+                                   user=user)
         mail.send(msg)
 
         flash('Ein neues Passwort wurde an Ihre E-Mail-Adresse gesendet.', category='success')
         return redirect(url_for('nutzer_mit_account_views.anmelden'))
     flash('Die Email Adresse existiert nicht!', 'error')
     return render_template("nutzer_mit_account/anmelden.html")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

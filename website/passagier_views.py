@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
 from sqlalchemy import or_, cast, Date
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
@@ -52,7 +52,7 @@ def flug_buchen(id, anzahlPassagiere):
             if len(passagier_data) == max_items_per_list:
 
                 neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=passagier_data[0],
-                                            nachname=passagier_data[1], geburtsdatum=passagier_data[2],
+                                            nachname=passagier_data[1], geburtsdatum=passagier_data[2], passagierstatus="gebucht",
                                             boardingpassnummer=neue_buchung.buchungsnummer + str(
                                                 random.randint(10, 99)))
 
@@ -99,34 +99,184 @@ def flug_buchen(id, anzahlPassagiere):
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
 
 
+@passagier_views.route('/buchungsbestaetigung', methods=['POST', 'GET'])
+def buchungsbestaetigung():
+    rechnungsnummer = request.args['rechnungsnummer']
+    buchungsnummer = request.args['buchungsnummer']
+    passagiere = request.args['passagiere']
+    flug = request.args['flug']
+    passagier_anzahl = request.args['passagier_anzahl']
+    preis = request.args['preis']
+    gepaeck = request.args['gepaeck']
+    flughafen_liste = request.args['flughafen_liste']
+
+    return render_template("Passagier/buchungsbestaetigung.html", user=current_user, rechnungsnummer=rechnungsnummer,
+                           buchungsnummer=buchungsnummer,
+                           passagiere=passagiere, flug=flug, passagier_anzahl=passagier_anzahl, preis=preis,
+                           gepaeck=gepaeck, flughafen_liste=flughafen_liste)
+
+
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])
 def online_check_in():
-    return render_template("Passagier/online_check_in.html", user=current_user)
+    # Übergabe jener Variablen aus der Buchung_suchen Funktion.
+    # Abhängig von dem Button auf den geklickt wird, wird der eine oder andere Passagier ausgesucht
+    buchungsnummer = request.args.get('buchungsnummer')
+    vorname = request.args.get('vorname')
+    nachname = request.args.get('nachname')
+    buchungsid = request.args.get('buchungsid')
 
+    # die restlichen Daten müssen nun mit jenem Passagier übereinstimmen, welcher denselben Vornamen hat.
+    # Das wird erreicht durch die Überprüfung, welche Reihe zu dem Passagier gehört, auf dessen Button geklickt wurde
+    passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname).\
+        where(Passagier.nachname == nachname).first()
+
+    if request.method == 'POST':
+        passagier.nachname = nachname
+        passagier.vorname = vorname
+        passagier.ausweistyp = request.form['ausweistyp']
+        passagier.ausweisnummer = request.form['ausweissnummer']
+        passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
+        passagier.passagierstatus = "eingecheckt"
+        db.session.commit()
+        flash("Check-In erfolgreich")
+
+        return redirect(url_for('passagier_views.buchung_suchen'))
+
+    return render_template("Passagier/online_check_in.html", user=current_user, passagier=passagier, vorname=vorname, nachname=nachname)
+
+
+def is_flight_within_days(flight_time, num_days):
+    # Get the current time
+    current_time = datetime.now()
+
+    # Calculate the time difference between the current time and the flight time
+    time_difference = flight_time - current_time
+
+    # Check if the time difference is less than the specified number of days
+    return time_difference <= timedelta(days=num_days)
+
+
+# Passagierfunktionen
 
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
+@login_required
 def buchung_suchen():
-    input_buchungsnummer = request.form.get('buchungsnummer')
+    input_buchungsnummer = request.args.get('buchungsnummer')
 
-    buchung = Buchung.query.filter(Buchung.buchungsnummer == 999)
-    # Kennung des Ankunftflughafens
-    ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-        Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
-    # Kennung des Zielflughafens
-    ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-        Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
-    nutzer = Nutzerkonto.query.filter(
-        Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsnummer == 999)
-    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == 999)
-    gepaeck = Gepaeck.query.all()
+    buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer). \
+        order_by(Buchung.buchungsid.desc()).first()
 
-    return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
-                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer, gepaeck=gepaeck)
+    # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst fehlermeldung)
+
+    if buchung is None:
+
+        # hier wird gesucht ob es buchungen zu dem angemeldeteten account gibt und die oberste angezeigt
+
+        buchung = Buchung.query.filter(Buchung.nutzerid == current_user.id).order_by(Buchung.buchungsid.desc()).first()
+
+        if buchung is None:
+            flash('Kein Buchungen gefunden', category='error')
+            return render_template('Passagier/buchung_suchen.html', user=current_user)
+
+        else:
+            ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
+                Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == buchung.buchungsnummer).first()
+            # Kennung des Zielflughafens
+            ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
+                Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == buchung.buchungsnummer).first()
+            nutzer = Nutzerkonto.query.filter(
+                Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsid == buchung.buchungsnummer).first()
+            passagier = Passagier.query.filter(Buchung.buchungsnummer == buchung.buchungsnummer).where(
+                Buchung.buchungsid == Passagier.buchungsid).all()
+            flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
+                Buchung.buchungsnummer == buchung.buchungsnummer).first()
+            flugzeug = Flugzeug.query.filter(Flugzeug.flugzeugid == flug.flugid).first()
+
+            storno_possbile = True
+            for i in passagier:
+                if i.passagierstatus == "eingecheckt" or i.passagierstatus == "boarded":
+                    storno_possbile = False
+
+            check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
+
+            if is_flight_within_days(flug.sollabflugzeit, 7):
+                storno_text = "Ihr Flug ist in weniger als sieben Tagen. Wenn Sie Ihre Buchung jetzt stornieren, " \
+                              "erhalten Sie keine Rückerstattung"
+
+            elif is_flight_within_days(flug.sollabflugzeit, 14):
+                storno_text = "Das Abflugdatum ihres Fluges ist zwischen 14 und 7 Tagen.Wenn Sie jetzt stornieren, " \
+                              "wird Ihnen 50% des Buchungspreis zurückerstattet"
+
+            else:
+                storno_text = "Ihr Flug ist noch mehr als zwei Wochen entfernt. Ihnen wird der volle Buchungspreis " \
+                              "zurückerstattet"
+
+            return render_template('Passagier/buchung_suchen.html', buchung=buchung,
+                                   ankunft_flughafen=ankunft_flughafen,
+                                   ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
+                                   check_in_available=check_in_available,
+                                   passagier=passagier, storno_text=storno_text, storno_possbile=storno_possbile
+                                   )
+
+    # hier kann speziell gesucht werden
+
+    elif buchung.nutzerid == current_user.id:
+
+        # Kennung des Ankunftflughafens
+        ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
+            Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer).first()
+        # Kennung des Zielflughafens
+        ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
+            Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == input_buchungsnummer).first()
+        nutzer = Nutzerkonto.query.filter(
+            Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsid == input_buchungsnummer).first()
+        passagier = Passagier.query.filter(Buchung.buchungsnummer == input_buchungsnummer).where(
+            Buchung.buchungsid == Passagier.buchungsid).all()
+        flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
+            Buchung.buchungsnummer == input_buchungsnummer).first()
+        check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
+
+        storno_possbile = True
+        for i in passagier:
+            if i.passagierstatus == "eingecheckt" or i.passagierstatus == "boarded":
+                storno_possbile = False
+
+        if is_flight_within_days(flug.sollabflugzeit, 7):
+            storno_text = "Ihr Flug ist in weniger als sieben Tagen. Wenn Sie Ihre Buchung jetzt stornieren, " \
+                          "erhalten Sie keine Rückerstattung"
+
+        elif is_flight_within_days(flug.sollabflugzeit, 14):
+            storno_text = "Das Abflugdatum ihres Fluges ist zwischen 14 und 7 Tagen.Wenn Sie jetzt stornieren, " \
+                          "wird Ihnen 50% des Buchungspreis zurückerstattet"
+
+        else:
+            storno_text = "Ihr Flug ist noch mehr als zwei Wochen entfernt. Ihnen wird der volle Buchungspreis zurücker" \
+                          "stattet"
+
+        return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
+                               ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
+                               passagier=passagier, check_in_available=check_in_available, storno_text=storno_text,
+                               storno_possbile=storno_possbile)
+    else:
+        flash('Kein Buchungen gefunden', category='error')
+        return render_template('Passagier/buchung_suchen.html', user=current_user)
 
 
-@passagier_views.route('/storno')
-def storno():
-    return render_template('Passagier/storno.html', user=current_user)
+@passagier_views.route('/<stor_buchungsnummer>', methods=['GET', 'POST'])
+def storno(stor_buchungsnummer):
+    buchung = Buchung.query.filter(Buchung.buchungsnummer == stor_buchungsnummer).first()
+    if buchung is not None:
+        buchung.buchungsstatus = "storniert"
+        db.session.commit()
+        flash('Buchung erfolgreich storniert', category='success')
+        buchungsnummer = buchung.buchungsnummer
+        rechnungsnummer = Rechnung.query.where(Rechnung.buchungsid == buchung.buchungsid).first().rechnungsnummer
+
+        return render_template("Passagier/stornierungsbestaetigung.html", user=current_user,
+                               rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer)
+
+    else:
+        return redirect(url_for('passagier_views.buchung_suchen'))
 
 
 @passagier_views.route('/gepaecksbestimmungen', methods=['GET'])
