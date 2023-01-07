@@ -1,4 +1,4 @@
-import random
+import random, re
 import string
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
@@ -153,6 +153,7 @@ def online_check_in():
         passagier.ausweisnummer = request.form['ausweissnummer']
         passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
         passagier.passagierstatus = "eingecheckt"
+
         db.session.commit()
         flash("Check-In erfolgreich")
 
@@ -235,7 +236,8 @@ def buchung_suchen():
                                    passagier=passagier, storno_text=storno_text, storno_possbile=storno_possbile
                                    )
 
-    # hier kann speziell nach nummer gesucht gesucht werden (muss aber mit nutzer id des angemedletetn nutzer zusammenhängen)
+    # hier kann speziell nach nummer gesucht werden (muss aber mit nutzer id des angemedletetn nutzer
+    # zusammenhängen)
 
     elif buchung.nutzerid == current_user.id:
 
