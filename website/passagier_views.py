@@ -13,6 +13,7 @@ from datetime import date, datetime, timedelta
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
 
+MINDESTLÄNGE_AUSWEISNUMMER = 9
 
 # Passagierfunktionen
 # Id generator für Buchungsnummer
@@ -29,10 +30,13 @@ def flug_buchen(id, anzahlPassagiere):
     passagier_anzahl = 0
     buchung_preis = flug_data.preis * anzahlPassagiere
     print(buchung_preis)
+    if flug_data.flugstatus =='annuliert':
+        flash('Der Flug wurde annuliert, bitte wählen Sie ein alternatives Datum.')
 
     if request.method == 'POST':
         zusatzgepaeck_counter = 0
         # neue Buchung erstellen
+
         neue_buchung = Buchung(nutzerid=current_user.id, flugid=id, buchungsstatus="gebucht",
                                buchungsnummer=id_generator())
 
@@ -153,6 +157,9 @@ def online_check_in():
         passagier.ausweisnummer = request.form['ausweissnummer']
         passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
         passagier.passagierstatus = "eingecheckt"
+
+        if not len(passagier.ausweisnummer) > MINDESTLÄNGE_AUSWEISNUMMER:
+            flash('Bitte überprüfen Sie die Ausweisnummer')
 
         db.session.commit()
         flash("Check-In erfolgreich")
