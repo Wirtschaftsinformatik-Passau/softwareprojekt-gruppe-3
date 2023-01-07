@@ -2,7 +2,7 @@
 
 {% block title %}Startseite{% endblock %}
 {% block content %}
-      <br>
+    <br>
     <br>
 
     <ul class="nav nav-tabs">
@@ -15,41 +15,59 @@
         <li class="nav-item">
             <a class="nav-link active" href="/flugstatus-überprüfen">Flugstatus</a>
         </li>
-     <li class="nav-item">
+        <li class="nav-item">
             <a class="nav-link" href="/fluglinien-anzeigen">Fluglinien</a>
         </li>
     </ul>
-      <div class="card" style="width: 68rem;">
+    <div class="card" style="width: 68rem;">
         <div class="card-body">
             <div class="container" style="width: 60rem; height: 10rem">
                 <form action="#" method="GET">
                     <div class="form-row">
                         <div class="col">
                             <label for="Von">Flugnummer:</label>
-                            <input type="text" id="flugnummer" name="flugnummer" class="form-control" style="width: 16rem"
+                            <input type="text" id="flugnummer" name="flugnummer" class="form-control"
+                                   style="width: 16rem"
                                    value="{% if not flugnummer %}MP1{% else %} {{ flugnummer }}{% endif %}" required>
 
                         </div>
 
                         <div class="col">
                             <label for="abflugdatum">Abflugdatum:</label>
-                            <input type="date" class="form-control" id="abflugdatum" name="abflugdatum"
-                                   placeholder="" style="width: 8rem" value="{% if not abflug and is_flight_in_the_past %}{{ today }}{% else %} {{ abflug }}{% endif %}" required>
+                            <input type="date" class="form-control" id="abflugdatum" name="abflugdatum" onclick="checkDate()"
+                                   placeholder="" style="width: 8rem" value="
+                                    {% if not abflug and is_flight_in_the_past %}{{ today }}{% else %} {{ abflug }}{% endif %}"
+                                   required>
                         </div>
+                        <p id="result"></p>
+
                         <div class="col">
-                        <div class="col-auto my-4">
-                            <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Flüge
-                                finden
-                            </button>
+                            <div class="col-auto my-4">
+                                <button type="submit"
+                                        value="submit" class="btn btn-primary" style="height: 3rem">Flüge
+                                    finden
+                                </button>
+                            </div>
+                            <script>
+                                function checkDate() {
+                                    var inputDate = document.getElementById("abflugdatum").value;
+                                    var currentDate = new Date();
+                                    if (inputDate < currentDate) {
+                                        document.getElementById("result").innerHTML = "Bitte geben Sie ein Datum an, dass in der Zukunft liegt.";
+                                    } else {
+                                        document.getElementById("result").innerHTML = "The date you entered is in the future.";
+                                    }
+                                }
+
+                            </script>
                         </div>
-                    </div>
                     </div>
 
                 </form>
             </div>
         </div>
     </div>
-     <br>
+    <br>
 
     {% if fluege %}
         <table class="table">
@@ -69,22 +87,22 @@
             <tbody>
             {% for rows in fluege %}
                 <tr>
-                <td>
+                    <td>
                         {{ rows.flugnummer }}
                     </td>
                     <td>
                         {% for e in flughafen_liste %}
-                             {% if e.flughafenid == rows.abflugid %}
-                                 {{e.name + " (" + e.kennung + ")"}}
-                             {% endif %}
-                         {% endfor %}
+                            {% if e.flughafenid == rows.abflugid %}
+                                {{ e.name + " (" + e.kennung + ")" }}
+                            {% endif %}
+                        {% endfor %}
                     </td>
                     <td>
                         {% for e in flughafen_liste %}
-                             {% if e.flughafenid == rows.zielid %}
-                                 {{e.name + " (" + e.kennung + ")"}}
-                             {% endif %}
-                         {% endfor %}
+                            {% if e.flughafenid == rows.zielid %}
+                                {{ e.name + " (" + e.kennung + ")" }}
+                            {% endif %}
+                        {% endfor %}
                     </td>
                     <td>
                         {{ rows.sollabflugzeit.strftime("%H:%M") }}
