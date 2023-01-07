@@ -2,9 +2,8 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
-import help
 
-conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("root", help.pss, "localhost", "airlinedb")
+conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("clara", "1234", "localhost", "airline")
 db = SQLAlchemy()
 mail = Mail()
 

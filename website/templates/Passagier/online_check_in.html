@@ -3,78 +3,68 @@
 {% block title %}Online Checkin{% endblock %}
 {% block content %}
     <form class="row gx-3 gy-2 align-items-center">
-        <form action="#" method="GET">
-            <div class="col-sm-3">
-                <h4>Personenbezogene Daten:</h4>
-                <div class="col-auto">
-                    <label class="visually-hidden" for="autoSizingInput">Vorname:</label>
-                    <td>
-                        {{ passagier.vorname }}
-                    </td>
+        <div class="row align-items-start"> <!-- zwei spalten ankündigen-->
+            <form method="GET">
+                <div class="col"> <!--erste spalte-->
+                    <br>
+                    <h4>Personenbezogene Daten:</h4>
+                    <div class="col-auto">
+                        <label class="visually-hidden" for="autoSizingInput">Vorname:</label>
+                        <td>
+                            {{ vorname }}
+                        </td>
+                    </div>
+                    <div class="col-auto">
+                        <label class="visually-hidden" for="autoSizingInputGroup">Nachname:</label>
+                        <td>
+                            {{ nachname }}
+                        </td>
+                    </div>
+                    <div class="col-auto">
+                        <label class="visually-hidden" for="autoSizingInputGroup">Geburtsdatum:</label>
+                        <td>
+                            {{ passagier.geburtsdatum.strftime("%d.%m.%Y") }}
+                        </td>
+                    </div>
                 </div>
-                <div class="col-auto">
-                    <label class="visually-hidden" for="autoSizingInputGroup">Nachname:</label>
-                    <td>
-                        {{ passagier.nachname }}
-                    </td>
-                </div>
-                <div class="col-auto">
-                    <label class="visually-hidden" for="autoSizingInputGroup">Geburtsdatum:</label>
-                    <td>
-                        {{ passagier.geburtsdatum }}
-                    </td>
-                </div>
-                <div class="col-auto">
-                    <label class="visually-hidden" for="autoSizingInputGroup">Staatsbürgerschaft:</label>
-                    <td>
-                        {{ passagier.staatsbuergerschaft }}
-                    </td>
-                </div>
+            </form> <!--end of GET request-->
+            <div class="col"> <!--zweite spalte-->
+                <br>
+                <form method="POST">
+                    <h4>Ausweisdaten:</h4>
+
+                    <label class="visually-hidden" for="ausweistyp">Art des Ausweis*:</label>
+                    <select class="form-select" id="ausweistyp" name="ausweistyp">
+
+                        <option selected value="1">Reisepass</option>
+                        <option value="2">Personalausweis</option>
+                    </select>
+                    <br>
+                    <label class="visually-hidden" for="ausweissnummer">Ausweisnummer*:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="ausweissnummer" name="ausweissnummer"
+                               placeholder="Ausweisnummer" required>
+                    </div>
+                    <label class="visually-hidden" for="ausweisgueltigkeit">Ablaufdatum*:</label>
+                    <div class="input-group">
+                        <input type="date" class="form-control" id="ausweisgueltigkeit"
+                               name="ausweisgueltigkeit"
+                               placeholder="22.05.2030" required>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" name="gepaecksbestimmungen" required>
+                        <label class="form-check-label" for="flexCheckDefault">
+                            <p>Hiermit bestätige ich, dass ich <a href='/gepaecksbestimmungen'>die Vorschriften
+                                zur
+                                Gepäckmitnahme</a> gelesen und verstanden habe.</p>
+                        </label>
+                    </div>
+                    <div class="col-md-12 text-right">
+                        <button type="submit" class="btn btn-danger" style="height: 3rem">Jetzt einchecken
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </form>
-    <br>
-    <form class="row gx-3 gy-2 align-items-center">
-        <form action="#" method="POST">
-            <div class="col-sm-3">
-                <h4>Ausweisdaten:</h4>
-                <div class="col-auto">
-                    <form class="row row-cols-lg-auto g-3 align-items-center">
-                        <div class="col-12">
-                            <div class="col-12">
-                                <label class="visually-hidden" for="ausweistyp">Art des Ausweis*:</label>
-                                <select class="form-select" id="ausweistyp" name="ausweistyp">
-                                    <option selected>Pass</option>
-                                    <option value="1">Reisepass</option>
-                                    <option value="2">Personalausweis</option>
-                                </select>
-                            </div>
-                            <label class="visually-hidden" for="ausweissnummer">Ausweisnummer*:</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="ausweissnummer" name="ausweissnummer"
-                                       placeholder="Ausweisnummer">
-                            </div>
-                            <label class="visually-hidden" for="ausweisgueltigkeit">Ablaufdatum*:</label>
-                            <div class="input-group">
-                                <input type="date" class="form-control" id="ausweisgueltigkeit" name="ausweisgueltigkeit"
-                                       placeholder="22.05.2030">
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                <label class="form-check-label" for="flexCheckDefault">
-                                    <p>Hiermit bestätige ich, dass ich <a href='/gepaecksbestimmungen'>die Vorschriften
-                                        zur
-                                        Gepäckmitnahme</a> gelesen und verstanden habe.</p>
-                                </label>
-                            </div>
-                            <form>
-                                <!-- Form fields go here -->
-                                <input type="submit" value="Jetzt einchecken ">
-                            </form>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </form>
+        </div>
     </form>
 {% endblock %}
