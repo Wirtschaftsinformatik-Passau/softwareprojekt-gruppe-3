@@ -36,13 +36,15 @@ def flugzeug_bearbeiten(page):
 
     # nur 4 flugzeuge werden angezeigt über paginate
 
-    flugzeuge = Flugzeug.query.filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
+    flugzeuge = Flugzeug.query.filter(Flugzeug.status == "aktiv").order_by(Flugzeug.flugzeugid.desc()). \
+        paginate(page=page, per_page=pages, error_out=False)
 
     if request.method == 'POST' and 'tag' in request.form:
         tag = request.form["tag"]
         search = "%{}%".format(tag)
         flugzeuge = Flugzeug.query.filter(Flugzeug.hersteller.like(search)). \
-            filter(Flugzeug.status == "aktiv").paginate(page=page, per_page=pages, error_out=False)
+            filter(Flugzeug.status == "aktiv").order_by(Flugzeug.flugzeugid.desc()).paginate(page=page, per_page=pages,
+                                                                                             error_out=False)
 
         return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge,
                                user=current_user, tag=tag)
@@ -55,8 +57,8 @@ def flugzeug_ändern():
     if request.method == 'POST':
         flugzeug = Flugzeug.query.get_or_404(request.form.get('id'))
         anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
-            filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).\
-            filter(Flug.flugzeugid == request.form.get('id')).\
+            filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
+            filter(Flug.flugzeugid == request.form.get('id')). \
             filter(Flug.flugstatus != "annuliert").count()
 
         print(anzahl_passagiere)
@@ -126,19 +128,18 @@ def flug_bearbeiten(page):
 
     # alle flüge von gestern bis in die Zukunft
 
-    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).paginate(page=page,
-                                                                                               per_page=pages,
-                                                                                               error_out=False)
-
-    # suche nach Flugnummer
+    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).order_by(Flug.flugid.desc()) \
+        .paginate(page=page, per_page=pages, error_out=False)
 
     if request.method == 'POST' and 'tag' in request.form:
         tag = request.form["tag"]
         search = "%{}%".format(tag)
-        fluege = Flug.query.filter(Flug.flugnummer.like(search)).paginate(page=page, per_page=pages, error_out=False)
+        fluege = Flug.query.filter(Flug.flugnummer.like(search)).order_by(Flug.flugid.desc()). \
+            paginate(page=page, per_page=pages, error_out=False)
 
         return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege,
-                               user=current_user, tag=tag)
+                               flughafen_liste=flughafen_liste,
+                               user=current_user, tag=tag, flugzeug_liste=flugzeug_liste)
 
     return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user,
                            flugzeug_liste=flugzeug_liste,
@@ -171,6 +172,9 @@ def flug_ändern():
 
         if flug.istankunftszeit > flug.sollankunftszeit:
             flug.flugstatus = "verspätet"
+
+        elif flug.istankunftszeit == flug.sollankunftszeit:
+            flug.flugstatus = "pünktlich"
 
         db.session.commit()
         flash("Flugdaten erfolgreich geändert", category='success')
@@ -205,7 +209,8 @@ def accounts_bearbeiten(page):
     page = page
     pages = 4
     accounts = Nutzerkonto.query.filter(
-        or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal')) \
+        or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal')).order_by(
+        Nutzerkonto.id.desc()) \
         .paginate(page=page, per_page=pages, error_out=False)
 
     if request.method == 'POST' and 'tag' in request.form:
@@ -213,7 +218,8 @@ def accounts_bearbeiten(page):
         search = "%{}%".format(tag)
         accounts = Nutzerkonto.query.filter(
             and_(Nutzerkonto.nachname.like(search),
-                 or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal'))).paginate(
+                 or_(Nutzerkonto.rolle == 'Bodenpersonal', Nutzerkonto.rolle == 'Verwaltungspersonal'))). \
+            order_by(Nutzerkonto.id.desc()).paginate(
             page=page, per_page=pages, error_out=False)
 
         return render_template("Verwaltungspersonal/accounts_bearbeiten.html", accounts=accounts, user=current_user)
