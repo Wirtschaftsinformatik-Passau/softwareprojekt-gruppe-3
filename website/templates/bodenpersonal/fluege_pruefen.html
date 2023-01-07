@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Auslastung prüfen {% endblock %}
+{% block content %}
+    <br>
+    <br>
+    <div class="card" style="width: 69rem;">
+        <div class="card-body">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" id="check-in" aria-current="page" href="/home_bp">Check-in/Boarding</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" id="fluege_pruefen" href="/fluege_pruefen">Auslastung prüfen</a>
+                </li>
+            </ul>
+            <div class="card" style="width: 66rem;">
+                <div class="card-body">
+                    <div class="container-fluid" style="width: 55rem; height: 15rem">
+                        <br>
+                        <form action="#" method="POST">
+                            <div class="form-row">
+                                <div class="col">
+                                    <label for="flugnummer">Flugnummer:</label>
+                                    <input type="text" class="form-control" id="flugnummer" name="flugnummer" placeholder="" required>
+                                </div>
+                                <div class="col-auto my-4">
+                                    <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">
+                                        Suchen
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Buchungsnummer</th>
+            <th scope="col">Vorname</th>
+            <th scope="col">Nachname</th>
+            <th scope="col">Passagierstatus</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for passagier in passagiere %}
+        <tr>
+            <td>{{ passagier.buchungsnummer }}</td>
+            <td>{{ passagier.vorname }}</td>
+            <td>{{ passagier.nachname }}</td>
+            <td>{{ passagier.passagierstatus }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+
+
+
+
+
+
+
+{% endblock %}

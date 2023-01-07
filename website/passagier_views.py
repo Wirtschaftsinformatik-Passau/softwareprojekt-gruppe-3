@@ -69,7 +69,7 @@ def buchung_suchen():
     ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
         Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == 999)
     nutzer = Nutzerkonto.query.filter(
-        Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsnummer == 999)
+        Buchung.id == Nutzerkonto.id).where(Buchung.buchungsnummer == 999)
     flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(Buchung.buchungsnummer == 999)
     gepaeck = Gepaeck.query.all()
 

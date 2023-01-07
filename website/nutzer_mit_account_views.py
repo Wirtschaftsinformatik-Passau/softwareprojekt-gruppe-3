@@ -14,7 +14,7 @@ import string
 # store the standard routes for a website where the user can navigate to
 nutzer_mit_account_views = Blueprint('nutzer_mit_account_views', __name__)
 
-MINIMALE_PASSWORTLÄNGE = 8
+MINIMALE_PASSWORTLAENGE = 8
 
 @nutzer_mit_account_views.route('anmelden', methods=['GET', 'POST'])
 def anmelden():
@@ -36,7 +36,7 @@ def anmelden():
             elif check_password_hash(nutzer.passwort, passwort) and nutzer.rolle == "Bodenpersonal":
                 flash('Erfolgreich angemeldet', category='success')
                 login_user(nutzer, remember=True)
-                return redirect(url_for('verwaltungspersonal_views.flugzeug_erstellen'))  # should be changed later
+                return redirect(url_for('bodenpersonal_views.home'))  # should be changed later
             else:
                 flash(' Passwort oder Email Adresse ist falsch! Versuchen Sie es erneut.', category='error')
         else:
@@ -45,7 +45,7 @@ def anmelden():
     return render_template("nutzer_mit_account/anmelden.html")
 
 
-@nutzer_mit_account_views.route('/logout',methods=['GET'])
+@nutzer_mit_account_views.route('/logout', methods=['GET'])
 @login_required
 def logout():
     logout_user()
@@ -75,7 +75,7 @@ def passwort_aendern():
         if not re.search(r'[^A-Za-z0-9]', new_password):
             flash('Neues Passwort muss mindestens ein Sonderzeichen enthalten.', category='error')
             return render_template("nutzer_mit_account/passwort_aendern.html")
-        if len(new_password) < MINIMALE_PASSWORTLÄNGE:
+        if len(new_password) < MINIMALE_PASSWORTLAENGE:
             flash('Neues Passwort muss mindestens 8 Zeichen lang sein.', category='error')
             return render_template("nutzer_mit_account/passwort_aendern.html")
         if new_password != confirm_password:

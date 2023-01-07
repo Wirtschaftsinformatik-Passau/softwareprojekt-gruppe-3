@@ -11,7 +11,13 @@
     <p>Nachname:      {{ user.nachname }}</p>
     <p>E-Mail-Adresse:     {{ user.emailadresse }}</p>
     <br>
+    {% if current_user.rolle == 'Passagier' %}
     <button class="btn btn-primary" onclick="location.href='{{ url_for('nutzer_ohne_account_views.home') }}'">Zurück zur Startseite</button>
+{% elif current_user.rolle == 'Verwaltungspersonal' %}
+    <button class="btn btn-primary" onclick="location.href='{{ url_for('verwaltungspersonal_views.flugzeug_erstellen') }}'">Zurück zur Startseite</button>
+{% elif current_user.rolle == 'Bodenpersonal' %}
+    <button class="btn btn-primary" onclick="location.href='{{ url_for('bodenpersonal_views.home') }}'">Zurück zur Startseite</button>
+{% endif %}
     <button class="btn btn-primary" onclick="location.href='{{ url_for('nutzer_mit_account_views.passwort_aendern') }}'">Passwort ändern? Hier klicken</button>
 </div>
     {% endblock %}
