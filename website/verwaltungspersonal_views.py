@@ -1,10 +1,14 @@
+import random
+import string
+
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
-from . import db
+from . import db, mail
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
+from flask_mail import Mail, Message
 
 # store the standard routes for a website where the user can navigate to
 verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
@@ -189,13 +193,20 @@ def accounts_anlegen():
         vorname = request.form.get('vorname')
         nachname = request.form.get('nachname')
         emailadresse = request.form.get('emailadresse')
-        passwort = "12345"
+        special_characters = '!@#$%^&*/_+-'
+        passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
+        while not (any(c.isdigit() for c in passwort) and any(c in special_characters for c in passwort)):
+            passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
         rolle = request.form.get('rolle')
 
         new_account = Nutzerkonto(vorname=vorname, nachname=nachname, emailadresse=emailadresse, rolle=rolle,
                                   passwort=generate_password_hash(passwort, method='sha256'))
         db.session.add(new_account)
         db.session.commit()
+        msg = Message('Ihr Account wurde erstellt', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+        msg.html = render_template('Verwaltungspersonal/neuer_account_erstellt_email.html', password=passwort,
+                                   user=current_user)
+        mail.send(msg)
 
         flash(rolle + "account wurde erfolgreich erstellt")
 

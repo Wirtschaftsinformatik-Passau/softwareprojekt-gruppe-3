@@ -15,10 +15,25 @@ passagier_views = Blueprint('passagier_views', __name__)
 
 MINDESTLÄNGE_AUSWEISNUMMER = 9
 
+
 # Passagierfunktionen
 # Id generator für Buchungsnummer
 def id_generator(size=8, chars=string.ascii_uppercase):
     return ''.join(random.choice(chars) for _ in range(size))
+
+
+def is_date_in_past(date):
+    # Convert the input date to a datetime object
+    date = datetime.strptime(date, '%Y-%m-%d')
+
+    # Get the current date and time
+    now = datetime.now()
+
+    # Compare the input date to the current date and time
+    if date < now:
+        return True
+    else:
+        return False
 
 
 # Passagierfunktionen
@@ -30,7 +45,7 @@ def flug_buchen(id, anzahlPassagiere):
     passagier_anzahl = 0
     buchung_preis = flug_data.preis * anzahlPassagiere
     print(buchung_preis)
-    if flug_data.flugstatus =='annuliert':
+    if flug_data.flugstatus == 'annuliert':
         flash('Der Flug wurde annuliert, bitte wählen Sie ein alternatives Datum.')
 
     if request.method == 'POST':
@@ -57,6 +72,13 @@ def flug_buchen(id, anzahlPassagiere):
             passagier_data.append(value)
             if len(passagier_data) == max_items_per_list:
 
+                if not is_date_in_past(passagier_data[2]):
+                    flash('Das Geburtsdatum von ' + passagier_data[0] + '' + passagier_data[
+                        1] + ' muss in der Vergangenheit liegen', category='error')
+
+                    return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
+                                           anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
+
                 neuer_passagier = Passagier(buchungsid=neue_buchung.buchungsid, vorname=passagier_data[0],
                                             nachname=passagier_data[1], geburtsdatum=passagier_data[2],
                                             passagierstatus="gebucht",
@@ -78,7 +100,7 @@ def flug_buchen(id, anzahlPassagiere):
                 passagier_anzahl = passagier_anzahl + 1
                 passagier_data = []
 
-        # neuen preis berechnen
+            # neuen preis berechnen
 
         rechnungs_preis = (Flug.query.filter_by(flugid=id).first().preis * anzahlPassagiere) + (
                 zusatzgepaeck_counter * 40)
