@@ -34,7 +34,7 @@
                         <div class="col">
                             <label for="abflugdatum">Abflugdatum:</label>
                             <input type="date" class="form-control" id="abflugdatum" name="abflugdatum"
-                                   placeholder="" style="width: 8rem" value="{% if not abflug %}{{ today }}{% else %} {{ abflug }}{% endif %}" required>
+                                   placeholder="" style="width: 8rem" value="{% if not abflug and is_flight_in_the_past %}{{ today }}{% else %} {{ abflug }}{% endif %}" required>
                         </div>
                         <div class="col">
                         <div class="col-auto my-4">

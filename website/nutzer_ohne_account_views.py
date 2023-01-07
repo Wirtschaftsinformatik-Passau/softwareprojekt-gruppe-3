@@ -5,7 +5,7 @@ from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy import or_, cast, Date
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 # store the standard routes for a website where the user can navigate to
 nutzer_ohne_account_views = Blueprint('nutzer_ohne_account_views', __name__)
@@ -22,9 +22,9 @@ def registrieren():
 
         konto = Nutzerkonto.query.filter_by(emailadresse=emailadresse).first()
         if konto:
-            flash('Konto existiert bereits !', category='error')
+            flash('Mit dieser E-Mail-Adresse existiert bereits ein Account. Bitte melden Sie sich mit diesem an.', category='error')
         elif passwort1 != passwort2:
-            flash('Passwort stimmt nicht überein!', category='error')
+            flash('Die angegebenen Passwörter müssen übereinstimmen.', category='error')
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', emailadresse):
             flash('Ungültige Email Adresse !', category='error')
         elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&/+])[A-Za-z\d@$!%*#?&/+]{8,}$', passwort1):
@@ -79,16 +79,22 @@ def home():
                            kuerzel_nach=kuerzel_nach, kuerzel_von=kuerzel_von, passagiere=passagiere)
 
 
+
+
 @nutzer_ohne_account_views.route('/flugstatus-überprüfen', methods=['GET', 'POST'])
 def flugstatus_überprüfen():
-    flughafen_liste = Flughafen.query.all()
+    if request.method == 'GET':
+        flughafen_liste = Flughafen.query.all()
 
-    abflug = request.args.get('abflugdatum')
-    flugnummer = request.args.get('flugnummer')
+        abflug = request.args.get('abflugdatum')
+        flugnummer = request.args.get('flugnummer')
 
-    fluege = Flug.query.filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer)
+        #DATUM IN DER VERGANGENHEIT
+        fluege = Flug.query.filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer)
+        if not fluege:
+            flash('Zu Ihren Suchenkriterien wurde kein passender Flug gefunden.')
 
-    return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege,
+        return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege,
                            abflug=abflug, flugnummer=flugnummer, today=date.today(), flughafen_liste=flughafen_liste)
 
 
