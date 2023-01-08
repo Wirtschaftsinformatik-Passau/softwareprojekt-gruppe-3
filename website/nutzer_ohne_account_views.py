@@ -73,7 +73,7 @@ def home():
             filter(Buchung.flugid == rows.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).count()
         print(anzahl_ges_passagiere)
 
-    return render_template("nutzer_ohne_account/home.html", fluege=fluege, flughafen_liste=flughafen_liste,
+    return render_template("nutzer_ohne_account/home_bp.html", fluege=fluege, flughafen_liste=flughafen_liste,
                            user=current_user,
                            kuerzel_nach=kuerzel_nach, kuerzel_von=kuerzel_von, passagiere=passagiere)
 

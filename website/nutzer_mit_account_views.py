@@ -37,7 +37,7 @@ def anmelden():
             elif check_password_hash(nutzer.passwort, passwort) and nutzer.rolle == "Bodenpersonal":
                 flash('Erfolgreich angemeldet', category='success')
                 login_user(nutzer, remember=True)
-                return redirect(url_for('verwaltungspersonal_views.flugzeug_erstellen'))  # should be changed later
+                return redirect(url_for('bodenpersonal_views.home'))  # should be changed later
             else:
                 flash(' Passwort oder Email Adresse ist falsch! Versuchen Sie es erneut.', category='error')
         else:
