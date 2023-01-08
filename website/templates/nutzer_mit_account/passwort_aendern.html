@@ -42,7 +42,11 @@
   </div>
 </form>
 <br>
-
+{% if current_user.rolle=="Passagier" %}
     <button class="btn btn-primary" onclick="location.href='{{ url_for('nutzer_ohne_account_views.home') }}'">Abbrechen</button>
-
+{% elif current_user.rolle=="Bodenpersonal" %}
+    <button class="btn btn-primary" onclick="location.href='{{ url_for('bodenpersonal_views.home') }}'">Abbrechen</button>
+{% elif current_user.rolle=="Verwaltungspersonal" %}
+    <button class="btn btn-primary" onclick="location.href='{{ url_for('verwaltungspersonal_views.flugzeug_erstellen') }}'">Abbrechen</button>
+{% endif %}
 {% endblock %}
