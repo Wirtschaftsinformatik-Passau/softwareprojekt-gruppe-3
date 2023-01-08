@@ -10,7 +10,6 @@ from datetime import date, datetime, timedelta
 # store the standard routes for a website where the user can navigate to
 nutzer_ohne_account_views = Blueprint('nutzer_ohne_account_views', __name__)
 
-
 @nutzer_ohne_account_views.route('/registrieren', methods=['GET', 'POST'])
 def registrieren():
     if request.method == 'POST':
@@ -77,6 +76,7 @@ def home():
     return render_template("nutzer_ohne_account/home.html", fluege=fluege, flughafen_liste=flughafen_liste,
                            user=current_user,
                            kuerzel_nach=kuerzel_nach, kuerzel_von=kuerzel_von, passagiere=passagiere)
+
 
 
 
