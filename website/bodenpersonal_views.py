@@ -102,7 +102,7 @@ def home():
                                        passagiere=passagiere, gepaeck=gepaeck)
         else:
             flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
-                  " Buchungsnummer und Ausweisnummer müssen ausgefüllt werden.", category="error")
+                  " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
             return render_template("bodenpersonal/home_bp.html")
 
     else:
@@ -123,12 +123,15 @@ def boarding():
 
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
 def einchecken():
-    buchungsnummer = request.args.get('buchungsnummer')
+    buchungsnummer = request.args.get('buchungsnummer_1')
     vorname = request.args.get('vorname')
     nachname = request.args.get('nachname')
+    buchungsid = request.args.get('buchungsid')
 
-    passagier = Passagier.query.filter(Passagier.buchungsid == Buchung.buchungsid).where(Passagier.vorname == vorname). \
-        where(Passagier.nachname == nachname).where(Buchung.buchungsnummer == buchungsnummer).first()
+
+    passagier= Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
+        where(Passagier.nachname == nachname).first()
+    #print(passagier.vorname)
 
     if request.method == 'POST':
         passagier.nachname = nachname

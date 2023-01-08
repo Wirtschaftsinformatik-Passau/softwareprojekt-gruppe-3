@@ -3,10 +3,11 @@
 
 {% block title %}Online Checkin{% endblock %}
 {% block content %}
+<br>
     <form class="row gx-3 gy-2 align-items-center">
         <div class="row align-items-start"> <!-- zwei spalten ankündigen-->
             <form method="GET">
-                <div class="col"> <!--erste spalte-->
+                <div class="col-7"> <!--erste spalte-->
                     <br>
                     <h4>Personenbezogene Daten:</h4>
                     <div class="col-auto">
@@ -26,7 +27,7 @@
             </form> <!--end of GET request-->
             <div class="col"> <!--zweite spalte-->
                 <br>
-                <form action = "/einchecken" method="POST">
+                <form  method="POST">
                     <h4>Ausweisdaten:</h4>
 
                     <label class="visually-hidden" for="ausweistyp">Art des Ausweis*:</label>
@@ -47,8 +48,9 @@
                                name="ausweisgueltigkeit"
                                placeholder="22.05.2030" required>
                     </div>
+                    <br>
                     <div class="col-md-12 text-right">
-                        <button type="submit" class="btn btn-danger" style="height: 3rem">Jetzt einchecken
+                        <button type="submit" class="btn btn-danger btn-block" style="height: 3rem">Jetzt einchecken
                         </button>
                     </div>
                 </form>
