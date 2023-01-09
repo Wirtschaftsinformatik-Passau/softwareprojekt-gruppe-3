@@ -17,7 +17,7 @@ class Nutzerkonto(db.Model, UserMixin):
 
 class Buchung(db.Model):
     buchungsid = db.Column(db.Integer, primary_key=True)
-    id = db.Column(db.Integer, db.ForeignKey('nutzerkonto.id'))
+    nutzerid = db.Column(db.Integer, db.ForeignKey('nutzerkonto.id'))
     flugid = db.Column(db.Integer, db.ForeignKey('flug.flugid'))
     buchungsnummer = db.Column(db.String(50))
     buchungsstatus = db.Column(db.Enum("gebucht", "storniert", "verfallen"))
