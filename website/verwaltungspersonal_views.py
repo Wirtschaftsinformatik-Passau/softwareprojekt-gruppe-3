@@ -205,7 +205,7 @@ def accounts_anlegen():
         db.session.commit()
         msg = Message('Ihr Account wurde erstellt', sender='airpassau.de@gmail.com', recipients=[emailadresse])
         msg.html = render_template('Verwaltungspersonal/neuer_account_erstellt_email.html', password=passwort,
-                                   user=current_user)
+                                   user=current_user, rolle=rolle)
         mail.send(msg)
 
         flash(rolle + "account wurde erfolgreich erstellt")
