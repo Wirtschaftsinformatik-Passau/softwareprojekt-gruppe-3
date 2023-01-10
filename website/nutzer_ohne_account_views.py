@@ -93,6 +93,7 @@ def flugstatus_überprüfen():
         fluege = Flug.query.filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer)
         if not fluege:
             flash('Zu Ihren Suchenkriterien wurde kein passender Flug gefunden.', category='error')
+            redirect(url_for('nutzer_ohne_account_views.flugstatus_überprüfen'))
 
         return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege,
                            abflug=abflug, flugnummer=flugnummer, today=date.today(), flughafen_liste=flughafen_liste)
