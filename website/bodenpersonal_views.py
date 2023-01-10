@@ -126,7 +126,7 @@ def boarding():
 
     passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
         where(Passagier.nachname == nachname).first()
-    print(passagier)
+
 
     if request.method == 'POST':
         passagier.boardingpassnummer = request.form['boardingPassNummer']
