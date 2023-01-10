@@ -117,9 +117,29 @@ def home():
 
 
 
-@bodenpersonal_views.route('/boarding', methods=['POST'])
+@bodenpersonal_views.route('/boarding', methods=['POST','GET'])
 def boarding():
+    buchungsnummer = request.args.get('buchungsnummer_1')
+    vorname = request.args.get('vorname')
+    nachname = request.args.get('nachname')
+    buchungsid = request.args.get('buchungsid')
+
+    passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
+        where(Passagier.nachname == nachname).first()
+
+
+    if request.method == 'POST':
+        passagier.boardingpassnummer = request.form['boardingPassNummer']
+        passagier.passagierstatus = "boarded"
+        db.session.add(passagier)
+        db.session.commit()
+        flash("Boarding erfolgreich")
+
+        return redirect(url_for('bodenpersonal_views.home'))
+
     return render_template('bodenpersonal/boarding.html', user=current_user)
+
+
 
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
 def einchecken():
@@ -131,7 +151,7 @@ def einchecken():
 
     passagier= Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
         where(Passagier.nachname == nachname).first()
-    #print(passagier.vorname)
+
 
     if request.method == 'POST':
         passagier.nachname = nachname
@@ -139,6 +159,7 @@ def einchecken():
         passagier.ausweistyp = request.form['ausweistyp']
         passagier.ausweisnummer = request.form['ausweissnummer']
         passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
+        passagier.staatsbuergerschaft = request.form['staatsangehoerigkeit']
         passagier.passagierstatus = "eingecheckt"
         db.session.add(passagier)
         db.session.commit()
