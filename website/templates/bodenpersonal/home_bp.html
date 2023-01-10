@@ -86,7 +86,8 @@
             <br>
             {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht"%}
 
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#boardingModal">Start Boarding</button>
+            <a href="{{ url_for('bodenpersonal_views.boarding',buchungsid = row.buchungsid,buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
+                                   class="btn btn-warning btn-sm" data-toggle="modal" data-target="#boardingModal">Start Boarding</a>
             <br>
             <button type="button" class="btn btn-warning  btn-sm" >Boarding karte ausdrucken</button>
 
@@ -133,7 +134,8 @@
         <br>
         {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht"%}
 
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#boardingModal">Start Boarding</button>
+            <a href="{{ url_for('bodenpersonal_views.boarding',buchungsid = row.buchungsid,buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
+                                   class="btn btn-warning btn-sm" data-toggle="modal" data-target="#boardingModal">Start Boarding</a>
             <br>
             <button type="button" class="btn btn-warning  btn-sm" >Boarding karte ausdrucken</button>
 

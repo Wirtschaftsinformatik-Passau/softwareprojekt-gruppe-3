@@ -7,7 +7,7 @@
     <form class="row gx-3 gy-2 align-items-center">
         <div class="row align-items-start"> <!-- zwei spalten ankündigen-->
             <form method="GET">
-                <div class="col-7"> <!--erste spalte-->
+                <div class="col"> <!--erste spalte-->
                     <br>
                     <h4>Personenbezogene Daten:</h4>
                     <div class="col-auto">
@@ -20,6 +20,12 @@
                         <label class="visually-hidden" for="autoSizingInputGroup" >Nachname:</label>
                         <td>
                             {{ nachname }}
+                        </td>
+                    </div>
+                    <div class="col-auto">
+                        <label class="visually-hidden" for="autoSizingInputGroup">Geburtsdatum:</label>
+                        <td>
+                            {{ passagier.geburtsdatum.strftime("%d.%m.%Y") }}
                         </td>
                     </div>
 
@@ -49,6 +55,16 @@
                                placeholder="22.05.2030" required>
                     </div>
                     <br>
+                     <!-- Add dropdown field for nationality -->
+  <label class="visually-hidden" for="staatsangehoerigkeit">Staatsangehörigkeit*:</label>
+  <div class="input-group">
+    <select class="form-select" id="staatsangehoerigkeit" name="staatsangehoerigkeit">
+      <option selected value="Deutschland">Bitte auswählen</option>
+      <!-- Include options file -->
+      {% include "bodenpersonal/options-nationalities.html" %}
+    </select>
+  </div>
+  <br>
                     <div class="col-md-12 text-right">
                         <button type="submit" class="btn btn-danger btn-block" style="height: 3rem">Jetzt einchecken
                         </button>
