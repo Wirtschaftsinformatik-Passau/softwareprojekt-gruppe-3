@@ -1,52 +1,67 @@
+{% extends "base.html" %} {% block title %}Passwort_aendern{% endblock %} {% block content %}
+    <form method="POST">
+        <br>
+        <h3 align="center">Passwort ändern</h3>
+        <div class="form-group">
+            <label for="current_password">Altes Passwort*:</label>
+            <input
+                    type="password"
+                    id="current_password"
+                    name="current_password"
+                    class="form-control"
+                    placeholder=""
+                    required
+            />
+            <br>
+            <label for="new_password">Neues Passwort*:</label>
+            <input
+                    type="password"
+                    id="new_password"
+                    name="new_password"
+                    class="form-control"
+                    placeholder=""
+                    required
+            />
+            <br/>
+            <label for="confirm_password">Passwort wiederholen*:</label>
+            <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    class="form-control"
+                    placeholder=""
+                    required
+            />
+            <br>
 
-{% extends "base.html" %} {% block title %}Passwort_aendern{% endblock %} {% block content
-%}
-<form method="POST">
-  <br>
-  <h3 align="center">Passwort ändern</h3>
-  <div class="form-group">
-    <label for="current_password">Altes Passwort*:</label>
-    <input
-      type="password"
-      id="current_password"
-      name="current_password"
-      class="form-control"
-      placeholder=""
-      required
-    />
-    <br>
-    <label for="new_password">Neues Passwort*:</label>
-    <input
-      type="password"
-      id="new_password"
-      name="new_password"
-      class="form-control"
-      placeholder=""
-      required
-    />
-    <br />
-      <label for="confirm_password">Passwort wiederholen*:</label>
-    <input
-      type="password"
-      id="confirm_password"
-      name="confirm_password"
-      class="form-control"
-      placeholder=""
-      required
-    />
-    <br>
+            <div align="center">
+                <button class="btn btn-primary" type="submit">Passwort ändern</button>
+            </div>
+            <div>
+                {% if current_user.rolle=="Passagier" %}
+                    <button class="btn btn-primary"
+                            onclick="location.href='{{ url_for('nutzer_ohne_account_views.home') }}'">Abbrechen
+                    </button>
+                {% elif current_user.rolle=="Bodenpersonal" %}
+                    <button class="btn btn-primary" onclick="location.href='{{ url_for('bodenpersonal_views.home') }}'">
+                        Abbrechen
+                    </button>
+                {% elif current_user.rolle=="Verwaltungspersonal" %}
+                    <button class="btn btn-primary"
+                            onclick="location.href='{{ url_for('verwaltungspersonal_views.flugzeug_erstellen') }}'">
+                        Abbrechen
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </form>
 
-    <div align="center">
-      <button class="btn btn-primary" type="submit">Passwort ändern</button>
-    </div>
-  </div>
-</form>
-<br>
-{% if current_user.rolle=="Passagier" %}
-    <button class="btn btn-primary" onclick="location.href='{{ url_for('nutzer_ohne_account_views.home') }}'">Abbrechen</button>
-{% elif current_user.rolle=="Bodenpersonal" %}
-    <button class="btn btn-primary" onclick="location.href='{{ url_for('bodenpersonal_views.home') }}'">Abbrechen</button>
-{% elif current_user.rolle=="Verwaltungspersonal" %}
-    <button class="btn btn-primary" onclick="location.href='{{ url_for('verwaltungspersonal_views.flugzeug_erstellen') }}'">Abbrechen</button>
-{% endif %}
+    <br>
+    <b>Passwortmindestanforderungen:</b>
+    <br>
+    - enthält mindestens 8 Zeichen
+    <br>
+    - enthält mindestens eine Zahl
+    <br>
+    - enthält mindestens ein Sonderzeichen
 {% endblock %}
