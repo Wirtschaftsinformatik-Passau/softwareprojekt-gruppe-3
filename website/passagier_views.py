@@ -181,7 +181,8 @@ def online_check_in():
         passagier.passagierstatus = "eingecheckt"
 
         if not len(passagier.ausweisnummer) > MINDESTLÄNGE_AUSWEISNUMMER:
-            flash('Bitte überprüfen Sie die Ausweisnummer')
+            flash('Bitte überprüfen Sie die Ausweisnummer', category='error')
+            return redirect(url_for('passagier_views.buchung_suchen'))
 
         db.session.commit()
         flash("Check-In erfolgreich")

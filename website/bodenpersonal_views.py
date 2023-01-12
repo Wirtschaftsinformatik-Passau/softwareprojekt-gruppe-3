@@ -3,8 +3,9 @@ from flask_login import current_user, login_required
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy.orm import aliased
+from datetime import datetime
 
-Flughafen_alias = aliased(Flughafen, name='zielflughafen')
+
 
 
 # store the standard routes for a website where the user can navigate to
@@ -165,28 +166,46 @@ def einchecken():
         db.session.add(passagier)
         db.session.commit()
         flash("Check-In erfolgreich")
-
         return redirect(url_for('bodenpersonal_views.home'))
-
-
-
-
     return render_template('bodenpersonal/einchecken.html', user=current_user, passagier=passagier, vorname=vorname,
                            nachname=nachname)
+@bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
+def gepäck_einchecken():
+
+    vorname = request.args.get('vorname')
+    nachname = request.args.get('nachname')
+    gepaeck=Gepaeck.query.join(Gepaeck.passagierid == Passagier.passagierid).join(
+        Passagier.buchungsid == Buchung.buchungsid).filter(Passagier.vorname == vorname,
+                                                           Passagier.nachname == nachname)
+
+    if request.method == 'POST':
+        gepaeck.status="eingecheckt"
+        db.session.add(gepaeck)
+        db.session.commit()
+        flash("Check-In erfolgreich")
+        return redirect(url_for('bodenpersonal_views.home'))
+
+    return render_template('bodenpersonal/gepaeck_einchecken.html', user=current_user)
+
+
+
 
 @bodenpersonal_views.route('/fluege_pruefen',methods=["GET","POST"])
 def fluege_pruefen():
     if request.method == 'POST':
         # get the flight number from the html form
         flugnummer = request.form['flugnummer']
+        datum = request.form['datum']
+
 
         # query the database to get the flight with the specified flight number
-        flug = Flug.query.filter_by(flugnummer=flugnummer).first()
+        flug = Flug.query.filter_by(flugnummer=flugnummer, istabflugzeit=datum).first()
+        print(flug)
         if flug is None:
             flash("Kein Flug mit dieser Nummer ist gefunden","error")
         else:
             # get the bookings for the flight
-            buchungen = Buchung.query.filter(Buchung.flugid == Flug.flugid).where(Flug.flugnummer == flugnummer).all()
+            buchungen = Buchung.query.filter(Buchung.flugid == Flug.flugid).where(Flug.flugnummer == flugnummer).where(Flug.istabflugzeit== datum).all()
 
             # get the passenger info for each booking
             passagiere = []
