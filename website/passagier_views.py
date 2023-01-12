@@ -214,7 +214,8 @@ def buchung_suchen():
     buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer). \
         order_by(Buchung.buchungsid.desc()).first()
 
-    # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst fehlermeldung)
+    # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst
+    # fehlermeldung)
 
     if buchung is None:
 

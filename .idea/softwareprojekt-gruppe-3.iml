@@ -20,6 +20,7 @@
         <option value="$MODULE_DIR$/website/templates/Passagier" />
         <option value="$MODULE_DIR$/website/templates/nutzer_ohne_account" />
         <option value="$MODULE_DIR$/website/templates/nutzer_mit_account" />
+        <option value="$MODULE_DIR$/website/templates/bodenpersonal" />
       </list>
     </option>
   </component>

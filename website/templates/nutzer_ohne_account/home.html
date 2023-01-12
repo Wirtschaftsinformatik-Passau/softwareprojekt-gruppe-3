@@ -30,7 +30,7 @@
                         <div class="col">
                             <label for="Von">Von:</label>
                             <select id="von" name="von" class="form-control" required>
-                                <option selected>auswählen...</option>
+                                <option selected>{{ request.args.get('von', default_flughafen_von) }}  </option>
                                 {% for rows in flughafen_liste %}
                                 <option> {{ rows.stadt }} </option>
                                 {% endfor %}
@@ -39,7 +39,7 @@
                         <div class="col">
                             <label for="Nach">Nach:</label>
                             <select id="nach" name="nach" class="form-control" required>
-                                <option selected>auswählen...</option>
+                                <option selected>{{ request.args.get('nach', default_flughafen_nach) }}</option>
                                 {% for rows in flughafen_liste %}
                                 <option> {{ rows.stadt }} </option>
                                 {% endfor %}
@@ -48,13 +48,13 @@
                         <div class="col">
                             <label for="Abflugdatum">Abflugdatum:</label>
                             <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum"
-                                   placeholder="" required>
+                                   value="{{ request.args.get('Abflugdatum', today) }}" required>
                         </div>
                         <div class="col">
                             <label for="AnzahlPersonen">Passagiere:</label>
                             <select  id="AnzahlPersonen" class="form-control"name="AnzahlPersonen"
                                    style="width: 4rem" required>
-                                <option selected> 1 </option>
+                                <option selected> {{ request.args.get('AnzahlPersonen', 1) }}</option>
                                 <option> 2 </option>
                                 <option> 3 </option>
                                 <option> 4 </option>
@@ -75,14 +75,11 @@
         </div>
     </div>
     <br>
-    {% if fluege %}
+    {% if buchbare_fluege %}
         <table class="table">
             <thead>
             <tr>
                 <th scope="col">Linie</th>
-                <th scope="col">Von</th>
-                <th scope="col">Nach</th>
-                <th scope="col">Datum</th>
                 <th scope="col">Abflug</th>
                 <th scope="col">Ankunft</th>
                 <th scope="col">Preis</th>
@@ -90,20 +87,12 @@
             </tr>
             </thead>
             <tbody>
-            {% for rows in fluege %}
+            {% for rows in buchbare_fluege %}
                 <tr>
                 <td>
                         {{ rows.flugnummer }}
                     </td>
-                    <td>
-                        {{ kuerzel_von.kennung }}
-                    </td>
-                    <td>
-                        {{ kuerzel_nach.kennung }}
-                    </td>
-                    <td>
-                        {{ rows.sollabflugzeit.strftime("%d.%m.%Y") }}
-                    </td>
+
                     <td>
                         {{ rows.sollabflugzeit.strftime("%H:%M") }}
                     </td>
