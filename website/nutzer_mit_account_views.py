@@ -72,7 +72,7 @@ def passwort_aendern():
         if not re.search(r'[0-9]', new_password):
             flash('Neues Passwort muss mindestens eine Ziffer enthalten.', category='error')
             return render_template("nutzer_mit_account/passwort_aendern.html")
-        if not re.search(r'[^A-Za-z0-9]', new_password):
+        if not re.search(r'[!@#$%^*_|.]', new_password):
             flash('Neues Passwort muss mindestens ein Sonderzeichen enthalten.', category='error')
             return render_template("nutzer_mit_account/passwort_aendern.html")
         if len(new_password) < MINIMALE_PASSWORTLÄNGE:
