@@ -33,7 +33,7 @@
             <p>oder</p>
             <div class="form-row">
               <div class="col">
-                <label for="buchungsnummer_2">Buchungssnummer:</label>
+                <label for="buchungsnummer_2">Buchungsnummer:</label>
                 <input style="width:17rem" type="text" class="form-control" id="buchungsnummer_2" name="buchungsnummer_2" placeholder="">
               </div>
               <div class="col">
@@ -102,7 +102,7 @@
         <td>
             {% for gepaeck_row in gepaeck%}
             {{ gepaeck_row.status }}
-            {% if gepaeck_row.status == "gebucht" and row.buchungsstatus=="gebucht"%}
+            {% if gepaeck_row.status == "gebucht" and row.buchungsstatus=="gebucht" and passagier_row.passagierstatus == "gebucht"%}
             <button type="button" class="btn btn-info  btn-sm" >Check-In</button>
         <button type="button" class="btn btn-info  btn-sm" >Etikett ausdrucken</button>
             {% endif %}
@@ -145,7 +145,7 @@
         <td>
             {% for gepaeck_row in gepaeck%}
             {{ gepaeck_row.status }}
-            {% if gepaeck_row.status == "gebucht" and row.buchungsstatus=="gebucht"%}
+            {% if gepaeck_row.status == "gebucht" and row.buchungsstatus=="gebucht" and  passagier_row.passagierstatus == "gebucht" %}
             <button type="button" class="btn btn-info  btn-sm" >Check-In</button>
             <button type="button" class="btn btn-info  btn-sm" >Etikett ausdrucken</button>
             {% endif %}

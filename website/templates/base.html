@@ -29,7 +29,7 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbar">
-        <div class="navbar-nav">
+        <div class="navbar-nav ">
             {% if current_user.is_authenticated and current_user.rolle=="Bodenpersonal" %}
                 <a class="nav-item nav-link" id="home_bp" href="/home_bp">Startseite</a>
                 <a class="nav-item nav-link" id="profil_bp" href="/profil">Profil</a>
@@ -53,6 +53,8 @@
                 <a class="nav-item nav-link" id="anmelden" href="/anmelden">Anmelden</a>
                 <a class="nav-item nav-link" id="registrieren" href="/registrieren">Registrieren</a>
             {% endif %}
+            </div>
+
 
 
         </div>
