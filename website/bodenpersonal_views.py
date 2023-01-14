@@ -74,6 +74,7 @@ def Kombination_2(buchungsnummer_2,ausweisnummer):
 # Diese Funktion stellt die Starseite des Bodenpersonals & die passagier_suchen Funktion dar
 @bodenpersonal_views.route('/home_bp',methods=["GET","POST"])
 def home():
+    today = datetime.now().date()
     if request.method == 'POST':
         buchungsnummer_1 = request.form.get('buchungsnummer_1')
         buchungsnummer_2 = request.form.get('buchungsnummer_2')
@@ -88,19 +89,23 @@ def home():
                 buchung_1, ankunft_flughafen, ziel_flughafen, flug, gepaeck, passagiere = Kombination_1(
                     buchungsnummer_1,
                     vorname, nachname)
+                for flug_row in flug:
+                    flight_date = flug_row.sollabflugzeit.date()
 
                 return render_template("bodenpersonal/home_bp.html", buchung_1=buchung_1,
                                        ankunft_flughafen=ankunft_flughafen,
                                        ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
-                                       passagiere=passagiere, gepaeck=gepaeck)
+                                       passagiere=passagiere, gepaeck=gepaeck,today =today,flight_date=flight_date)
 
             elif buchungsnummer_2 and ausweisnummer :
                 passagiere, buchung_2, ankunft_flughafen, ziel_flughafen, flug, gepaeck = Kombination_2(
                     buchungsnummer_2, ausweisnummer)
+                for flug_row in flug:
+                    flight_date = flug_row.sollabflugzeit.date()
                 return render_template("bodenpersonal/home_bp.html", buchung_2=buchung_2,
                                        ankunft_flughafen=ankunft_flughafen,
                                        ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
-                                       passagiere=passagiere, gepaeck=gepaeck)
+                                       passagiere=passagiere, gepaeck=gepaeck,today=today,flight_date= flight_date)
         else:
             flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
                   " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
@@ -205,7 +210,8 @@ def fluege_pruefen():
             flash("Kein Flug mit dieser Nummer ist gefunden","error")
         else:
             # get the bookings for the flight
-            buchungen = Buchung.query.filter(Buchung.flugid == Flug.flugid).where(Flug.flugnummer == flugnummer).where(Flug.istabflugzeit== datum).all()
+            buchungen = Buchung.query.filter(Buchung.flugid == Flug.flugid).where(Flug.flugnummer == flugnummer).where(
+                Flug.istabflugzeit== datum).all()
 
             # get the passenger info for each booking
             passagiere = []
