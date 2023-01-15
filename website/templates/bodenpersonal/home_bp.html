@@ -73,7 +73,7 @@
            {% for ziel in ziel_flughafen %}
         <td>{{ ziel.kennung }}</td>
         {% endfor %}
-        <td>{{ flight_date }}</td>
+        <td>{{ flug_datum }}</td>
         {% for passagier_row in passagiere %}
         <td>
           {{ passagier_row.vorname }}
@@ -83,7 +83,7 @@
           <br> Ausweisnum: {{passagier_row.ausweisnummer }}
             <br>
             {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht"
-            and  flight_date >= today %}
+            and  flug_datum >= today %}
 
             <a href="{{ url_for('bodenpersonal_views.boarding',buchungsid = row.buchungsid,buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
                                    class="btn btn-warning btn-sm" data-toggle="modal" data-target="#boardingModal">Start Boarding</a>
@@ -91,7 +91,7 @@
             <button type="button" class="btn btn-warning  btn-sm" >Boarding karte ausdrucken</button>
 
             {% elif passagier_row.passagierstatus == "gebucht" and row.buchungsstatus=="gebucht"
-            and  flight_date >= today %}
+            and  flug_datum >= today %}
 
             <a href="{{ url_for('bodenpersonal_views.einchecken',buchungsid = row.buchungsid,buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
                                    class="btn btn-warning btn-sm">Check-In</a>
@@ -103,7 +103,7 @@
             {% for gepaeck_row in gepaeck%}
             {{ gepaeck_row.status }}
             {% if gepaeck_row.status == "gebucht" and row.buchungsstatus=="gebucht" and passagier_row.passagierstatus == "gebucht"
-            and  flight_date >= today %}
+            and  flug_datum >= today %}
             <button type="button" class="btn btn-info  btn-sm" >Check-In</button>
         <button type="button" class="btn btn-info  btn-sm" >Etikett ausdrucken</button>
             {% endif %}
@@ -123,7 +123,7 @@
         {% for ziel in ziel_flughafen %}
         <td>{{ ziel.kennung }}</td>
         {% endfor %}
-        <td>{{  flight_date }}</td>
+        <td>{{  flug_datum }}</td>
         {% for passagier_row in passagiere %} <td>
           {{ passagier_row.vorname }}
           {{ passagier_row.nachname }}
@@ -131,7 +131,7 @@
           <br> Status: {{passagier_row.passagierstatus }}
           <br> Ausweisnum: {{passagier_row.ausweisnummer }}
         <br>
-        {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht" and  flight_date >= today %}
+        {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
 
             <a href="{{ url_for('bodenpersonal_views.boarding',buchungsid = row.buchungsid,buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
                                    class="btn btn-warning btn-sm" data-toggle="modal" data-target="#boardingModal">Start Boarding</a>
