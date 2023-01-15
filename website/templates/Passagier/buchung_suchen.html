@@ -44,7 +44,7 @@
                                         Buchung suchen
                                     </button>
                                 </div>
-                            </td> <!-- td damit es nebeneinandersteht-->
+                            </td> <!-- td damit es nebeneinandersteht, td steht für column-->
                         </table>
                     </form>
                 </div>
@@ -71,21 +71,14 @@
             <tr>
                 <td>{{ buchung.buchungsnummer }}</td>
                 <td>{{ buchung.buchungsstatus }}</td>
-
                 <td>{{ ankunft_flughafen.kennung }}</td>
-
-
                 <td>{{ ziel_flughafen.kennung }}</td>
-
-
                 <td>{{ flug.sollabflugzeit.strftime("%d.%m.%Y %H:%m") }}</td>
                 {% if buchung.buchungsstatus != "storniert" and storno_possbile %}
                     <td><a href="{{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}"
                            data-toggle="modal" data-target="#updateModal{{ buchung.buchungsnummer }}"
                            class="btn btn-danger">Stornieren</a></td>
                 {% endif %}
-
-
 
                 {% for passagier_row in passagier %}
                     <td>
@@ -103,29 +96,24 @@
                     </td>
                 {% endfor %}
 
+                <!-- Gepäckstatus -->
                 <td>
                     {{ gepaeck.status }}
                 </td>
             </tr>
-
-
-                <!--siehe flugzeug bearbeiten mit übergabe info route bei button-->
-
-
 
             </table>
             <div class="modal fade bd-example-modal-lg" role="dialog" id="updateModal{{ buchung.buchungsnummer }}">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Stornierung Ihrer Buchung (Buchungsnummer
-                                = {{ buchung.buchungsnummer }})
+                            <h5 class="modal-title">Stornierung Ihrer Buchung (Buchungsnummer = {{ buchung.buchungsnummer }})
                             </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div>
+
                             <tr>
                                 {% if passagier.passagierstatus == "eingecheckt" %}
                                     <td>
@@ -133,7 +121,7 @@
                                     </td>
                                 {% endif %}
                             </tr>
-                        </div>
+
 
 
                         <div class="modal-body">
@@ -157,7 +145,6 @@
 
                         </div>
                     </div>
-
                 </div>
             </div>
 

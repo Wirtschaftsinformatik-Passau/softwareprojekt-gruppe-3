@@ -209,6 +209,9 @@ def is_flight_within_days(flight_time, num_days):
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 @login_required
 def buchung_suchen():
+    if not current_user.is_authenticated:
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
+
     input_buchungsnummer = request.args.get('buchungsnummer')
 
     buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer). \
@@ -240,7 +243,6 @@ def buchung_suchen():
                 Buchung.buchungsnummer == buchung.buchungsnummer).first()
             flugzeug = Flugzeug.query.filter(Flugzeug.flugzeugid == flug.flugid).first()
             gepaeck = Gepaeck.query.filter(Passagier.passagierid == Gepaeck.passagierid).first()
-            print(gepaeck) #wird gefunden
 
             storno_possbile = True
             for i in passagier:
