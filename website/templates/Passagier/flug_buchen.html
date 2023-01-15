@@ -18,21 +18,21 @@
                         <div class="form-row">
                             <div class="col">
                                 <label for="vorname{{ count + 1 }}">Vorname</label>
-                                <input type="text" pattern="[a-zA-Z]" class="form-control" id="vorname{{ count + 1 }}"
+                                <input type="text" class="form-control" id="vorname{{ count + 1 }}"
                                        name="vorname{{ count + 1 }}" placeholder=""
                                        required>
                             </div>
                             <div class="col">
                                 <label for="nachname{{ count + 1 }}">Nachname:</label>
-                                <input type="text" pattern="[a-zA-Z]" class="form-control" id="nachname{{ count + 1 }}"
+                                <input type="text" class="form-control" id="nachname{{ count + 1 }}"
                                        name="nachname{{ count + 1 }}"
-                                       placeholder="" required>
+                                       placeholder="" pattern="[a-zA-Z]+" required>
                             </div>
                             <div class="col">
                                 <label for="geburtsdatum{{ count + 1 }}">Geburtsdatum:</label>
                                 <input type="date" class="form-control" id="geburtsdatum{{ count + 1 }}"
                                        name="geburtsdatum{{ count + 1 }}"
-                                       placeholder="" required>
+                                       placeholder="" pattern="[a-zA-Z]+" required>
                             </div>
                         </div>
 

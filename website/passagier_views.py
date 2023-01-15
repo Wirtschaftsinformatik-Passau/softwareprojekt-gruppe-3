@@ -239,6 +239,8 @@ def buchung_suchen():
             flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
                 Buchung.buchungsnummer == buchung.buchungsnummer).first()
             flugzeug = Flugzeug.query.filter(Flugzeug.flugzeugid == flug.flugid).first()
+            gepaeck = Gepaeck.query.filter(Passagier.passagierid == Gepaeck.passagierid).first()
+            print(gepaeck) #wird gefunden
 
             storno_possbile = True
             for i in passagier:
@@ -263,8 +265,8 @@ def buchung_suchen():
                                    ankunft_flughafen=ankunft_flughafen,
                                    ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
                                    check_in_available=check_in_available,
-                                   passagier=passagier, storno_text=storno_text, storno_possbile=storno_possbile
-                                   )
+                                   passagier=passagier, storno_text=storno_text, storno_possbile=storno_possbile,
+                                   gepaeck=gepaeck)
 
     # hier kann speziell nach nummer gesucht werden (muss aber mit nutzer id des angemedletetn nutzer
     # zusammenhängen)

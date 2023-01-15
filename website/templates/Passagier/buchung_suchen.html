@@ -79,50 +79,38 @@
 
 
                 <td>{{ flug.sollabflugzeit.strftime("%d.%m.%Y %H:%m") }}</td>
-                <td></td>
-                <td></td>{% if buchung.buchungsstatus != "storniert" and storno_possbile %}
-                <td><a href="{{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}"
-                       data-toggle="modal" data-target="#updateModal{{ buchung.buchungsnummer }}"
-                       class="btn btn-danger">Stornieren</a></td>
-            {% endif %}
+                {% if buchung.buchungsstatus != "storniert" and storno_possbile %}
+                    <td><a href="{{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}"
+                           data-toggle="modal" data-target="#updateModal{{ buchung.buchungsnummer }}"
+                           class="btn btn-danger">Stornieren</a></td>
+                {% endif %}
 
 
 
                 {% for passagier_row in passagier %}
-                    <tr aria-rowspan="0"></tr>
-                    <tr>
-                        <td colspan="5"></td>
-                        <td>
-                            {{ passagier_row.vorname }}
-                            {{ passagier_row.nachname }}<br>
-                            {{ passagier_row.geburtsdatum.strftime("%d.%m.%Y") }}<br>
-                            {{ passagier_row.passagierstatus }}
-
-                            {% for e in gepaeck %}
-                                {{ e.gepaeckstatus }}
-                            {% endfor %}
-                            <br>
-                            {% if buchung.buchungsstatus != "storniert" and check_in_available and passagier_row.passagierstatus != "eingecheckt" and passagier_row.passagierstatus != "boarded" %}
-                                <a href="{{ url_for('passagier_views.online_check_in', buchungsid = buchung.buchungsid, buchungsnummer=buchung.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
-                                   class="btn btn-primary">Online Check In</a>
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    </tr>
-
+                    <td>
+                        {{ passagier_row.vorname }}
+                        {{ passagier_row.nachname }}
+                        <br>
+                        {{ passagier_row.geburtsdatum.strftime("%d.%m.%Y") }}
+                        <br>
+                        {{ passagier_row.passagierstatus }}
+                        <br>
+                        {% if buchung.buchungsstatus != "storniert" and flug.flugstatus != "anuliert" and check_in_available and passagier_row.passagierstatus != "eingecheckt" and passagier_row.passagierstatus != "boarded" %}
+                            <a href="{{ url_for('passagier_views.online_check_in', buchungsid = buchung.buchungsid, buchungsnummer=buchung.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
+                               class="btn btn-primary">Online Check In</a>
+                        {% endif %}
+                    </td>
                 {% endfor %}
 
-            <tr>
-                <br>
-                {{ nutzer.emailadresse }}
-                <br>
+                <td>
+                    {{ gepaeck.status }}
+                </td>
             </tr>
 
-            <!--siehe flugzeug bearbeiten mit übergabe info route bei button-->
-            </td>
+
+                <!--siehe flugzeug bearbeiten mit übergabe info route bei button-->
+
 
 
             </table>
@@ -131,11 +119,23 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Stornierung Ihrer Buchung (Buchungsnummer
-                                = {{ buchung.buchungsnummer }})</h5>
+                                = {{ buchung.buchungsnummer }})
+                            </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+                        <div>
+                            <tr>
+                                {% if passagier.passagierstatus == "eingecheckt" %}
+                                    <td>
+                                        <button type="submit" class="btn btn-primary">Boardingkarte Drucken</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        </div>
+
+
                         <div class="modal-body">
                             <div class="card" style="width: 60rem;height: 10rem">
                                 <div class="card-body">
@@ -150,6 +150,7 @@
                                         <form action={{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}>
                                             <button type="submit" class="btn btn-danger">Buchung stornieren</button>
                                         </form>
+
                                     </div>
                                 </div>
                             </div>
