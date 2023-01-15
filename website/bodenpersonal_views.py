@@ -4,6 +4,7 @@ from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy.orm import aliased
 from datetime import datetime
+import random , string
 
 
 
@@ -11,6 +12,9 @@ from datetime import datetime
 # store the standard routes for a website where the user can navigate to
 bodenpersonal_views = Blueprint('bodenpersonal_views', __name__)
 
+def generate_boarding_pass_number():
+    boarding_pass_number = ''.join(random.choices(string.ascii_letters + string.digits, k=15))
+    return boarding_pass_number
 def Kombination_1(buchungsnummer_1,vorname,nachname):
 
     buchung_1 = Buchung.query.filter(Buchung.buchungsnummer == buchungsnummer_1).all()
@@ -90,22 +94,22 @@ def home():
                     buchungsnummer_1,
                     vorname, nachname)
                 for flug_row in flug:
-                    flight_date = flug_row.sollabflugzeit.date()
+                    flug_datum = flug_row.sollabflugzeit.date()
 
                 return render_template("bodenpersonal/home_bp.html", buchung_1=buchung_1,
                                        ankunft_flughafen=ankunft_flughafen,
                                        ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
-                                       passagiere=passagiere, gepaeck=gepaeck,today =today,flight_date=flight_date)
+                                       passagiere=passagiere, gepaeck=gepaeck,today =today,flug_datum=flug_datum)
 
             elif buchungsnummer_2 and ausweisnummer :
                 passagiere, buchung_2, ankunft_flughafen, ziel_flughafen, flug, gepaeck = Kombination_2(
                     buchungsnummer_2, ausweisnummer)
                 for flug_row in flug:
-                    flight_date = flug_row.sollabflugzeit.date()
+                    flug_datum = flug_row.sollabflugzeit.date()
                 return render_template("bodenpersonal/home_bp.html", buchung_2=buchung_2,
                                        ankunft_flughafen=ankunft_flughafen,
                                        ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
-                                       passagiere=passagiere, gepaeck=gepaeck,today=today,flight_date= flight_date)
+                                       passagiere=passagiere, gepaeck=gepaeck,today=today, flug_datum=flug_datum)
         else:
             flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
                   " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
@@ -119,35 +123,6 @@ def home():
 
 
 
-
-
-
-
-@bodenpersonal_views.route('/boarding', methods=['POST','GET'])
-def boarding():
-    buchungsnummer = request.args.get('buchungsnummer_1')
-    vorname = request.args.get('vorname')
-    nachname = request.args.get('nachname')
-    buchungsid = request.args.get('buchungsid')
-
-    passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
-        where(Passagier.nachname == nachname).first()
-    print(passagier)
-
-
-    if request.method == 'POST':
-        passagier.boardingpassnummer = request.form['boardingPassNummer']
-        passagier.passagierstatus = "boarded"
-        db.session.add(passagier)
-        db.session.commit()
-        flash("Boarding erfolgreich")
-
-        return redirect(url_for('bodenpersonal_views.home'))
-
-    return render_template('bodenpersonal/boarding.html', user=current_user)
-
-
-
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
 def einchecken():
     buchungsnummer = request.args.get('buchungsnummer_1')
@@ -158,6 +133,7 @@ def einchecken():
 
     passagier= Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
         where(Passagier.nachname == nachname).first()
+    gepaeck_list = Gepaeck.query.filter(Gepaeck.passagierid == passagier.passagierid).all()
 
 
     if request.method == 'POST':
@@ -168,29 +144,23 @@ def einchecken():
         passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
         passagier.staatsbuergerschaft = request.form['staatsangehoerigkeit']
         passagier.passagierstatus = "eingecheckt"
+        passagier.boardingpassnummer = generate_boarding_pass_number()
         db.session.add(passagier)
         db.session.commit()
-        flash("Check-In erfolgreich")
+        if gepaeck_list:
+            for gepaeck in gepaeck_list:
+                gepaeck.status = "eingecheckt"
+                db.session.add(gepaeck)
+            db.session.commit()
+            flash("Check-In erfolgreich")
+        else:
+            flash("Passagier hat kein Gepäck gebucht")
+            flash("Check-In erfolgreich")
         return redirect(url_for('bodenpersonal_views.home'))
+    gepaeck_nummer = len(gepaeck_list)
     return render_template('bodenpersonal/einchecken.html', user=current_user, passagier=passagier, vorname=vorname,
-                           nachname=nachname)
-@bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
-def gepäck_einchecken():
+                           nachname=nachname,gepaeck_nummer=gepaeck_nummer)
 
-    vorname = request.args.get('vorname')
-    nachname = request.args.get('nachname')
-    gepaeck=Gepaeck.query.join(Gepaeck.passagierid == Passagier.passagierid).join(
-        Passagier.buchungsid == Buchung.buchungsid).filter(Passagier.vorname == vorname,
-                                                           Passagier.nachname == nachname)
-
-    if request.method == 'POST':
-        gepaeck.status="eingecheckt"
-        db.session.add(gepaeck)
-        db.session.commit()
-        flash("Check-In erfolgreich")
-        return redirect(url_for('bodenpersonal_views.home'))
-
-    return render_template('bodenpersonal/gepaeck_einchecken.html', user=current_user)
 
 
 
@@ -226,6 +196,27 @@ def fluege_pruefen():
 
 
 
+@bodenpersonal_views.route('/boarding', methods=['POST','GET'])
+def boarding():
+    buchungsnummer = request.args.get('buchungsnummer_1')
+    vorname = request.args.get('vorname')
+    nachname = request.args.get('nachname')
+    buchungsid = request.args.get('buchungsid')
 
+    passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
+        where(Passagier.nachname == nachname).first()
+    print(passagier)
+
+
+    if request.method == 'POST':
+        passagier.boardingpassnummer = request.form['boardingPassNummer']
+        passagier.passagierstatus = "boarded"
+        db.session.add(passagier)
+        db.session.commit()
+        flash("Boarding erfolgreich")
+
+        return redirect(url_for('bodenpersonal_views.home'))
+
+    return render_template('bodenpersonal/boarding.html', user=current_user)
 
 
