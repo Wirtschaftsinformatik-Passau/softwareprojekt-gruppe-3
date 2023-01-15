@@ -22,7 +22,9 @@ def flugzeug_erstellen():
         hersteller = request.form.get('Hersteller')
         anzahlsitzplaetze = request.form.get('anzahlsitzplaetze')
         if int(anzahlsitzplaetze) < 0:
-            flash('Die Anzahl der Sitzplätze muss größer oder gleich 0 sein!', category="error")
+            flash('Die Anzahl der Sitzplätze muss größer als 0 sein!', category="error")
+        if int(anzahlsitzplaetze) == 0:
+            flash('Sie können kein Flugzeug mit 0 Sitzplätzen anlegen!', category="error")
         else:
             new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
             db.session.add(new_flugzeug)
@@ -107,6 +109,9 @@ def flug_anlegen():
         ankunftsdatum = request.form.get('ankunftsdatum') + " " + request.form.get("ankunftszeit")
         flugnummer = request.form.get('fluglinie')
         preis = request.form.get('preis')
+
+        if int(preis) <= 0:
+            flash('Der Preis p.P. muss größer als 0€ sein')
 
         new_flug = Flug(flugzeugid=flugzeugid, abflugid=abflugid, zielid=zielid, flugstatus=flugstatus,
                         sollabflugzeit=abflugdatum, sollankunftszeit=ankunftsdatum,

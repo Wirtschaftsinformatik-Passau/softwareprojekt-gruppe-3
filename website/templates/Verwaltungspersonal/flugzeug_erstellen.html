@@ -9,16 +9,16 @@
                 <div class="form-row">
                     <div class="col">
                         <label for="Modell">Modell:</label>
-                        <input type="text" class="form-control" id="Modell" name="Modell" placeholder="">
+                        <input type="text" class="form-control" id="Modell" name="Modell" placeholder="" pattern="[A-Z0-9]+" required>
                     </div>
                     <div class="col">
                         <label for="Hersteller">Hersteller:</label>
-                        <input type="text" class="form-control" id="Hersteller" name="Hersteller" placeholder="">
+                        <input type="text" class="form-control" id="Hersteller" name="Hersteller" placeholder="" pattern="[a-zA-Z]+" required>
                     </div>
                     <div class="col">
                         <label for="Anzahl Sitzplätze">Anzahl der Sitzplätze:</label>
                         <input type="number" class="form-control" id="anzahlsitzplaetze" name="anzahlsitzplaetze"
-                               placeholder="">
+                               placeholder="" required>
                     </div>
                         <button type="submit" class="btn btn-primary" style="height: 3rem">Flugzeug anlegen</button>
                 </div>

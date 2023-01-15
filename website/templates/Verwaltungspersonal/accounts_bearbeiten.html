@@ -123,13 +123,13 @@
                                                         <input type="hidden" name="id" value="{{ rows.id }}">
                                                         <input type="text" class="form-control" id="vorname"
                                                                name="vorname"
-                                                               value="{{ rows.vorname }}">
+                                                               value="{{ rows.vorname }}" pattern="[a-zA-Z]+">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="Nachname">Nachname:</label>
                                                         <input type="text" class="form-control" id="nachname"
                                                                name="nachname"
-                                                               value="{{ rows.nachname }}">
+                                                               value="{{ rows.nachname }}" pattern="[a-zA-Z]+">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="emailadresse">E-mail Adresse:</label>

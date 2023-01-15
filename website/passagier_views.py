@@ -180,12 +180,12 @@ def online_check_in():
         passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
         passagier.passagierstatus = "eingecheckt"
 
-        if not len(passagier.ausweisnummer) > MINDESTLÄNGE_AUSWEISNUMMER:
+        if not len(passagier.ausweisnummer) >= MINDESTLÄNGE_AUSWEISNUMMER:
             flash('Bitte überprüfen Sie die Ausweisnummer', category='error')
             return redirect(url_for('passagier_views.buchung_suchen'))
 
         db.session.commit()
-        flash("Check-In erfolgreich")
+        flash("Der Online-Check-In war erfolgreich! Ihre Boardingkarte können Sie im Anhang einsehen.")
 
         return redirect(url_for('passagier_views.buchung_suchen'))
 
@@ -209,13 +209,15 @@ def is_flight_within_days(flight_time, num_days):
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 @login_required
 def buchung_suchen():
+    # Der Nutzer wird zur Login-Seite weitergeleitet, falls er noch nicht angemeldet ist
     if not current_user.is_authenticated:
+        flash('Sie müssen angemeldet sein, um nach einer Buchung zu suchen')  # erscheint nicht
         return redirect(url_for('nutzer_mit_account_views.anmelden'))
 
     input_buchungsnummer = request.args.get('buchungsnummer')
 
     buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer). \
-        order_by(Buchung.buchungsid.desc()).first()
+        order_by(Buchung.buchungsid.desc()).all()
 
     # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst fehlermeldung)
 

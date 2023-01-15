@@ -120,14 +120,14 @@
                                                                 <label for="Modell">Modell:</label>
                                                                  <input type="hidden" name="id" value="{{ rows.flugzeugid }}">
                                                                 <input type="text" class="form-control" id="modell"
-                                                                       name="modell" value="{{ rows.modell  }}"
-                                                                       >
+                                                                       name="modell" value="{{ rows.modell }}" pattern="[A-Z0-9]+"
+                                                                       required>
                                                             </div>
                                                             <div class="col">
                                                                 <label for="Hersteller">Hersteller:</label>
                                                                 <input type="text" class="form-control" id="hersteller"
                                                                        name="hersteller"
-                                                                       value="{{ rows.hersteller }}" >
+                                                                       value="{{ rows.hersteller }}" pattern="[a-zA-Z]+" required>
                                                             </div>
                                                             <div class="col">
                                                                 <label for="Anzahl Sitzplätze">Anzahl der
@@ -135,7 +135,7 @@
                                                                 <input type="number" class="form-control"
                                                                        id="anzahlsitzplaetze"
                                                                        name="anzahlsitzplaetze"
-                                                                       value="{{ rows.anzahlsitzplaetze }}" >
+                                                                       value="{{ rows.anzahlsitzplaetze }}" required>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">

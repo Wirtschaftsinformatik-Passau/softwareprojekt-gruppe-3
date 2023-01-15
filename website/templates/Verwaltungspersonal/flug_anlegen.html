@@ -80,12 +80,14 @@
                         <div class="col-md-4 mb-3">
                             <label for="Abflugdatum">Abflugdatum:</label>
                             <input type="Date" class="form-control" id="abflugdatum" name="abflugdatum" placeholder=""
+                                   value="{{ ankunftsdatum.strftime("%Y-%m-%d") }}"
                                    required>
 
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Ankunftsdatum">Ankunftsdatum:</label>
                             <input type="Date" class="form-control" id="ankunftsdatum" name="ankunftsdatum" placeholder=""
+                                   value="{{ ankunftsdatum.strftime("%Y-%m-%d") }}"
                                    required>
 
                         </div>
@@ -98,12 +100,14 @@
                         <div class="col-md-4 mb-3">
                             <label for="Abflugzeit">Abflugzeit:</label>
                             <input type="Time" class="form-control" id="abflugzeit" name="abflugzeit" placeholder=""
+                                   value="{{ abflugzeit.strftime("%H:%M") }}"
                                     required>
 
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Ankunftszeit">Ankunftszeit:</label>
                             <input type="Time" class="form-control" id="ankunftszeit" name="ankunftszeit" placeholder=""
+                                   value="{{ ankunftszeit.strftime("%H:%M") }}"
                                     required>
 
                         </div>

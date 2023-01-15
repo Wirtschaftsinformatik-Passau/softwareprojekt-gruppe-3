@@ -27,7 +27,7 @@
                         <div class="col">
                             <label for="Von">Flugnummer:</label>
                             <input type="text" id="flugnummer" name="flugnummer" class="form-control"
-                                   style="width: 16rem"
+                                   style="width: 16rem" pattern="[A-Z0-9]+"
                                    value="{% if not flugnummer %}MP1{% else %} {{ flugnummer }}{% endif %}" required>
 
                         </div>

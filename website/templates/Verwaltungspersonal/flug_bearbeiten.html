@@ -77,11 +77,11 @@
                                 <tbody>
                                 {% for rows in fluege %}
                                     <tr>
-                                    <td>
-                                        {% for e in flughafen_liste %}
-                                            {% if e.flughafenid == rows.abflugid %}
-                                            {{ e.kennung }}
-                                            {% endif %}
+                                        <td>
+                                            {% for e in flughafen_liste %}
+                                                {% if e.flughafenid == rows.abflugid %}
+                                                    {{ e.kennung }}
+                                                {% endif %}
                                             {% endfor %}
                                         </td>
 
@@ -89,10 +89,10 @@
                                             {{ rows.sollabflugzeit.strftime("%Y.%m.%d %H:%M") }}
                                         </td>
                                         <td>
-                                           {% for e in flughafen_liste %}
-                                            {% if e.flughafenid == rows.zielid %}
-                                            {{ e.kennung }}
-                                            {% endif %}
+                                            {% for e in flughafen_liste %}
+                                                {% if e.flughafenid == rows.zielid %}
+                                                    {{ e.kennung }}
+                                                {% endif %}
                                             {% endfor %}
                                         </td>
 
@@ -101,9 +101,9 @@
                                         </td>
                                         <td>
                                             {% for e in flugzeug_liste %}
-                                            {% if e.flugzeugid == rows.flugzeugid %}
-                                            {{ e.hersteller + " " + e.modell }}
-                                            {% endif %}
+                                                {% if e.flugzeugid == rows.flugzeugid %}
+                                                    {{ e.hersteller + " " + e.modell }}
+                                                {% endif %}
                                             {% endfor %}
                                         </td>
                                         <td>
@@ -117,7 +117,6 @@
                                             <a href="/flug_ändern/{{ rows.flugid }}"
                                                data-toggle="modal" data-target="#updateModal{{ rows.flugid }}"
                                                class="btn btn-warning">Bearbeiten</a>
-
 
 
                                         </td>
@@ -139,11 +138,13 @@
                                                         <div class="form-row">
                                                             <div class="col-md-4 mb-3">
                                                                 <label for="Von">Von:</label>
-                                                            <input type="hidden" name="id" value="{{ rows.flugid }}">
+                                                                <input type="hidden" name="id"
+                                                                       value="{{ rows.flugid }}">
                                                                 <select id="von" name="von" class="form-control"
                                                                         required>
                                                                     {% for e in flughafen_liste %}
-                                                                        <option value="{{ e.flughafenid }}" {% if e.flughafenid == rows.abflugid %}selected{% endif %}> {{ e.stadt }} </option>
+                                                                        <option value="{{ e.flughafenid }}"
+                                                                                {% if e.flughafenid == rows.abflugid %}selected{% endif %}> {{ e.stadt }} </option>
                                                                     {% endfor %}
                                                                 </select>
 
@@ -154,7 +155,8 @@
                                                                         required>
                                                                     {% for e in flughafen_liste %}
 
-                                                                        <option value="{{ e.flughafenid }}" {% if e.flughafenid == rows.zielid %}selected{% endif %}> {{ e.stadt }} </option>
+                                                                        <option value="{{ e.flughafenid }}"
+                                                                                {% if e.flughafenid == rows.zielid %}selected{% endif %}> {{ e.stadt }} </option>
 
                                                                     {% endfor %}
                                                                 </select>
@@ -170,9 +172,8 @@
 
 
                                                                     {% for e in flugzeug_liste %}
-
-                                                                        <option value="{{ e.flugzeugid }}" {% if e.flugzeugid == rows.flugzeugid %}selected{% endif %}> {{ e.hersteller + " " + e.modell }} </option>
-
+                                                                        <option value="{{ e.flugzeugid }}"
+                                                                                {% if e.flugzeugid == rows.flugzeugid %}selected{% endif %}> {{ e.hersteller + " " + e.modell }} </option>
                                                                     {% endfor %}
 
 
@@ -192,7 +193,7 @@
                                                                 <input type="Date" class="form-control"
                                                                        id="ankunftsdatum"
                                                                        name="ankunftsdatum"
-                                                                       value="{{ rows.sollankunftszeit.strftime("%Y-%m-%d")  }}"
+                                                                       value="{{ rows.sollankunftszeit.strftime("%Y-%m-%d") }}"
                                                                        required>
 
                                                             </div>
@@ -206,9 +207,10 @@
                                                             </div>
                                                             <div class="col-md-4 mb-3">
                                                                 <label for="SollAbflugzeit">Abflugzeit (Soll):</label>
-                                                                <input type="Time" class="form-control" id="sollabflugzeit"
+                                                                <input type="Time" class="form-control"
+                                                                       id="sollabflugzeit"
                                                                        name="sollabflugzeit"
-                                                                       value="{{ rows.sollabflugzeit.strftime("%H:%M")  }}"
+                                                                       value="{{ rows.sollabflugzeit.strftime("%H:%M") }}"
                                                                        required>
 
                                                             </div>
@@ -217,10 +219,11 @@
                                                                 <input type="Time" class="form-control"
                                                                        id="sollankunftszeit"
                                                                        name="sollankunftszeit"
-                                                                       value="{{ rows.sollankunftszeit.strftime("%H:%M")  }}"
+                                                                       value="{{ rows.sollankunftszeit.strftime("%H:%M") }}"
                                                                        required>
 
                                                             </div>
+
                                                             <div class="col-md-4 mb-3">
                                                                 <label for="Fluglinie">Fluglinie:</label>
                                                                 <input type="text" class="form-control" id="fluglinie"
@@ -229,9 +232,10 @@
                                                                        required>
 
                                                             </div>
-                                                        <div class="col-md-4 mb-3">
+                                                            <div class="col-md-4 mb-3">
                                                                 <label for="IstAbflugzeit">Abflugzeit (Ist):</label>
-                                                                <input type="Time" class="form-control" id="istabflugzeit"
+                                                                <input type="Time" class="form-control"
+                                                                       id="istabflugzeit"
                                                                        name="istabflugzeit"
                                                                        value="{{ rows.istabflugzeit.strftime("%H:%M") }}"
                                                                        required>
@@ -242,11 +246,11 @@
                                                                 <input type="Time" class="form-control"
                                                                        id="istankunftszeit"
                                                                        name="istankunftszeit"
-                                                                       value="{{ rows.istankunftszeit.strftime("%H:%M")  }}"
+                                                                       value="{{ rows.istankunftszeit.strftime("%H:%M") }}"
                                                                        required>
 
                                                             </div>
-                                                        <div class="col-md-4 mb-3">
+                                                            <div class="col-md-4 mb-3">
                                                                 <label for="flugstatus">Flugstatus:</label>
                                                                 <input type="text" class="form-control"
                                                                        id="flugstatus"
@@ -258,7 +262,7 @@
                                                         </div>
                                                         <div class="modal-footer">
                                                             <a href="{{ url_for('verwaltungspersonal_views.flug_annulieren', id=rows.flugid) }}"
-                                               class="btn btn-danger">Annulieren</a>
+                                                               class="btn btn-danger">Annulieren</a>
 
                                                             <input type="submit" class="btn btn-info" value="Speichern">
 

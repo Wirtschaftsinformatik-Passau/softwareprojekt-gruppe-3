@@ -3,8 +3,6 @@
 {% block content %}
     <br>
     <br>
-
-
     <!-- upper nav bar with links to VP functions -->
 
     <ul class="nav nav-tabs">
@@ -54,12 +52,12 @@
                             <div class="form-group">
                                 <label for="Vorname">Vorname:</label>
                                 <input type="text" class="form-control" id="vorname" name="vorname"
-                                       placeholder="" required>
+                                       placeholder="" pattern="[a-zA-Z]+" required>
                             </div>
                             <div class="form-group">
                                 <label for="Nachname">Nachname:</label>
                                 <input type="text" class="form-control" id="nachname" name="nachname"
-                                       placeholder="" required>
+                                       placeholder="" pattern="[a-zA-Z]+" required>
                             </div>
                             <div class="form-group">
                                 <label for="emailadresse">E-mail Adresse:</label>
@@ -68,7 +66,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="Rolle">Rolle</label>
-                                <select class="form-control" id="rolle" name="rolle">
+                                <select class="form-control" id="rolle" name="rolle" required>
                                     <option>Verwaltungspersonal</option>
                                     <option>Bodenpersonal</option>
                                 </select>
