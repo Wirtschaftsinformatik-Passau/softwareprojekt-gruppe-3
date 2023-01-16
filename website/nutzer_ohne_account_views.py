@@ -145,6 +145,9 @@ def flugstatus_überprüfen():
         abflug = request.args.get('abflugdatum')
         flugnummer = request.args.get('flugnummer')
 
+        if request.args.get('abflugdatum') is not None and is_date_after_yesterday(request.args.get('abflugdatum')):
+            flash('Bitte geben Sie ein Datum ein, welches nicht in der Vergangenheit liegt', category='error')
+
         fluege = Flug.query.filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer)
         if not fluege:
             flash('Zu Ihren Suchenkriterien wurde kein passender Flug gefunden.', category='error')
