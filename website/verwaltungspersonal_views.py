@@ -21,15 +21,12 @@ def flugzeug_erstellen():
         modell = request.form.get('Modell')
         hersteller = request.form.get('Hersteller')
         anzahlsitzplaetze = request.form.get('anzahlsitzplaetze')
-        if int(anzahlsitzplaetze) < 0:
-            flash('Die Anzahl der Sitzplätze muss größer als 0 sein!', category="error")
-        if int(anzahlsitzplaetze) == 0:
-            flash('Sie können kein Flugzeug mit 0 Sitzplätzen anlegen!', category="error")
-        else:
-            new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
-            db.session.add(new_flugzeug)
-            db.session.commit()
-            flash('Flugzeug angelegt!', category='success')
+
+
+        new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
+        db.session.add(new_flugzeug)
+        db.session.commit()
+        flash('Flugzeug angelegt!', category='success')
 
     return render_template("Verwaltungspersonal/home_vp.html", user=current_user)
 
@@ -65,18 +62,15 @@ def flugzeug_ändern():
         anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
             filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
             filter(Flug.flugzeugid == request.form.get('id')). \
-            filter(Flug.flugstatus != "annuliert").count()
-
-        print(anzahl_passagiere)
+            filter(Flug.flugstatus != "annulliert").count()
 
         flugzeug.modell = request.form['modell']
         flugzeug.hersteller = request.form['hersteller']
-        if int(request.form['anzahlsitzplaetze']) < 0:
-            flash('Die Anzahl der Sitzplätze muss größer oder gleich 0 sein!', category="error")
-        else:
-            flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
-            db.session.commit()
-            flash("Flugzeugdaten erfolgreich geändert")
+
+
+        flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
+        db.session.commit()
+        flash("Flugzeugdaten erfolgreich geändert")
         return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
 
@@ -109,9 +103,6 @@ def flug_anlegen():
         ankunftsdatum = request.form.get('ankunftsdatum') + " " + request.form.get("ankunftszeit")
         flugnummer = request.form.get('fluglinie')
         preis = request.form.get('preis')
-
-        if int(preis) <= 0:
-            flash('Der Preis p.P. muss größer als 0€ sein')
 
         new_flug = Flug(flugzeugid=flugzeugid, abflugid=abflugid, zielid=zielid, flugstatus=flugstatus,
                         sollabflugzeit=abflugdatum, sollankunftszeit=ankunftsdatum,
