@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %} Koffer Etikett{% endblock %}
+{% block content %}
+{% for label in labels %}
+    <div>
+        <img src="{{ label[0] }}.png" alt="QR code for baggage {{ label[0] }}">
+        <p>Passenger: {{ label[1] }} {{ label[2] }}</p>
+        <p>Baggage ID: {{ label[0] }}</p>
+    </div>
+    {% endfor %}
+
+{% endblock %}

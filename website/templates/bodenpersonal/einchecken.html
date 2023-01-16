@@ -1,7 +1,7 @@
 
 {% extends "base.html" %}
 
-{% block title %}Online Checkin{% endblock %}
+{% block title %} Checkin{% endblock %}
 {% block content %}
 <br>
     <form class="row gx-3 gy-2 align-items-center">
@@ -33,7 +33,7 @@
             </form> <!--end of GET request-->
             <div class="col"> <!--zweite spalte-->
                 <br>
-                <form  method="POST">
+                <form  method="POST" >
                     <h4>Ausweisdaten:</h4>
 
                     <label class="visually-hidden" for="ausweistyp">Art des Ausweis*:</label>
@@ -72,10 +72,15 @@
 </div>
                     <br>
                     <div class="col-md-12 text-right">
-                        <button type="submit" class="btn btn-danger btn-block" style="height: 3rem">Jetzt einchecken
+                        <button type="submit" class="btn btn-warning btn-block" >Jetzt einchecken
                         </button>
+
                     </div>
+                    <br>
+                    <div class="col-md-12 text-right">
+
                 </form>
+                <br>
             </div>
         </div>
     </form>

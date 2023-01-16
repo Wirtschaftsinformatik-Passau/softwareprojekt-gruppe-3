@@ -1,11 +1,12 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for,send_file
 from flask_login import current_user, login_required
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy.orm import aliased
 from datetime import datetime
-import random , string
-
+import random, string
+import qrcode
+from qrcode import make
 
 
 
@@ -125,7 +126,7 @@ def home():
 
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
 def einchecken():
-    buchungsnummer = request.args.get('buchungsnummer_1')
+    #buchungsnummer = request.args.get('buchungsnummer_1')
     vorname = request.args.get('vorname')
     nachname = request.args.get('nachname')
     buchungsid = request.args.get('buchungsid')
@@ -151,16 +152,33 @@ def einchecken():
             for gepaeck in gepaeck_list:
                 gepaeck.status = "eingecheckt"
                 db.session.add(gepaeck)
-            db.session.commit()
-            flash("Check-In erfolgreich")
+                db.session.commit()
+                flash("Check-In erfolgreich")
+                return redirect(url_for('bodenpersonal_views.print_baggage_labels',labels=gepaeck_list))
+
         else:
             flash("Passagier hat kein Gepäck gebucht")
             flash("Check-In erfolgreich")
         return redirect(url_for('bodenpersonal_views.home'))
+
+
     gepaeck_nummer = len(gepaeck_list)
+
     return render_template('bodenpersonal/einchecken.html', user=current_user, passagier=passagier, vorname=vorname,
                            nachname=nachname,gepaeck_nummer=gepaeck_nummer)
 
+@bodenpersonal_views.route('/print_baggage_labels')
+def print_baggage_labels():
+    vorname = request.args.get('vorname')
+    nachname = request.args.get('nachname')
+    gepaeck_list = request.args.get('gepaeck_list')
+    labels = []
+    for gepaeck in gepaeck_list:
+        for gepaeck in gepaeck_list:
+            qr = make(str(gepaeck.gepaeckid))
+            qr.save(f"{gepaeck.gepaeckid}.png")
+            labels.append((gepaeck.gepaeckid, vorname, nachname))
+    render_template('bodenpersonal/print_baggage_labels.html', labels=labels)
 
 
 
@@ -175,7 +193,7 @@ def fluege_pruefen():
 
         # query the database to get the flight with the specified flight number
         flug = Flug.query.filter_by(flugnummer=flugnummer, istabflugzeit=datum).first()
-        print(flug)
+        #print(flug)
         if flug is None:
             flash("Kein Flug mit dieser Nummer ist gefunden","error")
         else:
