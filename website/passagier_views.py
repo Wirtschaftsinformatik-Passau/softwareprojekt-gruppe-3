@@ -217,7 +217,7 @@ def buchung_suchen():
     input_buchungsnummer = request.args.get('buchungsnummer')
 
     buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer). \
-        order_by(Buchung.buchungsid.desc()).all()
+        order_by(Buchung.buchungsid.desc()).first()
 
     # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst fehlermeldung)
 
