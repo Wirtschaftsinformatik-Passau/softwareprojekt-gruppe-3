@@ -25,7 +25,7 @@
     <div class="card" style="width: 68rem;">
         <div class="card-body">
             <div class="container" style="width: 60rem; height: 10rem">
-                <form action="#" method="GET">
+                <form action="{{ url_for('nutzer_ohne_account_views.home') }}" method="GET">
                     <div class="form-row">
                         <div class="col">
                             <label for="Von">Von:</label>
@@ -48,7 +48,7 @@
                         <div class="col">
                             <label for="Abflugdatum">Abflugdatum:</label>
                             <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum"
-                                   value="{{ request.args.get('Abflugdatum', today) }}" required>
+                                   value="{{ request.args.get('Abflugdatum', tomorrow) }}" required>
                         </div>
                         <div class="col">
                             <label for="AnzahlPersonen">Passagiere:</label>
