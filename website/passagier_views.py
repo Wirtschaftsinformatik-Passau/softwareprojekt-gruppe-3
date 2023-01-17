@@ -333,11 +333,27 @@ def storno(stor_buchungsnummer):
         buchungsnummer = buchung.buchungsnummer
         rechnungsnummer = Rechnung.query.where(Rechnung.buchungsid == buchung.buchungsid).first().rechnungsnummer
 
-        return render_template("Passagier/stornierungsbestaetigung.html", user=current_user,
-                               rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer)
+        return redirect(url_for('passagier_views.stornierungsbestaetigung', user=current_user,
+                                rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer))
 
     else:
         return redirect(url_for('passagier_views.buchung_suchen'))
+
+
+@passagier_views.route('/stornierungsbestaetigung', methods=['POST', 'GET'])
+def stornierungsbestaetigung():
+    rechnungsnummer = request.args['rechnungsnummer']
+    buchungsnummer = request.args['buchungsnummer']
+    emailadresse = Nutzerkonto.query.get_or_404(current_user.id).emailadresse
+
+    msg = Message('Stornierungsbestaetigung', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+    msg.html = render_template("Passagier/stornierungsbestaetigung.html", user=current_user,
+                               rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer)
+
+    mail.send(msg)
+
+    return render_template("Passagier/stornierungsbestaetigung.html", user=current_user,
+                           rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer)
 
 
 @passagier_views.route('/gepaecksbestimmungen', methods=['GET'])
