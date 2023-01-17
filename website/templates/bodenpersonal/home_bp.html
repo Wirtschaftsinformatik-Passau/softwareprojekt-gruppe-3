@@ -85,10 +85,9 @@
             {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht"
             and  flug_datum >= today %}
 
-            <a href="{{ url_for('bodenpersonal_views.boarding',buchungsid = row.buchungsid,buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
-                                   class="btn btn-warning btn-sm" data-toggle="modal" data-target="#boardingModal">Start Boarding</a>
-            <br>
-            <button type="button" class="btn btn-warning  btn-sm" >Boarding karte ausdrucken</button>
+             <form action="{{ url_for('bodenpersonal_views.boarding', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}" method="post">
+                <input type="submit" class="btn btn-warning btn-sm" value="Start Boarding">
+             </form>
 
             {% elif passagier_row.passagierstatus == "gebucht" and row.buchungsstatus=="gebucht"
             and  flug_datum >= today %}
@@ -98,14 +97,14 @@
 
             {% endif %}
         </td>
-        {% include 'bodenpersonal/boarding.html' %}
+
         <td>
             {% for gepaeck_row in gepaeck%}
             {{ gepaeck_row.status }}
             {% if gepaeck_row.status == "gebucht" and row.buchungsstatus=="gebucht" and passagier_row.passagierstatus == "gebucht"
             and  flug_datum >= today %}
-            <button type="button" class="btn btn-info  btn-sm" >Check-In</button>
-        <button type="button" class="btn btn-info  btn-sm" >Etikett ausdrucken</button>
+           <!-- <button type="button" class="btn btn-info  btn-sm" >Check-In</button>
+           <button type="button" class="btn btn-info  btn-sm" >Etikett ausdrucken</button>-->
             {% endif %}
             {% endfor %}
         </td>
@@ -132,15 +131,16 @@
           <br> Ausweisnum: {{passagier_row.ausweisnummer }}
         <br>
         {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
+          <form action="{{ url_for('bodenpersonal_views.boarding', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}" method="post">
+                <input type="submit" class="btn btn-warning btn-sm" value="Start Boarding">
+             </form>
 
-            <a href="{{ url_for('bodenpersonal_views.boarding',buchungsid = row.buchungsid,buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
-                                   class="btn btn-warning btn-sm" data-toggle="modal" data-target="#boardingModal">Start Boarding</a>
-            <br>
+
             <button type="button" class="btn btn-warning  btn-sm" >Boarding karte ausdrucken</button>
 
             {% endif %}
         </td>
-        {% include 'bodenpersonal/boarding.html' %}
+
         <td>
             {% for gepaeck_row in gepaeck%}
             {{ gepaeck_row.status }}
