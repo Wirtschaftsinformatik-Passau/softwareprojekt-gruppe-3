@@ -264,3 +264,6 @@ def accounts_loeschen(id):
 
     return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
 
+@verwaltungspersonal_views.route('/logging/')
+def logging():
+    return redirect(url_for('logging'))
