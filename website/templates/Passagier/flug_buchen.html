@@ -19,7 +19,7 @@
                             <div class="col">
                                 <label for="vorname{{ count + 1 }}">Vorname</label>
                                 <input type="text" class="form-control" id="vorname{{ count + 1 }}"
-                                       name="vorname{{ count + 1 }}" placeholder=""
+                                       name="vorname{{ count + 1 }}" placeholder="" pattern="[a-zA-Z]+"
                                        required>
                             </div>
                             <div class="col">
@@ -31,12 +31,10 @@
                             <div class="col">
                                 <label for="geburtsdatum{{ count + 1 }}">Geburtsdatum:</label>
                                 <input type="date" class="form-control" id="geburtsdatum{{ count + 1 }}"
-                                       name="geburtsdatum{{ count + 1 }}"
-                                       placeholder="" pattern="[a-zA-Z]+" required>
+                                       name="geburtsdatum{{ count + 1 }}" value="{{ geburtsdatum.strftime("%Y-%m-%d") }}"
+                                       placeholder=""  required>
                             </div>
                         </div>
-
-
                     </div>
 
                     <!-- Gepäckinformationen -->

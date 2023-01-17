@@ -28,7 +28,7 @@
                             <label for="Von">Flugnummer:</label>
                             <input type="text" id="flugnummer" name="flugnummer" class="form-control"
                                    style="width: 16rem"
-                                   value="{{ request.args.get('flugnummer', 'PM1') }}" required>
+                                   value="{{ request.args.get('flugnummer', 'PM1') }}" pattern="[A-Z0-9]+" required>
 
                         </div>
 

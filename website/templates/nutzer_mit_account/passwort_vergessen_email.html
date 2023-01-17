@@ -1,10 +1,9 @@
 <html>
   <body>
-    <p>Hallo {{ user.vorname }}!</p>
+    <p>Hallo {{ user.vorname }} {{ user.nachname }}!</p>
 
-    <p>Dein neues Passwort lautet: {{ password }}</p>
-    <p>Du kannst dich jetzt mit diesem Passwort anmelden und kannst es später in deinen Account-Einstellungen ändern.</p>
-    <p>Vielen Dank für dein Vertrauen!</p>
+    <p>Du hast ein neues Passwort angefordert. Anbei senden wir es dir.</p>
+    <p><b>Dein neues Passwort:</b> {{ password }}</p>
   <p>Dein <i> AirPassau</i>  Team</p>
   </body>
 </html>

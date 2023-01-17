@@ -41,12 +41,13 @@
 
                         <option selected value="1">Reisepass</option>
                         <option value="2">Personalausweis</option>
+                        <!--required fehlt evtl -->
                     </select>
                     <br>
                     <label class="visually-hidden" for="ausweissnummer">Ausweisnummer*:</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="ausweissnummer" name="ausweissnummer"
-                               placeholder="Ausweisnummer" required>
+                               placeholder="Ausweisnummer" pattern="[A-Z0-9]+" required>
                     </div>
                     <label class="visually-hidden" for="ausweisgueltigkeit">Ablaufdatum*:</label>
                     <div class="input-group">

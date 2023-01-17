@@ -184,7 +184,7 @@
                                                                 <label for="Abflugdatum">Abflugdatum:</label>
                                                                 <input type="date" class="form-control" id="abflugdatum"
                                                                        name="abflugdatum"
-                                                                       value="{{ rows.sollabflugzeit.strftime("%Y-%m-%d") }}"
+                                                                       value="{{ rows.abflugdatum.strftime("%Y-%m-%d") }}"
                                                                        required>
 
                                                             </div>
@@ -193,7 +193,7 @@
                                                                 <input type="Date" class="form-control"
                                                                        id="ankunftsdatum"
                                                                        name="ankunftsdatum"
-                                                                       value="{{ rows.sollankunftszeit.strftime("%Y-%m-%d") }}"
+                                                                       value="{{ rows.ankunftsdatum.strftime("%Y-%m-%d") }}"
                                                                        required>
 
                                                             </div>
@@ -221,7 +221,6 @@
                                                                        name="sollankunftszeit"
                                                                        value="{{ rows.sollankunftszeit.strftime("%H:%M") }}"
                                                                        required>
-
                                                             </div>
 
                                                             <div class="col-md-4 mb-3">
@@ -230,7 +229,6 @@
                                                                        name="fluglinie"
                                                                        value="{{ rows.flugnummer }}"
                                                                        required>
-
                                                             </div>
                                                             <div class="col-md-4 mb-3">
                                                                 <label for="IstAbflugzeit">Abflugzeit (Ist):</label>
@@ -239,7 +237,6 @@
                                                                        name="istabflugzeit"
                                                                        value="{{ rows.istabflugzeit.strftime("%H:%M") }}"
                                                                        required>
-
                                                             </div>
                                                             <div class="col-md-4 mb-3">
                                                                 <label for="IstAnkunftszeit">Ankunftszeit (Ist):</label>

@@ -18,15 +18,15 @@
             <div class="form-row">
               <div class="col">
                 <label for="buchungsnummer_1">Buchungsnummer:</label>
-                <input type="text" class="form-control" id="buchungsnummer_1" name="buchungsnummer_1" placeholder="">
+                <input type="text" class="form-control" id="buchungsnummer_1" name="buchungsnummer_1" placeholder="" pattern="[A-Z0-9]+">
               </div>
               <div class="col">
                 <label for="vorname">Vorname:</label>
-                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="">
+                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="" pattern="[a-zA-Z]+">
               </div>
               <div class="col">
                 <label for="nachname">Nachname:</label>
-                <input type="text" class="form-control" id="nachname" name="nachname" placeholder="">
+                <input type="text" class="form-control" id="nachname" name="nachname" placeholder="" pattern="[a-zA-Z]+">
               </div>
             </div>
             <br>
@@ -34,11 +34,11 @@
             <div class="form-row">
               <div class="col">
                 <label for="buchungsnummer_2">Buchungsnummer:</label>
-                <input style="width:17rem" type="text" class="form-control" id="buchungsnummer_2" name="buchungsnummer_2" placeholder="">
+                <input style="width:17rem" type="text" class="form-control" id="buchungsnummer_2" name="buchungsnummer_2" placeholder="" pattern="[A-Z0-9]+">
               </div>
               <div class="col">
                 <label for="ausweisnummer">Ausweisnummer:</label>
-                <input style="width:17rem" type="text" class="form-control" id="ausweisnummer" name="ausweisnummer" placeholder="">
+                <input style="width:17rem" type="text" class="form-control" id="ausweisnummer" name="ausweisnummer" placeholder="" pattern="[A-Z0-9]+">
               </div>
               <div class="col-auto my-4">
                 <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem"> Buchung suchen </button>
