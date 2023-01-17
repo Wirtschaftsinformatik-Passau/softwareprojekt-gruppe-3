@@ -219,7 +219,8 @@ def buchung_suchen():
     buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer). \
         order_by(Buchung.buchungsid.desc()).first()
 
-    # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst fehlermeldung)
+    # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst
+    # fehlermeldung)
 
     if buchung is None:
 
@@ -334,7 +335,7 @@ def storno(stor_buchungsnummer):
         rechnungsnummer = Rechnung.query.where(Rechnung.buchungsid == buchung.buchungsid).first().rechnungsnummer
 
         return redirect(url_for('passagier_views.stornierungsbestaetigung', user=current_user,
-                                rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer))
+                                rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer, buchungsid=buchung.buchungsid))
 
     else:
         return redirect(url_for('passagier_views.buchung_suchen'))
@@ -344,11 +345,15 @@ def storno(stor_buchungsnummer):
 def stornierungsbestaetigung():
     rechnungsnummer = request.args['rechnungsnummer']
     buchungsnummer = request.args['buchungsnummer']
+    buchungsid = int(request.args['buchungsid'])
+
     emailadresse = Nutzerkonto.query.get_or_404(current_user.id).emailadresse
+    flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
+        Buchung.buchungsnummer == buchungsnummer).first()
 
     msg = Message('Stornierungsbestaetigung', sender='airpassau.de@gmail.com', recipients=[emailadresse])
-    msg.html = render_template("Passagier/stornierungsbestaetigung.html", user=current_user,
-                               rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer)
+    msg.html = render_template("Passagier/stornierungsbestaetigung_email.html", user=current_user,
+                               rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer, flug=flug)
 
     mail.send(msg)
 
