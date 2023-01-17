@@ -217,7 +217,7 @@ def buchung_suchen():
     input_buchungsnummer = request.args.get('buchungsnummer')
 
     buchung = Buchung.query.filter(Buchung.buchungsnummer == input_buchungsnummer). \
-        order_by(Buchung.buchungsid.desc()).all()
+        order_by(Buchung.buchungsid.desc()).first()
 
     # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst fehlermeldung)
 
@@ -290,6 +290,7 @@ def buchung_suchen():
         flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
             Buchung.buchungsnummer == input_buchungsnummer).first()
         check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
+        gepaeck = Gepaeck.query.filter(Passagier.passagierid == Gepaeck.passagierid).first()
 
         # check if passagier is schon eingecheckt oder boarded
 
@@ -315,7 +316,7 @@ def buchung_suchen():
         return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
                                ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
                                passagier=passagier, check_in_available=check_in_available, storno_text=storno_text,
-                               storno_possbile=storno_possbile)
+                               storno_possbile=storno_possbile, gepaeck=gepaeck)
     else:
         flash('Kein Buchungen gefunden', category='error')
         return render_template('Passagier/buchung_suchen.html', user=current_user)

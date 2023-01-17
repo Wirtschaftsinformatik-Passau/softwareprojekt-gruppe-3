@@ -16,17 +16,19 @@ verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
 
 # Flugzeug funktionen
 @verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
+@verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
 def flugzeug_erstellen():
     if request.method == 'POST':
         modell = request.form.get('Modell')
         hersteller = request.form.get('Hersteller')
         anzahlsitzplaetze = request.form.get('anzahlsitzplaetze')
-
-
-        new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
-        db.session.add(new_flugzeug)
-        db.session.commit()
-        flash('Flugzeug angelegt!', category='success')
+        if int(anzahlsitzplaetze) < 0:
+            flash('Die Anzahl der Sitzplätze muss größer oder gleich 0 sein!', category="error")
+        else:
+            new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
+            db.session.add(new_flugzeug)
+            db.session.commit()
+            flash('Flugzeug angelegt!', category='success')
 
     return render_template("Verwaltungspersonal/home_vp.html", user=current_user)
 
@@ -62,15 +64,18 @@ def flugzeug_ändern():
         anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
             filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
             filter(Flug.flugzeugid == request.form.get('id')). \
-            filter(Flug.flugstatus != "annulliert").count()
+            filter(Flug.flugstatus != "annuliert").count()
+
+        print(anzahl_passagiere)
 
         flugzeug.modell = request.form['modell']
         flugzeug.hersteller = request.form['hersteller']
-
-
-        flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
-        db.session.commit()
-        flash("Flugzeugdaten erfolgreich geändert")
+        if int(request.form['anzahlsitzplaetze']) < 0:
+            flash('Die Anzahl der Sitzplätze muss größer oder gleich 0 sein!', category="error")
+        else:
+            flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
+            db.session.commit()
+            flash("Flugzeugdaten erfolgreich geändert")
         return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
 

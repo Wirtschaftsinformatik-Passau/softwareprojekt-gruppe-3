@@ -9,6 +9,23 @@ from datetime import date, datetime, timedelta
 
 # store the standard routes for a website where the user can navigate to
 nutzer_ohne_account_views = Blueprint('nutzer_ohne_account_views', __name__)
+default_flughafen_von = "Passau"
+default_flughafen_nach = "München"
+
+
+def is_date_after_yesterday(date):
+    # Convert the input date to a datetime object
+    date = datetime.strptime(date, '%Y-%m-%d')
+
+    # Get the current date and time
+    now = datetime.today() - timedelta(days=1)
+
+    # Compare the input date to the current date and time
+    if date < now:
+        return True
+    else:
+        return False
+
 
 @nutzer_ohne_account_views.route('/registrieren', methods=['GET', 'POST'])
 def registrieren():
@@ -21,7 +38,8 @@ def registrieren():
 
         konto = Nutzerkonto.query.filter_by(emailadresse=emailadresse).first()
         if konto:
-            flash('Mit dieser E-Mail-Adresse existiert bereits ein Account. Bitte melden Sie sich mit diesem an.', category='error')
+            flash('Mit dieser E-Mail-Adresse existiert bereits ein Account. Bitte melden Sie sich mit diesem an.',
+                  category='error')
         elif passwort1 != passwort2:
             flash('Die angegebenen Passwörter müssen übereinstimmen.', category='error')
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', emailadresse):
@@ -48,37 +66,75 @@ def registrieren():
 
 
 # nutzer_ohne_account Funktionen
+# nutzer_ohne_account Funktionen
 @nutzer_ohne_account_views.route('/', methods=['GET', 'POST'])
 def home():
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
 
-    vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('von')).with_entities(Flughafen.flughafenid)
-    nachID = Flughafen.query.filter(Flughafen.stadt == request.args.get('nach')).with_entities(Flughafen.flughafenid)
-    abflug = request.args.get('Abflugdatum')
-    passagiere = request.args.get('AnzahlPersonen')
+    vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('von', default_flughafen_von)).with_entities(
+        Flughafen.flughafenid)
+    nachID = Flughafen.query.filter(Flughafen.stadt == request.args.get('nach', default_flughafen_nach)).with_entities(
+        Flughafen.flughafenid)
+    abflug = request.args.get('Abflugdatum', datetime.today())
+    passagiere = request.args.get('AnzahlPersonen', 1)
 
-    kuerzel_von = Flughafen.query.filter(Flughafen.flughafenid == vonID).first()
-    kuerzel_nach = Flughafen.query.filter(Flughafen.flughafenid == nachID).first()
+    # Default search
+
+    if request.args.get('Abflugdatum') is None:
+        buchbare_fluege = []
+
+        mögliche_fluege = Flug.query.filter(Flug.abflugid == 6, Flug.zielid == 1). \
+            filter(cast(Flug.sollabflugzeit, Date) == date.today() + timedelta(days=1)).filter(
+            Flug.flugstatus != "annulliert")
+
+        for rows in mögliche_fluege:
+            anzahl_geb_passagiere = Passagier.query.join(Buchung). \
+                filter(Buchung.flugid == rows.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).count()
+            flugzeug_kapa = Flugzeug.query.get(rows.flugzeugid).anzahlsitzplaetze
+            if (int(anzahl_geb_passagiere) + int(passagiere)) <= int(flugzeug_kapa):
+                buchbare_fluege.append(rows)
+
+        return render_template("nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
+                               user=current_user,
+                               passagiere=1,
+                               tomorrow=date.today() + timedelta(days=1), abflug=abflug,
+                               default_flughafen_von=default_flughafen_von,
+                               default_flughafen_nach=default_flughafen_nach, buchbare_fluege=buchbare_fluege)
 
     # Datenbankabfrage nach Abflug und Ziel Flughafen sowie Datum und Passagieranzahl < Summe bereits gebuchter
-    # Passagiere
+    # Passagiere, und ob Flug nicht annulliert ist.
 
-    fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
-        filter(cast(Flug.sollabflugzeit, Date) == abflug)
+    # is date today or in the future
 
-    #zählt Anzahl der bereis gebuchten passagiere
+    if request.args.get('Abflugdatum') is not None and is_date_after_yesterday(request.args.get('Abflugdatum')):
+        flash('Bitte geben Sie ein Datum ein, welches in der Zukunft liegt', category='error')
 
-    for rows in fluege:
-        anzahl_ges_passagiere = Passagier.query.join(Buchung). \
+    mögliche_fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
+        filter(cast(Flug.sollabflugzeit, Date) == request.args.get('Abflugdatum')).filter(
+        Flug.flugstatus != "annulliert")
+
+    buchbare_fluege = []
+
+    # zählt Anzahl der bereits gebuchten passagiere und überprüft ob innherhalb der Kapazität des Flugzeugs und fügt sie
+    # zu buchbaren Flügen hinzu
+
+    for rows in mögliche_fluege:
+        anzahl_geb_passagiere = Passagier.query.join(Buchung). \
             filter(Buchung.flugid == rows.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).count()
-        print(anzahl_ges_passagiere)
+        flugzeug_kapa = Flugzeug.query.get(rows.flugzeugid).anzahlsitzplaetze
+        if (int(anzahl_geb_passagiere) + int(passagiere)) <= int(flugzeug_kapa):
+            buchbare_fluege.append(rows)
 
-    return render_template("nutzer_ohne_account/home.html", fluege=fluege, flughafen_liste=flughafen_liste,
+    # wenn keiner der flüge buchbar ist
+
+    if not buchbare_fluege:
+        flash('Zu Ihren Suchkriterien wurde kein passender Flug gefunden', category='error')
+
+    return render_template("nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
                            user=current_user,
-                           kuerzel_nach=kuerzel_nach, kuerzel_von=kuerzel_von, passagiere=passagiere)
-
-
-
+                           passagiere=passagiere,
+                           today=date.today(), abflug=abflug, default_flughafen_von=default_flughafen_von,
+                           default_flughafen_nach=default_flughafen_nach, buchbare_fluege=buchbare_fluege)
 
 
 @nutzer_ohne_account_views.route('/flugstatus-überprüfen', methods=['GET', 'POST'])
@@ -89,14 +145,17 @@ def flugstatus_überprüfen():
         abflug = request.args.get('abflugdatum')
         flugnummer = request.args.get('flugnummer')
 
-        #DATUM IN DER VERGANGENHEIT
+        if request.args.get('abflugdatum') is not None and is_date_after_yesterday(request.args.get('abflugdatum')):
+            flash('Bitte geben Sie ein Datum ein, welches nicht in der Vergangenheit liegt', category='error')
+
         fluege = Flug.query.filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer)
-        if not fluege:
+
+        if fluege is None:
             flash('Zu Ihren Suchenkriterien wurde kein passender Flug gefunden.', category='error')
-            redirect(url_for('nutzer_ohne_account_views.flugstatus_überprüfen'))
 
         return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege,
-                           abflug=abflug, flugnummer=flugnummer, today=date.today(), flughafen_liste=flughafen_liste)
+                               abflug=abflug, flugnummer=flugnummer, today=date.today(),
+                               flughafen_liste=flughafen_liste)
 
 
 @nutzer_ohne_account_views.route('fluglinien-anzeigen', methods=['GET', 'POST'], defaults={"page": 1})

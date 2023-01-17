@@ -27,16 +27,15 @@
                         <div class="col">
                             <label for="Von">Flugnummer:</label>
                             <input type="text" id="flugnummer" name="flugnummer" class="form-control"
-                                   style="width: 16rem" pattern="[A-Z0-9]+"
-                                   value="{% if not flugnummer %}MP1{% else %} {{ flugnummer }}{% endif %}" required>
+                                   style="width: 16rem"
+                                   value="{{ request.args.get('flugnummer', 'PM1') }}" required>
 
                         </div>
 
                         <div class="col">
                             <label for="abflugdatum">Abflugdatum:</label>
-                            <input type="date" class="form-control" id="abflugdatum" name="abflugdatum" onclick="checkDate()"
-                                   placeholder="" style="width: 8rem" value="
-                                    {% if not abflug and is_flight_in_the_past %}{{ today }}{% else %} {{ abflug }}{% endif %}"
+                            <input type="date" class="form-control" id="abflugdatum" name="abflugdatum"
+                                    style="width: 8rem" value="{{ request.args.get('abflugdatum', today) }}"
                                    required>
                         </div>
                         <p id="result"></p>
@@ -48,18 +47,7 @@
                                     finden
                                 </button>
                             </div>
-                            <script>
-                                function checkDate() {
-                                    var inputDate = document.getElementById("abflugdatum").value;
-                                    var currentDate = new Date();
-                                    if (inputDate < currentDate) {
-                                        document.getElementById("result").innerHTML = "Bitte geben Sie ein Datum an, dass in der Zukunft liegt.";
-                                    } else {
-                                        document.getElementById("result").innerHTML = "The date you entered is in the future.";
-                                    }
-                                }
 
-                            </script>
                         </div>
                     </div>
 
@@ -93,14 +81,14 @@
                     <td>
                         {% for e in flughafen_liste %}
                             {% if e.flughafenid == rows.abflugid %}
-                                {{ e.name + " (" + e.kennung + ")" }}
+                                {{ e.kennung }}
                             {% endif %}
                         {% endfor %}
                     </td>
                     <td>
                         {% for e in flughafen_liste %}
                             {% if e.flughafenid == rows.zielid %}
-                                {{ e.name + " (" + e.kennung + ")" }}
+                                {{ e.kennung }}
                             {% endif %}
                         {% endfor %}
                     </td>
