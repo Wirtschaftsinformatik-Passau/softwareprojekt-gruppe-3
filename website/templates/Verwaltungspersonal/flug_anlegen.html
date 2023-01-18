@@ -46,6 +46,7 @@
                         <div class="col-md-4 mb-3">
                             <label for="Von">Von:</label>
                              <select id="von" name="von" class="form-control" required>
+                              <option selected>{{ request.args.get('von', default_flughafen_von) }}</option>
                                 {% for rows in flughafen_liste %}
                                 <option> {{ rows.stadt }} </option>
                                 {% endfor %}
@@ -57,6 +58,7 @@
                         <div class="col-md-4 mb-3">
                             <label for="Nach">Nach:</label>
                              <select id="nach" name="nach" class="form-control" required>
+                             <option selected>{{ request.args.get('nach', default_flughafen_nach) }}</option>
                                 {% for rows in flughafen_liste %}
                                 <option> {{ rows.stadt }} </option>
                                 {% endfor %}
@@ -80,41 +82,41 @@
                         <div class="col-md-4 mb-3">
                             <label for="Abflugdatum">Abflugdatum:</label>
                             <input type="Date" class="form-control" id="abflugdatum" name="abflugdatum" placeholder=""
-                                   value=""
+                                   value="{{ request.args.get('abflugdatum', tomorrow) }}"
                                    required>
 
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Ankunftsdatum">Ankunftsdatum:</label>
                             <input type="Date" class="form-control" id="ankunftsdatum" name="ankunftsdatum" placeholder=""
-                                   value=""
+                                   value="{{ request.args.get('ankunftsdatum', tomorrow) }}"
                                    required>
 
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="Preis">Preis p.P:</label>
-                            <input type="number" class="form-control" id="preis" name="preis" placeholder="" min="1"
-                                    required>
+                            <label for="Preis">Preis (in €):</label>
+                            <input type="number" class="form-control" id="preis" name="preis" placeholder="Preis pro Person" min="1"
+                                    value="150"required>
 
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Abflugzeit">Abflugzeit:</label>
                             <input type="Time" class="form-control" id="abflugzeit" name="abflugzeit" placeholder=""
-                                   value=""
+                                   value="10:00"
                                     required>
 
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Ankunftszeit">Ankunftszeit:</label>
                             <input type="Time" class="form-control" id="ankunftszeit" name="ankunftszeit" placeholder=""
-                                   value=""
+                                   value="12:00"
                                     required>
 
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Fluglinie">Fluglinie:</label>
                             <input type="text" class="form-control" id="fluglinie" name="fluglinie" placeholder="Fluglinie" pattern="[A-Z0-9]+"
-                                    required>
+                                    value="PM1" required>
 
                         </div>
 

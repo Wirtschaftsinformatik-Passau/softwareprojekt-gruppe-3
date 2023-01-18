@@ -61,15 +61,18 @@
 
 
                         {% if fluege %}
-                            <table class="table table-striped">
+
+                            <table class="table">
                                 <thead>
                                 <tr>
                                     <th scope="col">Von</th>
-                                    <th scope="col">Abflugzeit</th>
+                                    <th scope="col">Abflug</th>
+
                                     <th scope="col">Nach</th>
-                                    <th scope="col">Ankunftszeit</th>
+                                     <th scope="col">Ankunft</th>
+
                                     <th scope="col">Flugzeug</th>
-                                    <th scope="col">Preis</th>
+                                    <th scope="col">Preis p.P.</th>
                                     <th scope="col">Flugstatus</th>
                                     <th scope="col"></th>
                                 </tr>
@@ -86,7 +89,7 @@
                                         </td>
 
                                         <td>
-                                            {{ rows.sollabflugzeit.strftime("%Y.%m.%d %H:%M") }}
+                                            {{ rows.sollabflugzeit.strftime("%d.%m.%Y %H:%M") }}
                                         </td>
                                         <td>
                                             {% for e in flughafen_liste %}
@@ -95,10 +98,11 @@
                                                 {% endif %}
                                             {% endfor %}
                                         </td>
-
-                                        <td>
-                                            {{ rows.sollankunftszeit.strftime("%H:%M") }}
+                                    <td>
+                                            {{ rows.sollankunftszeit.strftime("%d.%m.%Y %H:%M") }}
                                         </td>
+
+
                                         <td>
                                             {% for e in flugzeug_liste %}
                                                 {% if e.flugzeugid == rows.flugzeugid %}
@@ -280,6 +284,7 @@
                                 </tbody>
 
                             </table>
+
                             <!-- Pagination bar -->
 
                             <nav aria-label="Page navigation example">

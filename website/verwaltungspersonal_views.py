@@ -15,6 +15,9 @@ from flask_mail import Mail, Message
 # store the standard routes for a website where the user can navigate to
 verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
 
+default_flughafen_von = "Passau"
+default_flughafen_nach = "München"
+
 
 # Flugzeug funktionen
 @verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
@@ -63,18 +66,26 @@ def flugzeug_bearbeiten(page):
 def flugzeug_ändern():
     if request.method == 'POST':
         flugzeug = Flugzeug.query.get_or_404(request.form.get('id'))
-        anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
-            filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
+        fluege_mit_flugzeug = Flug.query.join(Flugzeug).filter(Flug.flugzeugid == Flugzeug.flugzeugid). \
             filter(Flug.flugzeugid == request.form.get('id')). \
-            filter(Flug.flugstatus != "annuliert").filter(Flug.sollabflugzeit > date.today()).count()
+            filter(Flug.flugstatus != "annuliert")
+        max_anzahl_passagier = 0
+        for rows in fluege_mit_flugzeug:
 
-        print(anzahl_passagiere)
+            anzahl = Passagier.query.join(Buchung, Flug). \
+                filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
+                filter(Flug.flugid == rows.flugid).filter(Flug.sollabflugzeit > date.today()).count()
+            if anzahl > max_anzahl_passagier:
+                max_anzahl_passagier = anzahl
+
+        print(max_anzahl_passagier)
 
         flugzeug.modell = request.form['modell']
         flugzeug.hersteller = request.form['hersteller']
+
         if int(request.form['anzahlsitzplaetze']) < 0:
             flash('Die Anzahl der Sitzplätze muss größer oder gleich 0 sein!', category="error")
-        elif anzahl_passagiere > int(request.form['anzahlsitzplaetze']):
+        elif max_anzahl_passagier > int(request.form['anzahlsitzplaetze']):
             flash('Die eingegebene Anzahl der Sitzplätze interferiert mit einem aktiven Flug. Bitte wenden Sie sich '
                   'an einen Vorgesetzten.', category="error")
         else:
@@ -110,38 +121,46 @@ def flug_anlegen():
     flugzeug_liste = Flugzeug.query.filter(Flugzeug.status == "aktiv").with_entities(Flugzeug.flugzeugid,
                                                                                      Flugzeug.hersteller,
                                                                                      Flugzeug.modell)
-
     if request.method == 'POST':
         flugzeugid = request.form["flugzeugtyp"]
-        abflugid = Flughafen.query.filter(Flughafen.stadt == request.form.get('von')) \
-            .with_entities(Flughafen.flughafenid)
-        zielid = Flughafen.query.filter(Flughafen.stadt == request.form.get('nach')) \
-            .with_entities(Flughafen.flughafenid)
+        abflugid = Flughafen.query.filter(Flughafen.stadt == request.form.get('von')).first()
+        zielid = Flughafen.query.filter(Flughafen.stadt == request.form.get('nach')).first()
         flugstatus = "pünktlich"
         abflugdatum = request.form.get('abflugdatum') + " " + request.form.get("abflugzeit")
         ankunftsdatum = request.form.get('ankunftsdatum') + " " + request.form.get("ankunftszeit")
         flugnummer = request.form.get('fluglinie')
         preis = request.form.get('preis')
+        print(abflugid.flughafenid)
 
-        new_flug = Flug(flugzeugid=flugzeugid, abflugid=abflugid, zielid=zielid, flugstatus=flugstatus,
-                        sollabflugzeit=abflugdatum, sollankunftszeit=ankunftsdatum,
-                        istabflugzeit=abflugdatum, istankunftszeit=ankunftsdatum,
-                        flugnummer=flugnummer,
-                        preis=preis)
+        if abflugdatum > ankunftsdatum:
+            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe', category='error')
+        elif abflugid.flughafenid == zielid.flughafenid:
+            flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
+        else:
 
-        db.session.add(new_flug)
-        db.session.commit()
-        flash('Flug hinzugefügt!', category='success')
+            new_flug = Flug(flugzeugid=flugzeugid, abflugid=abflugid.flughafenid, zielid=zielid.flughafenid,
+                            flugstatus=flugstatus,
+                            sollabflugzeit=abflugdatum, sollankunftszeit=ankunftsdatum,
+                            istabflugzeit=abflugdatum, istankunftszeit=ankunftsdatum,
+                            flugnummer=flugnummer,
+                            preis=preis)
+
+            db.session.add(new_flug)
+            db.session.commit()
+            flash('Flug hinzugefügt!', category='success')
 
     return render_template("Verwaltungspersonal/flug_anlegen.html", flughafen_liste=flughafen_liste, user=current_user,
-                           flugzeug_liste=flugzeug_liste)
+                           flugzeug_liste=flugzeug_liste, default_flughafen_von=default_flughafen_von,
+                           default_flughafen_nach=default_flughafen_nach, tomorrow=date.today() + timedelta(days=1))
 
 
 @verwaltungspersonal_views.route('/flug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/flug-bearbeiten/<int:page>', methods=['GET', 'POST'])
 def flug_bearbeiten(page):
     flughafen_liste = Flughafen.query.all()
-    flugzeug_liste = Flugzeug.query.all()
+    flugzeug_liste = Flugzeug.query.filter(Flugzeug.status == "aktiv").with_entities(Flugzeug.flugzeugid,
+                                                                                     Flugzeug.hersteller,
+                                                                                     Flugzeug.modell)
     page = page
     pages = 4
 
@@ -188,17 +207,22 @@ def flug_ändern():
         flug.istabflugzeit = request.form['abflugdatum'] + " " + request.form['istabflugzeit']
         flug.istankunftszeit = request.form['ankunftsdatum'] + " " + request.form['istankunftszeit']
         flug.flugnummer = request.form['fluglinie']
+        if flug.sollabflugzeit > flug.sollankunftszeit or flug.istabflugzeit > flug.istankunftszeit:
+            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe', category='error')
+        elif flug.abflugid == flug.zielid:
+            flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
+        else:
 
-        if flug.istankunftszeit > flug.sollankunftszeit:
-            flug.flugstatus = "verspätet"
+            if flug.istankunftszeit > flug.sollankunftszeit:
+                flug.flugstatus = "verspätet"
 
-        elif flug.istankunftszeit == flug.sollankunftszeit:
-            flug.flugstatus = "pünktlich"
+            elif flug.istankunftszeit == flug.sollankunftszeit:
+                flug.flugstatus = "pünktlich"
 
-        db.session.commit()
-        flash("Flugdaten erfolgreich geändert", category='success')
+            db.session.commit()
+            flash("Flugdaten erfolgreich geändert", category='success')
 
-    return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+        return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
 
 # Funktionen zu Accounte: anzeigen bearbeiten und löschen
