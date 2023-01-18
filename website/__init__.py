@@ -7,6 +7,7 @@ from logging.handlers import RotatingFileHandler
 from glob import glob
 import werkzeug
 
+
 # customizing the Log file can be saved in seperate file by adding: filename="logs.log",
 # logging.basicConfig(format="%(levelname)s:%(name)s_:%(message)s")
 

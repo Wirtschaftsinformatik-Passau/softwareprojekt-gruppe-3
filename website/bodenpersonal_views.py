@@ -131,8 +131,6 @@ def einchecken():
 
     passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
         where(Passagier.nachname == nachname).first()
-    gepaeck_list = Gepaeck.query.filter(Gepaeck.passagierid == passagier.passagierid).all()
-
     if request.method == 'POST':
         passagier.nachname = nachname
         passagier.vorname = vorname
@@ -144,39 +142,28 @@ def einchecken():
         passagier.boardingpassnummer = generate_boarding_pass_number()
         db.session.add(passagier)
         db.session.commit()
-        if gepaeck_list:
-            for gepaeck in gepaeck_list:
-                gepaeck.status = "eingecheckt"
-                db.session.add(gepaeck)
-                db.session.commit()
-                flash("Check-In erfolgreich")
 
-
-        else:
-            flash("Passagier hat kein Gepäck gebucht")
-            flash("Check-In erfolgreich")
+        flash("Check-In erfolgreich")
         return redirect(url_for('bodenpersonal_views.home'))
-
-    gepaeck_nummer = len(gepaeck_list)
 
     return render_template('bodenpersonal/einchecken.html', user=current_user, passagier=passagier, vorname=vorname,
-                           nachname=nachname, gepaeck_nummer=gepaeck_nummer)
+                           nachname=nachname)
 
-@bodenpersonal_views.route('/koffer_einchecken/<int:buchungsid>/<buchungsnummer>/<vorname>/<nachname>', methods=["POST"])
-def koffer_einchecken(buchungsid,buchungsnummer, vorname, nachname):
-    if 'gepaeckid' not in request.form:
-        flash("Error: No luggage ids were submitted in the form.", category="error")
-        return redirect(url_for('bodenpersonal_views.home'))
-    else:
-        gepaeckid = request.form.getlist('gepaeckid')
-        for id in gepaeckid:
-            gepaeck = Gepaeck.query.filter_by(gepaeckid=id).first()
-            gepaeck.status = "eingecheckt"
-            db.session.add(gepaeck)
-            db.session.commit()
-        flash(f"Gepäck wurde eingecheckt für Passagier {vorname} {nachname} {buchungsid} {buchungsnummer} {gepaeckid}",
-              category="success")
-        return redirect(url_for('bodenpersonal_views.home'))
+@bodenpersonal_views.route('/koffer_einchecken', methods=["POST"])
+def koffer_einchecken():
+    buchungsid = request.form.get('buchungsid')
+    buchungsnummer = request.form.get('buchungsnummer')
+    vorname = request.form.get('vorname')
+    nachname = request.form.get('nachname')
+    gepaeckid = request.form.getlist('gepaeckid')
+
+    for id in gepaeckid:
+        gepaeck = Gepaeck.query.filter(Gepaeck.gepaeckid == id).first()
+        gepaeck.status = "eingecheckt"
+        db.session.commit()
+
+    flash("Koffer erfolgreich eingecheckt!", category="success")
+    return redirect(url_for('bodenpersonal_views.home', buchungsnummer=buchungsnummer, vorname=vorname, nachname=nachname))
 
 
 
