@@ -1,0 +1,8 @@
+2023-01-18 16:01:25,284 - INFO -  * Restarting with stat
+2023-01-18 16:01:26,206 - WARNING -  * Debugger is active!
+2023-01-18 16:01:26,210 - INFO -  * Debugger PIN: 123-827-586
+2023-01-18 16:01:28,693 - INFO - 127.0.0.1 - - [18/Jan/2023 16:01:28] "[35m[1mPOST /generate_boarding_pass?passagier_id=1 HTTP/1.1[0m" 500 -
+2023-01-18 16:01:28,748 - INFO - 127.0.0.1 - - [18/Jan/2023 16:01:28] "[36mGET /generate_boarding_pass?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2023-01-18 16:01:28,758 - INFO - 127.0.0.1 - - [18/Jan/2023 16:01:28] "[36mGET /generate_boarding_pass?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2023-01-18 16:01:28,777 - INFO - 127.0.0.1 - - [18/Jan/2023 16:01:28] "[36mGET /generate_boarding_pass?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2023-01-18 16:01:28,789 - INFO - 127.0.0.1 - - [18/Jan/2023 16:01:28] "[36mGET /generate_boarding_pass?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -

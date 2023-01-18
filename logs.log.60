@@ -1,0 +1,11 @@
+2023-01-18 16:00:18,441 - INFO -  * Restarting with stat
+2023-01-18 16:00:19,335 - WARNING -  * Debugger is active!
+2023-01-18 16:00:19,339 - INFO -  * Debugger PIN: 123-827-586
+2023-01-18 16:00:19,445 - INFO - 127.0.0.1 - - [18/Jan/2023 16:00:19] "[33mGET /generate_boarding_pass/1 HTTP/1.1[0m" 404 -
+2023-01-18 16:00:19,522 - INFO - 127.0.0.1 - - [18/Jan/2023 16:00:19] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2023-01-18 16:00:19,552 - INFO - 127.0.0.1 - - [18/Jan/2023 16:00:19] "GET /buchung_suchen HTTP/1.1" 200 -
+2023-01-18 16:00:32,922 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\bodenpersonal_views.py', reloading
+2023-01-18 16:00:33,074 - INFO -  * Restarting with stat
+2023-01-18 16:00:33,931 - WARNING -  * Debugger is active!
+2023-01-18 16:00:33,935 - INFO -  * Debugger PIN: 123-827-586
+2023-01-18 16:00:33,982 - INFO - 127.0.0.1 - - [18/Jan/2023 16:00:33] "[33mGET /generate_boarding_pass/1 HTTP/1.1[0m" 404 -

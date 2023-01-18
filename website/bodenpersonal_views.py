@@ -5,8 +5,11 @@ from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, 
 from sqlalchemy.orm import aliased
 from datetime import datetime
 import random, string
-import qrcode
-#from qrcode import make
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.graphics.barcode import qr
+
 
 # store the standard routes for a website where the user can navigate to
 bodenpersonal_views = Blueprint('bodenpersonal_views', __name__)
@@ -180,6 +183,43 @@ def boarding():
     db.session.commit()
     flash("Passagier erfolgreich geboarded","success")
     return redirect(url_for('bodenpersonal_views.home',buchungsid=buchungsid, vorname=vorname, nachname=nachname))
+
+ziel_flughafen = aliased(Flughafen)
+ankunft_flughafen = aliased(Flughafen)
+
+
+@bodenpersonal_views.route('/generate_boarding_pass', methods=['POST'])
+def generate_boarding_pass():
+    passagier_id = request.args.get('passagier_id')
+    passagier = Passagier.query.join(Buchung, Buchung.buchungsid == Passagier.buchungsid).join(Flug,
+        Buchung.flugid == Flug.flugid).join(
+        ankunft_flughafen, Flug.abflugid == ankunft_flughafen.flughafenid).join(
+        ziel_flughafen, Flug.zielid == ziel_flughafen.flughafenid).filter(
+        Passagier.passagierid == passagier_id).first()
+    doc = SimpleDocTemplate("boarding_pass.pdf", pagesize=letter)
+    elements = []
+    data = [['Name:', passagier.vorname + ' ' + passagier.nachname],
+            #['Von:', passagier.flug.abflugid.kennung],
+            #['Nach:', passagier.flug.zielid.kennung],
+            #['Fluglinie:', passagier.flug.flugnummer],
+            #['Sollabflugzeit:', passagier.flug.sollabflugzeit],
+            #['Datum:', passagier.flug.sollabflugzeit.date()],
+            ['Boardingpassnummer:', passagier.boardingpassnummer]]
+    t = Table(data)
+    t.qr(passagier.boardingpassnummer, x=10, y=10, qr_version=5, qr_error_correction='M')
+    # Setting the table style
+    t.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+                           ('TEXTCOLOR', (0, 0), (-1, -1), colors.whitesmoke),
+                           ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                           ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                           ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                           ('BACKGROUND', (0, -1), (-1, -1), colors.beige),
+                           ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+    # Adding the table to the elements list
+    elements.append(t)
+    # Building the PDF
+    doc.build(elements)
+    return send_file('boarding_pass.pdf', as_attachment=True)
 
 
 
