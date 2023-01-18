@@ -9,7 +9,8 @@ from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, 
 from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
 from flask_mail import Mail, Message
-#import __init__
+
+# import __init__
 
 # store the standard routes for a website where the user can navigate to
 verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
@@ -65,7 +66,7 @@ def flugzeug_ändern():
         anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
             filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
             filter(Flug.flugzeugid == request.form.get('id')). \
-            filter(Flug.flugstatus != "annuliert").count()
+            filter(Flug.flugstatus != "annuliert").filter(Flug.sollabflugzeit > date.today()).count()
 
         print(anzahl_passagiere)
 
@@ -73,6 +74,9 @@ def flugzeug_ändern():
         flugzeug.hersteller = request.form['hersteller']
         if int(request.form['anzahlsitzplaetze']) < 0:
             flash('Die Anzahl der Sitzplätze muss größer oder gleich 0 sein!', category="error")
+        elif anzahl_passagiere > int(request.form['anzahlsitzplaetze']):
+            flash('Die eingegebene Anzahl der Sitzplätze interferiert mit einem aktiven Flug. Bitte wenden Sie sich '
+                  'an einen Vorgesetzten.', category="error")
         else:
             flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
             db.session.commit()
@@ -83,9 +87,18 @@ def flugzeug_ändern():
 @verwaltungspersonal_views.route('/flugzeug-inaktiv-setzen/<int:id>', methods=['GET', 'POST'])
 def flugzeug_inaktiv_setzen(id):
     flugzeug_inaktiv = Flugzeug.query.filter_by(flugzeugid=id).first()
-    flugzeug_inaktiv.status = "inaktiv"
-    db.session.merge(flugzeug_inaktiv)
-    db.session.commit()
+    anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
+        filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
+        filter(Flug.flugzeugid == id). \
+        filter(Flug.flugstatus != "annuliert").filter(Flug.sollabflugzeit > date.today()).count()
+
+    if anzahl_passagiere > 0:
+        flash('Das Flugzeug welches Sie löschen wollen ist mit einem aktiven Flug verbunden. Bitte wenden Sie sich '
+              'an einen Vorgesetzten.', category="error")
+    else:
+        flugzeug_inaktiv.status = "inaktiv"
+        db.session.merge(flugzeug_inaktiv)
+        db.session.commit()
 
     return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
@@ -215,7 +228,7 @@ def accounts_anlegen():
     return render_template("Verwaltungspersonal/accounts_anlegen.html", user=current_user)
 
 
-# Seite mit die das Bearbeiten und löschen ermöglicht
+# Seite die das Bearbeiten und löschen ermöglicht
 @verwaltungspersonal_views.route('/accounts-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/accounts-bearbeiten/<int:page>', methods=['GET', 'POST'])
 def accounts_bearbeiten(page):
@@ -263,6 +276,7 @@ def accounts_loeschen(id):
     db.session.commit()
 
     return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
+
 
 @verwaltungspersonal_views.route('/logging/')
 def logging():
