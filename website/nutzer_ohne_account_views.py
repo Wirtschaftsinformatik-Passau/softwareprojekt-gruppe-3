@@ -13,12 +13,12 @@ default_flughafen_von = "Passau"
 default_flughafen_nach = "München"
 
 
-def is_date_after_yesterday(date):
+def is_date_after_yesterday(date, diff):
     # Convert the input date to a datetime object
     date = datetime.strptime(date, '%Y-%m-%d')
 
     # Get the current date and time
-    now = datetime.today() - timedelta(days=1)
+    now = datetime.today() - timedelta(days=diff)
 
     # Compare the input date to the current date and time
     if date < now:
@@ -75,7 +75,7 @@ def home():
         Flughafen.flughafenid)
     nachID = Flughafen.query.filter(Flughafen.stadt == request.args.get('nach', default_flughafen_nach)).with_entities(
         Flughafen.flughafenid)
-    abflug = request.args.get('Abflugdatum', datetime.today())
+    abflug = request.args.get('Abflugdatum')
     passagiere = request.args.get('AnzahlPersonen', 1)
 
     # Default search
@@ -83,7 +83,8 @@ def home():
     if request.args.get('Abflugdatum') is None:
         buchbare_fluege = []
 
-        mögliche_fluege = Flug.query.filter(Flug.abflugid == 6, Flug.zielid == 1). \
+        mögliche_fluege = Flug.query.join(Flugzeug).filter(Flug.flugzeugid == Flugzeug.flugzeugid). \
+            filter(Flug.abflugid == 6, Flug.zielid == 1).filter(Flugzeug.status != "inaktiv"). \
             filter(cast(Flug.sollabflugzeit, Date) == date.today() + timedelta(days=1)).filter(
             Flug.flugstatus != "annulliert")
 
@@ -104,37 +105,41 @@ def home():
     # Datenbankabfrage nach Abflug und Ziel Flughafen sowie Datum und Passagieranzahl < Summe bereits gebuchter
     # Passagiere, und ob Flug nicht annulliert ist.
 
-    # is date today or in the future
+    # is date in the future
 
-    if request.args.get('Abflugdatum') is not None and is_date_after_yesterday(request.args.get('Abflugdatum')):
+    if request.args.get('Abflugdatum') is not None and is_date_after_yesterday(request.args.get('Abflugdatum'), 0):
         flash('Bitte geben Sie ein Datum ein, welches in der Zukunft liegt', category='error')
+        return render_template("nutzer_ohne_account/home.html", user=current_user, flughafen_liste=flughafen_liste)
 
-    mögliche_fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
-        filter(cast(Flug.sollabflugzeit, Date) == request.args.get('Abflugdatum')).filter(
-        Flug.flugstatus != "annulliert")
+    else:
 
-    buchbare_fluege = []
+        mögliche_fluege = Flug.query.join(Flugzeug).filter(Flug.flugzeugid == Flugzeug.flugzeugid). \
+            filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
+            filter(cast(Flug.sollabflugzeit, Date) == request.args.get('Abflugdatum')).filter(
+            Flug.flugstatus != "annulliert").filter(Flugzeug.status != "inaktiv")
 
-    # zählt Anzahl der bereits gebuchten passagiere und überprüft ob innherhalb der Kapazität des Flugzeugs und fügt sie
-    # zu buchbaren Flügen hinzu
+        buchbare_fluege = []
 
-    for rows in mögliche_fluege:
-        anzahl_geb_passagiere = Passagier.query.join(Buchung). \
-            filter(Buchung.flugid == rows.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).count()
-        flugzeug_kapa = Flugzeug.query.get(rows.flugzeugid).anzahlsitzplaetze
-        if (int(anzahl_geb_passagiere) + int(passagiere)) <= int(flugzeug_kapa):
-            buchbare_fluege.append(rows)
+        # zählt Anzahl der bereits gebuchten passagiere und überprüft ob innherhalb der Kapazität des Flugzeugs und
+        # fügt sie zu buchbaren Flügen hinzu
 
-    # wenn keiner der flüge buchbar ist
+        for rows in mögliche_fluege:
+            anzahl_geb_passagiere = Passagier.query.join(Buchung). \
+                filter(Buchung.flugid == rows.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).count()
+            flugzeug_kapa = Flugzeug.query.get(rows.flugzeugid).anzahlsitzplaetze
+            if (int(anzahl_geb_passagiere) + int(passagiere)) <= int(flugzeug_kapa):
+                buchbare_fluege.append(rows)
 
-    if not buchbare_fluege:
-        flash('Zu Ihren Suchkriterien wurde kein passender Flug gefunden', category='error')
+        # wenn keiner der flüge buchbar ist
 
-    return render_template("nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
-                           user=current_user,
-                           passagiere=passagiere,
-                           today=date.today(), abflug=abflug, default_flughafen_von=default_flughafen_von,
-                           default_flughafen_nach=default_flughafen_nach, buchbare_fluege=buchbare_fluege)
+        if not buchbare_fluege:
+            flash('Zu Ihren Suchkriterien wurde kein passender Flug gefunden', category='error')
+
+        return render_template("nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
+                               user=current_user,
+                               passagiere=passagiere,
+                               today=date.today(), abflug=abflug, default_flughafen_von=default_flughafen_von,
+                               default_flughafen_nach=default_flughafen_nach, buchbare_fluege=buchbare_fluege)
 
 
 @nutzer_ohne_account_views.route('/flugstatus-überprüfen', methods=['GET', 'POST'])
@@ -145,13 +150,18 @@ def flugstatus_überprüfen():
         abflug = request.args.get('abflugdatum')
         flugnummer = request.args.get('flugnummer')
 
-        if request.args.get('abflugdatum') is not None and is_date_after_yesterday(request.args.get('abflugdatum')):
+        if request.args.get('abflugdatum') is not None and is_date_after_yesterday(
+                request.args.get('abflugdatum'), 1):
             flash('Bitte geben Sie ein Datum ein, welches nicht in der Vergangenheit liegt', category='error')
+            return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user)
+        else:
 
-        fluege = Flug.query.filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer)
+            fluege = Flug.query.join(Flugzeug).filter(Flug.flugzeugid == Flugzeug.flugzeugid). \
+                filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer). \
+                filter(Flugzeug.status != "inaktiv")
 
-        if fluege is None:
-            flash('Zu Ihren Suchenkriterien wurde kein passender Flug gefunden.', category='error')
+            if fluege is None:
+                flash('Zu Ihren Suchenkriterien wurde kein passender Flug gefunden.', category='error')
 
         return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege,
                                abflug=abflug, flugnummer=flugnummer, today=date.today(),
@@ -167,9 +177,10 @@ def fluglinien_anzeigen(page):
 
     # flüge müssen ab gestern in der Zukunft sein
 
-    fluege = Flug.query.filter(Flug.sollabflugzeit > date.today() - timedelta(days=1)).with_entities(Flug.flugnummer,
-                                                                                                     Flug.abflugid,
-                                                                                                     Flug.zielid).distinct().paginate(
+    fluege = Flug.query.filter(Flug.sollabflugzeit > (date.today() - timedelta(days=1))). \
+        filter(Flug.flugstatus != "annulliert").with_entities(Flug.flugnummer,
+                                                              Flug.abflugid,
+                                                              Flug.zielid).distinct().paginate(
         page=page, per_page=pages, error_out=False)
     return render_template("nutzer_ohne_account/fluglinien_anzeigen.html", user=current_user, fluege=fluege,
                            flughafen_liste=flughafen_liste)
