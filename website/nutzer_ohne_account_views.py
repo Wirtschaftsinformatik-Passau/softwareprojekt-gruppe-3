@@ -13,12 +13,12 @@ default_flughafen_von = "Passau"
 default_flughafen_nach = "München"
 
 
-def is_date_after_yesterday(date):
+def is_date_after_yesterday(date, diff):
     # Convert the input date to a datetime object
     date = datetime.strptime(date, '%Y-%m-%d')
 
     # Get the current date and time
-    now = datetime.today()
+    now = datetime.today() - timedelta(days=diff)
 
     # Compare the input date to the current date and time
     if date < now:
@@ -83,7 +83,8 @@ def home():
     if request.args.get('Abflugdatum') is None:
         buchbare_fluege = []
 
-        mögliche_fluege = Flug.query.filter(Flug.abflugid == 6, Flug.zielid == 1). \
+        mögliche_fluege = Flug.query.join(Flugzeug).filter(Flug.flugzeugid == Flugzeug.flugzeugid). \
+            filter(Flug.abflugid == 6, Flug.zielid == 1).filter(Flugzeug.status != "inaktiv"). \
             filter(cast(Flug.sollabflugzeit, Date) == date.today() + timedelta(days=1)).filter(
             Flug.flugstatus != "annulliert")
 
@@ -106,15 +107,16 @@ def home():
 
     # is date in the future
 
-    if request.args.get('Abflugdatum') is not None and is_date_after_yesterday(request.args.get('Abflugdatum')):
+    if request.args.get('Abflugdatum') is not None and is_date_after_yesterday(request.args.get('Abflugdatum'), 0):
         flash('Bitte geben Sie ein Datum ein, welches in der Zukunft liegt', category='error')
         return render_template("nutzer_ohne_account/home.html", user=current_user, flughafen_liste=flughafen_liste)
 
     else:
 
-        mögliche_fluege = Flug.query.filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
+        mögliche_fluege = Flug.query.join(Flugzeug).filter(Flug.flugzeugid == Flugzeug.flugzeugid). \
+            filter(Flug.abflugid == vonID, Flug.zielid == nachID). \
             filter(cast(Flug.sollabflugzeit, Date) == request.args.get('Abflugdatum')).filter(
-            Flug.flugstatus != "annulliert")
+            Flug.flugstatus != "annulliert").filter(Flugzeug.status != "inaktiv")
 
         buchbare_fluege = []
 
@@ -148,13 +150,18 @@ def flugstatus_überprüfen():
         abflug = request.args.get('abflugdatum')
         flugnummer = request.args.get('flugnummer')
 
-        if request.args.get('abflugdatum') is not None and is_date_after_yesterday(request.args.get('abflugdatum')):
+        if request.args.get('abflugdatum') is not None and is_date_after_yesterday(
+                request.args.get('abflugdatum'), 1):
             flash('Bitte geben Sie ein Datum ein, welches nicht in der Vergangenheit liegt', category='error')
+            return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user)
+        else:
 
-        fluege = Flug.query.filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer)
+            fluege = Flug.query.join(Flugzeug).filter(Flug.flugzeugid == Flugzeug.flugzeugid). \
+                filter(cast(Flug.sollabflugzeit, Date) == abflug).filter(Flug.flugnummer == flugnummer). \
+                filter(Flugzeug.status != "inaktiv")
 
-        if fluege is None:
-            flash('Zu Ihren Suchenkriterien wurde kein passender Flug gefunden.', category='error')
+            if fluege is None:
+                flash('Zu Ihren Suchenkriterien wurde kein passender Flug gefunden.', category='error')
 
         return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege,
                                abflug=abflug, flugnummer=flugnummer, today=date.today(),
@@ -170,9 +177,10 @@ def fluglinien_anzeigen(page):
 
     # flüge müssen ab gestern in der Zukunft sein
 
-    fluege = Flug.query.filter(Flug.sollabflugzeit > date.today() - timedelta(days=1)).with_entities(Flug.flugnummer,
-                                                                                                     Flug.abflugid,
-                                                                                                     Flug.zielid).distinct().paginate(
+    fluege = Flug.query.filter(Flug.sollabflugzeit > (date.today() - timedelta(days=1))). \
+        filter(Flug.flugstatus != "annulliert").with_entities(Flug.flugnummer,
+                                                              Flug.abflugid,
+                                                              Flug.zielid).distinct().paginate(
         page=page, per_page=pages, error_out=False)
     return render_template("nutzer_ohne_account/fluglinien_anzeigen.html", user=current_user, fluege=fluege,
                            flughafen_liste=flughafen_liste)
