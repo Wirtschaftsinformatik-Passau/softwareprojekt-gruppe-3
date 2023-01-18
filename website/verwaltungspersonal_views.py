@@ -9,7 +9,7 @@ from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, 
 from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
 from flask_mail import Mail, Message
-import __init__
+#import __init__
 
 # store the standard routes for a website where the user can navigate to
 verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)

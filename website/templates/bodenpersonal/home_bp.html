@@ -98,16 +98,22 @@
             {% endif %}
         </td>
 
-        <td>
-            {% for gepaeck_row in gepaeck%}
-            {{ gepaeck_row.status }}
-            {% if gepaeck_row.status == "gebucht" and row.buchungsstatus=="gebucht" and passagier_row.passagierstatus == "gebucht"
-            and  flug_datum >= today %}
-           <!-- <button type="button" class="btn btn-info  btn-sm" >Check-In</button>
-           <button type="button" class="btn btn-info  btn-sm" >Etikett ausdrucken</button>-->
-            {% endif %}
-            {% endfor %}
-        </td>
+       <td>
+    {% for gepaeck_row in gepaeck%}
+   {% if gepaeck_row.status == "gebucht" %}
+    <input type="checkbox" name="gepaeckid" value="{{gepaeck_row.gepaeckid}}" >
+    {% endif %}
+           {{ gepaeck_row.status }}
+           {% if passagier_row.passagierstatus == "eingecheckt" or passagier_row.passagierstatus == "boarded" or passagier_row.passagierstatus == "gebucht" %}
+                 {% if gepaeck_row.status == "gebucht" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
+
+                     <form action="{{ url_for('bodenpersonal_views.koffer_einchecken', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}" method="post">
+                     <input type="submit" class="btn btn-warning btn-sm" value="Check-In">
+                     </form>
+                 {% endif %}
+           {% endif %}
+    {% endfor %}
+</td>
       </tr>
     {% endfor %}
     {% endfor %}

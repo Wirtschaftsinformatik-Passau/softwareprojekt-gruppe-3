@@ -150,7 +150,7 @@ def einchecken():
                 db.session.add(gepaeck)
                 db.session.commit()
                 flash("Check-In erfolgreich")
-                return redirect(url_for('bodenpersonal_views.home'))
+
 
         else:
             flash("Passagier hat kein Gepäck gebucht")
@@ -161,6 +161,24 @@ def einchecken():
 
     return render_template('bodenpersonal/einchecken.html', user=current_user, passagier=passagier, vorname=vorname,
                            nachname=nachname, gepaeck_nummer=gepaeck_nummer)
+
+@bodenpersonal_views.route('/koffer_einchecken/<int:buchungsid>/<buchungsnummer>/<vorname>/<nachname>', methods=["POST"])
+def koffer_einchecken(buchungsid,buchungsnummer, vorname, nachname):
+    if 'gepaeckid' not in request.form:
+        flash("Error: No luggage ids were submitted in the form.", category="error")
+        return redirect(url_for('bodenpersonal_views.home'))
+    else:
+        gepaeckid = request.form.getlist('gepaeckid')
+        for id in gepaeckid:
+            gepaeck = Gepaeck.query.filter_by(gepaeckid=id).first()
+            gepaeck.status = "eingecheckt"
+            db.session.add(gepaeck)
+            db.session.commit()
+        flash(f"Gepäck wurde eingecheckt für Passagier {vorname} {nachname} {buchungsid} {buchungsnummer} {gepaeckid}",
+              category="success")
+        return redirect(url_for('bodenpersonal_views.home'))
+
+
 
 
 @bodenpersonal_views.route('/boarding', methods=['POST'])
@@ -173,7 +191,7 @@ def boarding():
     passagier.passagierstatus = "boarded"
     db.session.add(passagier)
     db.session.commit()
-    flash("Passagier erfolgreich geboarded")
+    flash("Passagier erfolgreich geboarded","success")
     return redirect(url_for('bodenpersonal_views.home',buchungsid=buchungsid, vorname=vorname, nachname=nachname))
 
 
