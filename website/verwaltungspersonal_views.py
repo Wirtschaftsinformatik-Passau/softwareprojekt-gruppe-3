@@ -213,10 +213,32 @@ def flug_bearbeiten(page):
 @verwaltungspersonal_views.route('/flug-annulieren/<int:id>', methods=['GET', 'POST'])
 def flug_annulieren(id):
     flug = Flug.query.get_or_404(id)
-    flug.flugstatus = 'annulliert'
-    db.session.commit()
-    flash('Flug wurde erfolgreich annulliert', category='success')
-    return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+    if flug.flugstatus == "annulliert":
+        flash('Flug wurde bereits annulliert!', category='error')
+        return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+    else:
+        flug.flugstatus = 'annulliert'
+        db.session.commit()
+        flughafen_von = Flughafen.query.filter(Flughafen.flughafenid == flug.abflugid).first()
+        flughafen_nach = Flughafen.query.filter(Flughafen.flughafenid == flug.zielid).first()
+        wann = flug.sollabflugzeit.strftime("%d.%m.%Y")
+
+        emailadressen = ["test@default.com"]
+
+        alle_nutzer = Nutzerkonto.query.join(Buchung).filter(Nutzerkonto.id == Buchung.nutzerid). \
+            filter(Buchung.flugid == id)
+
+        for rows in alle_nutzer:
+            emailadressen.append(str(rows.emailadresse))
+
+        print(emailadressen)
+
+        msg = Message('Annullierung Ihres Fluges', sender='airpassau.de@gmail.com', recipients=emailadressen)
+        msg.html = render_template('Verwaltungspersonal/Flug_annulliert_email.html',
+                               user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
+        mail.send(msg)
+        flash('Flug wurde erfolgreich annulliert', category='success')
+        return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
 
 @verwaltungspersonal_views.route('/flug-ändern/', methods=['GET', 'POST'])
@@ -241,8 +263,6 @@ def flug_ändern():
         # check ob ein Flug mit gleichen von und nach und abflugzeit existiert
         if is_date_after_yesterday(flug.istankunftszeit, 0) or flug.flugstatus == "annulliert":
             flash('Der Flug ist bereits gelandet oder annulliert worden. Sie können keine Änderungen mehr vornehmen', category='error')
-        elif old_ankunft > datetime.now() and int(old_price) != int(request.form['preis']):
-            flash('Der Flug ist bereits gestartet. Sie können den Preis nicht mehr ändern', category='error')
         elif flug.sollabflugzeit > flug.sollankunftszeit or flug.istabflugzeit > flug.istankunftszeit:
             flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe',
                   category='error')
@@ -255,6 +275,10 @@ def flug_ändern():
 
             elif flug.istankunftszeit == flug.sollankunftszeit:
                 flug.flugstatus = "pünktlich"
+
+            flughafen_von = Flughafen.query.filter(Flughafen.flughafenid == flug.abflugid).first()
+            flughafen_nach = Flughafen.query.filter(Flughafen.flughafenid == flug.zielid).first()
+            wann = request.form['abflugdatum']
 
             db.session.commit()
 
@@ -272,7 +296,7 @@ def flug_ändern():
 
             msg = Message('Änderungen in Ihrer Buchung', sender='airpassau.de@gmail.com', recipients=emailadressen)
             msg.html = render_template('Verwaltungspersonal/Flugdaten_geändert_email.html',
-                                       user=current_user)
+                                       user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
             mail.send(msg)
 
             flash("Flugdaten erfolgreich geändert", category='success')
