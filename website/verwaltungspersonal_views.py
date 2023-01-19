@@ -1,6 +1,6 @@
 import random
 import string
-
+from datetime import date, datetime, timedelta
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
@@ -17,6 +17,20 @@ verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
 
 default_flughafen_von = "Passau"
 default_flughafen_nach = "München"
+
+
+def is_date_after_yesterday(date, diff):
+    # Convert the input date to a datetime object
+    date = datetime.strptime(date, '%Y-%m-%d %H:%M')
+
+    # Get the current date and time
+    now = datetime.now() - timedelta(days=diff)
+
+    # Compare the input date to the current date and time
+    if date < now:
+        return True
+    else:
+        return False
 
 
 # Flugzeug funktionen
@@ -130,12 +144,23 @@ def flug_anlegen():
         ankunftsdatum = request.form.get('ankunftsdatum') + " " + request.form.get("ankunftszeit")
         flugnummer = request.form.get('fluglinie')
         preis = request.form.get('preis')
-        print(abflugid.flughafenid)
 
-        if abflugdatum > ankunftsdatum:
-            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe', category='error')
+        # chec, ob ein Flug mit gleichen von und nach und abflugzeit existiert
+
+        fluege = Flug.query.filter(Flug.abflugid == abflugid.flughafenid).filter(Flug.zielid == zielid.flughafenid). \
+            filter(Flug.sollabflugzeit == abflugdatum).filter(Flug.sollankunftszeit == ankunftsdatum). \
+            filter(Flug.flugzeugid == flugzeugid)
+
+        if is_date_after_yesterday(abflugdatum, 0):
+            flash('Das Abflugdatum darf nicht in der Vergangenheit liegen',
+                  category='error')
+        elif abflugdatum > ankunftsdatum:
+            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe',
+                  category='error')
         elif abflugid.flughafenid == zielid.flughafenid:
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
+        elif fluege.first() is not None:
+            flash('Der gleiche Flug existiert bereits. Wählen Sie andere Eingabedaten', category='error')
         else:
 
             new_flug = Flug(flugzeugid=flugzeugid, abflugid=abflugid.flughafenid, zielid=zielid.flughafenid,
@@ -166,7 +191,8 @@ def flug_bearbeiten(page):
 
     # alle flüge von gestern bis in die Zukunft
 
-    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).order_by(Flug.flugid.desc()) \
+    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).order_by(
+        Flug.sollabflugzeit.desc()) \
         .paginate(page=page, per_page=pages, error_out=False)
 
     if request.method == 'POST' and 'tag' in request.form:
@@ -198,6 +224,10 @@ def flug_ändern():
     if request.method == 'POST':
         flug = Flug.query.get_or_404(request.form.get('id'))
 
+        old_price = flug.preis
+        old_abflug = flug.sollabflugzeit
+        old_ankunft = flug.sollankunftszeit
+
         flug.abflugid = request.form['von']
         flug.zielid = request.form['nach']
         flug.flugzeugid = request.form['flugzeugtyp']
@@ -207,8 +237,15 @@ def flug_ändern():
         flug.istabflugzeit = request.form['abflugdatum'] + " " + request.form['istabflugzeit']
         flug.istankunftszeit = request.form['ankunftsdatum'] + " " + request.form['istankunftszeit']
         flug.flugnummer = request.form['fluglinie']
-        if flug.sollabflugzeit > flug.sollankunftszeit or flug.istabflugzeit > flug.istankunftszeit:
-            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe', category='error')
+
+        # check ob ein Flug mit gleichen von und nach und abflugzeit existiert
+        if is_date_after_yesterday(flug.istankunftszeit, 0) or flug.flugstatus == "annulliert":
+            flash('Der Flug ist bereits gelandet oder annulliert worden. Sie können keine Änderungen mehr vornehmen', category='error')
+        elif old_ankunft > datetime.now() and int(old_price) != int(request.form['preis']):
+            flash('Der Flug ist bereits gestartet. Sie können den Preis nicht mehr ändern', category='error')
+        elif flug.sollabflugzeit > flug.sollankunftszeit or flug.istabflugzeit > flug.istankunftszeit:
+            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe',
+                  category='error')
         elif flug.abflugid == flug.zielid:
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
         else:
@@ -220,6 +257,24 @@ def flug_ändern():
                 flug.flugstatus = "pünktlich"
 
             db.session.commit()
+
+            # random email adresse, da sonst fehler meldung wenn keine Email adresse hinterlegt ist
+
+            emailadressen = ["test@default.com"]
+
+            alle_nutzer = Nutzerkonto.query.join(Buchung).filter(Nutzerkonto.id == Buchung.nutzerid). \
+                filter(Buchung.flugid == request.form.get('id'))
+
+            for rows in alle_nutzer:
+                emailadressen.append(str(rows.emailadresse))
+
+            print(emailadressen)
+
+            msg = Message('Änderungen in Ihrer Buchung', sender='airpassau.de@gmail.com', recipients=emailadressen)
+            msg.html = render_template('Verwaltungspersonal/Flugdaten_geändert_email.html',
+                                       user=current_user)
+            mail.send(msg)
+
             flash("Flugdaten erfolgreich geändert", category='success')
 
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
