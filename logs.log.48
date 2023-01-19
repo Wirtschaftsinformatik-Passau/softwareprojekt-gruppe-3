@@ -1,0 +1,10 @@
+2023-01-19 16:53:48,769 - INFO -  * Restarting with stat
+2023-01-19 16:53:50,215 - WARNING -  * Debugger is active!
+2023-01-19 16:53:50,223 - INFO -  * Debugger PIN: 123-827-586
+2023-01-19 16:54:22,607 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\bodenpersonal_views.py', reloading
+2023-01-19 16:54:22,834 - INFO -  * Restarting with stat
+2023-01-19 16:54:24,464 - WARNING -  * Debugger is active!
+2023-01-19 16:54:24,471 - INFO -  * Debugger PIN: 123-827-586
+2023-01-19 16:54:26,216 - INFO - 127.0.0.1 - - [19/Jan/2023 16:54:26] "[35m[1mPOST /generate_boarding_pass?passagier_id=1 HTTP/1.1[0m" 500 -
+2023-01-19 16:54:26,316 - INFO - 127.0.0.1 - - [19/Jan/2023 16:54:26] "[36mGET /generate_boarding_pass?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2023-01-19 16:54:26,318 - INFO - 127.0.0.1 - - [19/Jan/2023 16:54:26] "[36mGET /generate_boarding_pass?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -

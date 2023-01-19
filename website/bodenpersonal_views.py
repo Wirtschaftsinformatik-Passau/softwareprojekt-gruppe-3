@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file
+from flask import Blueprint, render_template, request, flash, redirect,Response, url_for, send_file
 from flask_login import current_user, login_required
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
@@ -7,9 +7,11 @@ from datetime import datetime
 import random, string
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-from reportlab.graphics.barcode import qr
-
+from qrcode import QRCode
+from qrcode.constants import ERROR_CORRECT_L
 
 # store the standard routes for a website where the user can navigate to
 bodenpersonal_views = Blueprint('bodenpersonal_views', __name__)
@@ -196,6 +198,11 @@ def generate_boarding_pass():
         ankunft_flughafen, Flug.abflugid == ankunft_flughafen.flughafenid).join(
         ziel_flughafen, Flug.zielid == ziel_flughafen.flughafenid).filter(
         Passagier.passagierid == passagier_id).first()
+    qr = QRCode(version=5, error_correction=ERROR_CORRECT_L)
+    qr.add_data(passagier.boardingpassnummer)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.save("boarding_pass_{}_{}.png".format(passagier.vorname, passagier.nachname))
     doc = SimpleDocTemplate("boarding_pass.pdf", pagesize=letter)
     elements = []
     data = [['Name:', passagier.vorname + ' ' + passagier.nachname],
@@ -206,9 +213,11 @@ def generate_boarding_pass():
             #['Datum:', passagier.flug.sollabflugzeit.date()],
             ['Boardingpassnummer:', passagier.boardingpassnummer]]
     t = Table(data)
-    t.qr(passagier.boardingpassnummer, x=10, y=10, qr_version=5, qr_error_correction='M')
+    img = ImageReader('boarding_pass.png')
+
     # Setting the table style
-    t.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+    t.setStyle(TableStyle([ ('IMAGE',(0,-1),(-1,-1),img,(20,20),(200,200)),
+                           ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
                            ('TEXTCOLOR', (0, 0), (-1, -1), colors.whitesmoke),
                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -219,8 +228,10 @@ def generate_boarding_pass():
     elements.append(t)
     # Building the PDF
     doc.build(elements)
-    return send_file('boarding_pass.pdf', as_attachment=True)
-
+    with open("boarding_pass.pdf", 'rb') as pdf:
+        pdf_data =pdf.read()
+        response = Response(pdf_data,content_type='application/pdf',headers={"Content-Disposition":"attachment;filename=boarding_pass_{}_{}.pdf".format(passagier.vorname, passagier.nachname)})
+        return response
 
 
 @bodenpersonal_views.route('/fluege_pruefen', methods=["GET", "POST"])
