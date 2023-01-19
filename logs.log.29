@@ -1,12 +1,11 @@
-2023-01-19 17:05:42,951 - INFO -  * Restarting with stat
-2023-01-19 17:05:44,284 - WARNING -  * Debugger is active!
-2023-01-19 17:05:44,290 - INFO -  * Debugger PIN: 123-827-586
-2023-01-19 17:07:08,802 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\bodenpersonal_views.py', reloading
-2023-01-19 17:07:08,935 - INFO -  * Restarting with stat
-2023-01-19 17:07:10,355 - WARNING -  * Debugger is active!
-2023-01-19 17:07:10,368 - INFO -  * Debugger PIN: 123-827-586
-2023-01-19 17:07:22,370 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\bodenpersonal_views.py', reloading
-2023-01-19 17:07:22,651 - INFO -  * Restarting with stat
-2023-01-19 17:07:24,168 - WARNING -  * Debugger is active!
-2023-01-19 17:07:24,175 - INFO -  * Debugger PIN: 123-827-586
-2023-01-19 17:09:43,178 - INFO -  * Restarting with stat
+2023-01-19 10:06:08,047 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2023-01-19 10:06:08,053 - INFO - [33mPress CTRL+C to quit[0m
+2023-01-19 10:06:08,055 - INFO -  * Restarting with stat
+2023-01-19 10:06:08,590 - WARNING -  * Debugger is active!
+2023-01-19 10:06:08,592 - INFO -  * Debugger PIN: 101-719-810
+2023-01-19 10:06:10,134 - INFO - 127.0.0.1 - - [19/Jan/2023 10:06:10] "GET / HTTP/1.1" 200 -
+2023-01-19 10:06:10,144 - INFO - 127.0.0.1 - - [19/Jan/2023 10:06:10] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
+2023-01-19 10:06:10,200 - INFO - 127.0.0.1 - - [19/Jan/2023 10:06:10] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2023-01-19 10:06:10,233 - INFO - 127.0.0.1 - - [19/Jan/2023 10:06:10] "GET /buchung_suchen HTTP/1.1" 200 -
+2023-01-19 10:06:13,072 - INFO - 127.0.0.1 - - [19/Jan/2023 10:06:13] "GET /buchung_suchen HTTP/1.1" 200 -

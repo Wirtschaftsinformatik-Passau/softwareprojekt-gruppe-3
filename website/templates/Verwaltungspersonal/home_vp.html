@@ -45,17 +45,17 @@
                                 <div class="col">
                                     <label for="Modell">Modell:</label>
                                     <input type="text" class="form-control" id="Modell" name="Modell" placeholder=""
-                                    required>
+                                           pattern="[A-Z0-9]+" required>
                                 </div>
                                 <div class="col">
                                     <label for="Hersteller">Hersteller:</label>
                                     <input type="text" class="form-control" id="Hersteller" name="Hersteller"
-                                           placeholder="" required>
+                                           placeholder="" pattern="[a-zA-Z]+" required>
                                 </div>
                                 <div class="col">
                                     <label for="Anzahl Sitzplätze">Anzahl der Sitzplätze:</label>
                                     <input type="number" class="form-control" id="anzahlsitzplaetze"
-                                           name="anzahlsitzplaetze"
+                                           name="anzahlsitzplaetze" min="1"
                                            placeholder="" required>
                                 </div>
                                 <div class="col-auto my-4">

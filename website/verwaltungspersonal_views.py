@@ -1,6 +1,6 @@
 import random
 import string
-
+from datetime import date, datetime, timedelta
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
@@ -9,6 +9,7 @@ from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, 
 from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
 from flask_mail import Mail, Message
+import re
 
 # import __init__
 
@@ -17,6 +18,20 @@ verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
 
 default_flughafen_von = "Passau"
 default_flughafen_nach = "München"
+
+
+def is_date_after_yesterday(date, diff):
+    # Convert the input date to a datetime object
+    date = datetime.strptime(date, '%Y-%m-%d %H:%M')
+
+    # Get the current date and time
+    now = datetime.now() - timedelta(days=diff)
+
+    # Compare the input date to the current date and time
+    if date < now:
+        return True
+    else:
+        return False
 
 
 # Flugzeug funktionen
@@ -130,12 +145,23 @@ def flug_anlegen():
         ankunftsdatum = request.form.get('ankunftsdatum') + " " + request.form.get("ankunftszeit")
         flugnummer = request.form.get('fluglinie')
         preis = request.form.get('preis')
-        print(abflugid.flughafenid)
 
-        if abflugdatum > ankunftsdatum:
-            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe', category='error')
+        # chec, ob ein Flug mit gleichen von und nach und abflugzeit existiert
+
+        fluege = Flug.query.filter(Flug.abflugid == abflugid.flughafenid).filter(Flug.zielid == zielid.flughafenid). \
+            filter(Flug.sollabflugzeit == abflugdatum).filter(Flug.sollankunftszeit == ankunftsdatum). \
+            filter(Flug.flugzeugid == flugzeugid)
+
+        if is_date_after_yesterday(abflugdatum, 0):
+            flash('Das Abflugdatum darf nicht in der Vergangenheit liegen',
+                  category='error')
+        elif abflugdatum > ankunftsdatum:
+            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe',
+                  category='error')
         elif abflugid.flughafenid == zielid.flughafenid:
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
+        elif fluege.first() is not None:
+            flash('Der gleiche Flug existiert bereits. Wählen Sie andere Eingabedaten', category='error')
         else:
 
             new_flug = Flug(flugzeugid=flugzeugid, abflugid=abflugid.flughafenid, zielid=zielid.flughafenid,
@@ -166,7 +192,8 @@ def flug_bearbeiten(page):
 
     # alle flüge von gestern bis in die Zukunft
 
-    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).order_by(Flug.flugid.desc()) \
+    fluege = Flug.query.filter(Flug.istabflugzeit > date.today() - timedelta(days=1)).order_by(
+        Flug.sollabflugzeit.desc()) \
         .paginate(page=page, per_page=pages, error_out=False)
 
     if request.method == 'POST' and 'tag' in request.form:
@@ -187,16 +214,42 @@ def flug_bearbeiten(page):
 @verwaltungspersonal_views.route('/flug-annulieren/<int:id>', methods=['GET', 'POST'])
 def flug_annulieren(id):
     flug = Flug.query.get_or_404(id)
-    flug.flugstatus = 'annulliert'
-    db.session.commit()
-    flash('Flug wurde erfolgreich annulliert', category='success')
-    return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+    if flug.flugstatus == "annulliert":
+        flash('Flug wurde bereits annulliert!', category='error')
+        return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+    else:
+        flug.flugstatus = 'annulliert'
+        db.session.commit()
+        flughafen_von = Flughafen.query.filter(Flughafen.flughafenid == flug.abflugid).first()
+        flughafen_nach = Flughafen.query.filter(Flughafen.flughafenid == flug.zielid).first()
+        wann = flug.sollabflugzeit.strftime("%d.%m.%Y")
+
+        emailadressen = ["test@default.com"]
+
+        alle_nutzer = Nutzerkonto.query.join(Buchung).filter(Nutzerkonto.id == Buchung.nutzerid). \
+            filter(Buchung.flugid == id)
+
+        for rows in alle_nutzer:
+            emailadressen.append(str(rows.emailadresse))
+
+        print(emailadressen)
+
+        msg = Message('Annullierung Ihres Fluges', sender='airpassau.de@gmail.com', recipients=emailadressen)
+        msg.html = render_template('Verwaltungspersonal/Flug_annulliert_email.html',
+                                   user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
+        mail.send(msg)
+        flash('Flug wurde erfolgreich annulliert', category='success')
+        return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
 
 @verwaltungspersonal_views.route('/flug-ändern/', methods=['GET', 'POST'])
 def flug_ändern():
     if request.method == 'POST':
         flug = Flug.query.get_or_404(request.form.get('id'))
+
+        old_price = flug.preis
+        old_abflug = flug.sollabflugzeit
+        old_ankunft = flug.sollankunftszeit
 
         flug.abflugid = request.form['von']
         flug.zielid = request.form['nach']
@@ -207,8 +260,14 @@ def flug_ändern():
         flug.istabflugzeit = request.form['abflugdatum'] + " " + request.form['istabflugzeit']
         flug.istankunftszeit = request.form['ankunftsdatum'] + " " + request.form['istankunftszeit']
         flug.flugnummer = request.form['fluglinie']
-        if flug.sollabflugzeit > flug.sollankunftszeit or flug.istabflugzeit > flug.istankunftszeit:
-            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe', category='error')
+
+        # check ob ein Flug mit gleichen von und nach und abflugzeit existiert
+        if is_date_after_yesterday(flug.istankunftszeit, 0) or flug.flugstatus == "annulliert":
+            flash('Der Flug ist bereits gelandet oder annulliert worden. Sie können keine Änderungen mehr vornehmen',
+                  category='error')
+        elif flug.sollabflugzeit > flug.sollankunftszeit or flug.istabflugzeit > flug.istankunftszeit:
+            flash('Der Ankunftszeit darf nicht vor der Abflugzeit sein. Bitte kontrollieren Sie die Eingabe',
+                  category='error')
         elif flug.abflugid == flug.zielid:
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
         else:
@@ -219,7 +278,29 @@ def flug_ändern():
             elif flug.istankunftszeit == flug.sollankunftszeit:
                 flug.flugstatus = "pünktlich"
 
+            flughafen_von = Flughafen.query.filter(Flughafen.flughafenid == flug.abflugid).first()
+            flughafen_nach = Flughafen.query.filter(Flughafen.flughafenid == flug.zielid).first()
+            wann = request.form['abflugdatum']
+
             db.session.commit()
+
+            # random email adresse, da sonst fehler meldung wenn keine Email adresse hinterlegt ist
+
+            emailadressen = ["test@default.com"]
+
+            alle_nutzer = Nutzerkonto.query.join(Buchung).filter(Nutzerkonto.id == Buchung.nutzerid). \
+                filter(Buchung.flugid == request.form.get('id'))
+
+            for rows in alle_nutzer:
+                emailadressen.append(str(rows.emailadresse))
+
+            print(emailadressen)
+
+            msg = Message('Änderungen in Ihrer Buchung', sender='airpassau.de@gmail.com', recipients=emailadressen)
+            msg.html = render_template('Verwaltungspersonal/Flugdaten_geändert_email.html',
+                                       user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
+            mail.send(msg)
+
             flash("Flugdaten erfolgreich geändert", category='success')
 
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
@@ -238,16 +319,26 @@ def accounts_anlegen():
             passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
         rolle = request.form.get('rolle')
 
-        new_account = Nutzerkonto(vorname=vorname, nachname=nachname, emailadresse=emailadresse, rolle=rolle,
-                                  passwort=generate_password_hash(passwort, method='sha256'))
-        db.session.add(new_account)
-        db.session.commit()
-        msg = Message('Ihr Account wurde erstellt', sender='airpassau.de@gmail.com', recipients=[emailadresse])
-        msg.html = render_template('Verwaltungspersonal/neuer_account_erstellt_email.html', password=passwort,
-                                   user=current_user, rolle=rolle, vorname=vorname)
-        mail.send(msg)
+        konto = Nutzerkonto.query.filter_by(emailadresse=emailadresse).first()
+        if konto:
+            flash('Mit dieser E-Mail-Adresse existiert bereits ein Account. Bitte löschen Sie diesen bevor Sie einen '
+                  'neuen Account erstellen.',
+                  category='error')
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', emailadresse):
+            flash('Ungültige Email Adresse !', category='error')
+        else:
 
-        flash(rolle + "account wurde erfolgreich erstellt")
+            new_account = Nutzerkonto(vorname=vorname, nachname=nachname, emailadresse=emailadresse, rolle=rolle,
+                                      passwort=generate_password_hash(passwort, method='sha256'))
+            db.session.add(new_account)
+            db.session.commit()
+            msg = Message('Ihr Account wurde erstellt', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+            msg.html = render_template('Verwaltungspersonal/neuer_account_erstellt_email.html', password=passwort,
+                                       user=current_user, rolle=rolle, vorname=vorname)
+            mail.send(msg)
+
+            flash(rolle + "account wurde erfolgreich erstellt")
+            return render_template("Verwaltungspersonal/accounts_anlegen.html", user=current_user)
 
     return render_template("Verwaltungspersonal/accounts_anlegen.html", user=current_user)
 
