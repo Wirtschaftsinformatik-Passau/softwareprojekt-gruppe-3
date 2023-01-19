@@ -73,7 +73,7 @@ def flug_buchen(id, anzahlPassagiere):
             if len(passagier_data) == max_items_per_list:
 
                 if not is_date_in_past(passagier_data[2]):
-                    flash('Das Geburtsdatum von ' + passagier_data[0] + '' + passagier_data[
+                    flash('Das Geburtsdatum von ' + passagier_data[0] + ' ' + passagier_data[
                         1] + ' muss in der Vergangenheit liegen', category='error')
 
                     return render_template("Passagier/flug_buchen.html", user=current_user, flugid=id,
