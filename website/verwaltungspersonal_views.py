@@ -283,9 +283,11 @@ def flug_ändern():
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
         elif is_between(flug.istabflugzeit, flug.istankunftszeit) and int(old_price) != int(request.form['preis']):
             flash('Der Flug ist bereits gestartet. Sie können den Preis nicht mehr ändern', category='error')
-        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_abflug != (request.form['abflugdatum'] + " " + request.form['sollabflugzeit']):
+        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_abflug != (
+                request.form['abflugdatum'] + " " + request.form['sollabflugzeit']):
             flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
-        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_ankunft != (request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit']):
+        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_ankunft != (
+                request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit']):
             flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
         else:
 
@@ -413,3 +415,8 @@ def accounts_loeschen(id):
 @verwaltungspersonal_views.route('/logging/')
 def logging():
     return redirect(url_for('logging'))
+
+
+@verwaltungspersonal_views.route('/reporting', methods=['GET', 'POST'])
+def reporting():
+    return render_template("Verwaltungspersonal/reporting.html", user=current_user)
