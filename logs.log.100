@@ -1,11 +1,10 @@
-2023-01-18 20:25:31,597 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on http://127.0.0.1:5000
-2023-01-18 20:25:31,607 - INFO - [33mPress CTRL+C to quit[0m
-2023-01-18 20:25:31,609 - INFO -  * Restarting with stat
-2023-01-18 20:25:32,293 - WARNING -  * Debugger is active!
-2023-01-18 20:25:32,295 - INFO -  * Debugger PIN: 101-719-810
-2023-01-18 20:25:33,173 - INFO - 127.0.0.1 - - [18/Jan/2023 20:25:33] "GET / HTTP/1.1" 200 -
-2023-01-18 20:25:33,188 - INFO - 127.0.0.1 - - [18/Jan/2023 20:25:33] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
-2023-01-18 20:25:33,248 - INFO - 127.0.0.1 - - [18/Jan/2023 20:25:33] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
-2023-01-18 20:25:33,277 - INFO - 127.0.0.1 - - [18/Jan/2023 20:25:33] "GET /buchung_suchen HTTP/1.1" 200 -
-2023-01-18 20:25:37,013 - INFO - 127.0.0.1 - - [18/Jan/2023 20:25:37] "GET /home-vp HTTP/1.1" 200 -
+2023-01-19 10:56:10,997 - INFO -  * Restarting with stat
+2023-01-19 10:56:11,601 - WARNING -  * Debugger is active!
+2023-01-19 10:56:11,603 - INFO -  * Debugger PIN: 101-719-810
+2023-01-19 10:56:13,273 - INFO - 127.0.0.1 - - [19/Jan/2023 10:56:13] "[32mPOST /flug-ändern/ HTTP/1.1[0m" 302 -
+2023-01-19 10:56:13,309 - INFO - 127.0.0.1 - - [19/Jan/2023 10:56:13] "GET /flug-bearbeiten HTTP/1.1" 200 -
+2023-01-19 10:56:13,319 - INFO - 127.0.0.1 - - [19/Jan/2023 10:56:13] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
+2023-01-19 10:56:13,336 - INFO - 127.0.0.1 - - [19/Jan/2023 10:56:13] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2023-01-19 10:56:13,355 - INFO - 127.0.0.1 - - [19/Jan/2023 10:56:13] "GET /buchung_suchen HTTP/1.1" 200 -
+2023-01-19 10:58:22,839 - INFO - 127.0.0.1 - - [19/Jan/2023 10:58:22] "[32mPOST /flug-ändern/ HTTP/1.1[0m" 302 -
+2023-01-19 10:58:22,849 - INFO - 127.0.0.1 - - [19/Jan/2023 10:58:22] "GET /flug-bearbeiten HTTP/1.1" 200 -

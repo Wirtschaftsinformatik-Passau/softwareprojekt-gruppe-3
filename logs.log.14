@@ -1,9 +1,11 @@
-2023-01-19 10:23:33,076 - INFO -  * Restarting with stat
-2023-01-19 10:23:33,762 - WARNING -  * Debugger is active!
-2023-01-19 10:23:33,765 - INFO -  * Debugger PIN: 101-719-810
-2023-01-19 10:23:41,770 - INFO - 127.0.0.1 - - [19/Jan/2023 10:23:41] "[35m[1mPOST /flug-ändern/ HTTP/1.1[0m" 500 -
-2023-01-19 10:23:41,873 - INFO - 127.0.0.1 - - [19/Jan/2023 10:23:41] "[36mGET /flug-ändern/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
-2023-01-19 10:23:41,874 - INFO - 127.0.0.1 - - [19/Jan/2023 10:23:41] "[36mGET /flug-ändern/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
-2023-01-19 10:23:41,890 - INFO - 127.0.0.1 - - [19/Jan/2023 10:23:41] "[36mGET /flug-ändern/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-2023-01-19 10:23:53,593 - INFO - 127.0.0.1 - - [19/Jan/2023 10:23:53] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
-2023-01-19 10:23:53,628 - INFO - 127.0.0.1 - - [19/Jan/2023 10:23:53] "GET /buchung_suchen HTTP/1.1" 200 -
+2023-01-20 00:58:07,830 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2023-01-20 00:58:07,830 - INFO - [33mPress CTRL+C to quit[0m
+2023-01-20 00:58:07,837 - INFO -  * Restarting with stat
+2023-01-20 00:58:08,598 - WARNING -  * Debugger is active!
+2023-01-20 00:58:08,744 - INFO -  * Debugger PIN: 123-827-586
+2023-01-20 00:58:12,488 - INFO - 127.0.0.1 - - [20/Jan/2023 00:58:12] "GET / HTTP/1.1" 200 -
+2023-01-20 00:58:12,520 - INFO - 127.0.0.1 - - [20/Jan/2023 00:58:12] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
+2023-01-20 00:58:12,661 - INFO - 127.0.0.1 - - [20/Jan/2023 00:58:12] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2023-01-20 00:58:12,717 - INFO - 127.0.0.1 - - [20/Jan/2023 00:58:12] "GET /buchung_suchen HTTP/1.1" 200 -
+2023-01-20 00:58:13,998 - INFO - 127.0.0.1 - - [20/Jan/2023 00:58:13] "GET /home_bp HTTP/1.1" 200 -

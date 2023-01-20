@@ -148,10 +148,13 @@
           <form action="{{ url_for('bodenpersonal_views.boarding', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}" method="post">
                 <input type="submit" class="btn btn-warning btn-sm" value="Start Boarding">
              </form>
-        {% elif passagier_row.passagierstatus == "boarded" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
-                <a href="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}"
-                 class="btn btn-warning btn-sm"> Boarding Pass ausdrucken</a>
-        {% endif %}
+
+             {% elif passagier_row.passagierstatus == "boarded" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
+                <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}" method="post">
+                <input type="submit" class="btn btn-warning btn-sm" value=" Boardingpass ausdrucken">
+             </form>
+
+            {% endif %}
         </td>
 
                <td>

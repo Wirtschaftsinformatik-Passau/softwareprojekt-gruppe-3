@@ -7,7 +7,6 @@ from datetime import datetime
 import random, string
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import mm
 from reportlab.lib.utils import ImageReader
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from qrcode import QRCode
@@ -255,7 +254,7 @@ def fluege_pruefen():
             passagiere = []
             for buchung in buchungen:
                 p = db.session.query(Buchung.buchungsnummer, Passagier.vorname, Passagier.nachname,
-                                     Passagier.passagierstatus).join(Passagier).filter(
+                                     Passagier.passagierstatus,Passagier.geburtsdatum).join(Passagier).filter(
                     Passagier.buchungsid == buchung.buchungsid).all()
                 passagiere.extend(p)
             return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer, passagiere=passagiere,
