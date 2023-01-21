@@ -2,6 +2,7 @@
 
 {% block title %}Flugzeug erstellen{% endblock %}
 {% block content %}
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <br>
     <br>
 
@@ -16,7 +17,7 @@
             <a class="nav-link" href="#">Log</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Reporting</a>
+            <a class="nav-link" href="/reporting">Reporting</a>
             </li>
     <li class="nav-item">
     <a class="nav-link" href="/accounts-anlegen">Accounts</a>
@@ -25,7 +26,7 @@
     </ul>
 
 
-     <div class="card" style="width: 63rem;">
+     <div class="card" style="width: auto">
         <div class="card-body">
 
             <ul class="nav nav-pills">
@@ -36,9 +37,9 @@
                     <a class="nav-link" href="/flug-bearbeiten">Bearbeiten</a>
                 </li>
             </ul>
-            <div class="card" style="width: 60rem;">
+            <div class="card" style="width: auto">
                 <div class="card-body">
-                    <div class="container" style="width: 55rem; height: 20rem">
+                    <div class="container-fluid" style="width: auto; height: auto">
 
 
                 <form action="#", method="post">
@@ -122,7 +123,7 @@
 
                     </div>
 
-                    <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Flug anlegen</button>
+                    <button type="submit" value="submit" class="btn btn-primary" style="height: auto">Flug anlegen</button>
 
 
 

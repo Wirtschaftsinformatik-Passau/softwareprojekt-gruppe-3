@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Home für Verwaltungspersonal{% endblock %}
+{% block content %}
+    <br>
+    <br>
+        <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link"  href="/home-vp">Flugzeuge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/flug-anlegen">Flüge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/logging">Log</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Reporting</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/accounts-anlegen">Accounts</a>
+        </li>
+    </ul>
+{% endblock %}

@@ -2,6 +2,7 @@
 
 {% block title %} Koffer Etikett{% endblock %}
 {% block content %}
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
 {% for label in labels %}
     <div>
         <img src="{{ label[0] }}.png" alt="QR code for baggage {{ label[0] }}">

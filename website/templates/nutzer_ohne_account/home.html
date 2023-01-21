@@ -3,6 +3,8 @@
 {% block title %}Startseite{% endblock %}
 {% block content %}
 
+    <!--meta line makes it responsive, has to be added at the beginning at each file -->
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
     <br>
     <br>
 
@@ -22,12 +24,14 @@
     </ul>
 
 
-    <div class="card" style="width: 68rem;">
+    <div class="card" style="width: auto; height:auto">
+    <!--PROBLEM: no responsive utilities by Bootstrap for card yet-->
         <div class="card-body">
-            <div class="container" style="width: 60rem; height: 10rem">
+            <div class="container" style="width: auto; height:auto">
                 <form action="{{ url_for('nutzer_ohne_account_views.home') }}" method="GET">
                     <div class="form-row">
-                        <div class="col">
+                    <!--making tables responsive: instead of "col", write "col-sm"-->
+                        <div class="col-auto">
                             <label for="Von">Von:</label>
                             <select id="von" name="von" class="form-control" required>
                                 <option selected>{{ request.args.get('von', default_flughafen_von) }}  </option>
@@ -36,7 +40,7 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col">
+                        <div class="col-auto">
                             <label for="Nach">Nach:</label>
                             <select id="nach" name="nach" class="form-control" required>
                                 <option selected>{{ request.args.get('nach', default_flughafen_nach) }}</option>
@@ -45,15 +49,15 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col">
+                        <div class="col-auto">
                             <label for="Abflugdatum">Abflugdatum:</label>
-                            <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum"
+                            <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum" style="height:auto; width:auto"
                                    value="{{ request.args.get('Abflugdatum', tomorrow) }}" required>
                         </div>
-                        <div class="col">
+                        <div class="col-auto">
                             <label for="AnzahlPersonen">Passagiere:</label>
                             <select  id="AnzahlPersonen" class="form-control"name="AnzahlPersonen"
-                                   style="width: 4rem" required>
+                                   style="width: auto" required>
                                 <option selected> {{ request.args.get('AnzahlPersonen', 1) }}</option>
                                 <option> 2 </option>
                                 <option> 3 </option>

@@ -34,6 +34,15 @@ def is_date_after_yesterday(date, diff):
         return False
 
 
+def is_between(start_time, end_time):
+    start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M')
+    end_time = datetime.strptime(end_time, '%Y-%m-%d %H:%M')
+    if start_time <= end_time:
+        return start_time <= datetime.now() <= end_time
+    else:  # over midnight e.g., 23:30-04:15
+        return datetime.now() >= start_time or datetime.now() <= end_time
+
+
 # Flugzeug funktionen
 @verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
 @verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
@@ -217,6 +226,8 @@ def flug_annulieren(id):
     if flug.flugstatus == "annulliert":
         flash('Flug wurde bereits annulliert!', category='error')
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+    elif is_between(flug.istabflugzeit, flug.istankunftszeit):
+        flash('Flug ist bereits gestartet. Sie können diesen Flug nicht mehr annullieren', category='error')
     else:
         flug.flugstatus = 'annulliert'
         db.session.commit()
@@ -270,6 +281,14 @@ def flug_ändern():
                   category='error')
         elif flug.abflugid == flug.zielid:
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
+        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and int(old_price) != int(request.form['preis']):
+            flash('Der Flug ist bereits gestartet. Sie können den Preis nicht mehr ändern', category='error')
+        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_abflug != (
+                request.form['abflugdatum'] + " " + request.form['sollabflugzeit']):
+            flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
+        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_ankunft != (
+                request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit']):
+            flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
         else:
 
             if flug.istankunftszeit > flug.sollankunftszeit:
@@ -396,3 +415,8 @@ def accounts_loeschen(id):
 @verwaltungspersonal_views.route('/logging/')
 def logging():
     return redirect(url_for('logging'))
+
+
+@verwaltungspersonal_views.route('/reporting', methods=['GET', 'POST'])
+def reporting():
+    return render_template("Verwaltungspersonal/reporting.html", user=current_user)

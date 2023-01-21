@@ -27,7 +27,7 @@ fileHandler.setFormatter(logFormatter)
 logger.addHandler(fileHandler)
 
 
-conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("merie", "1234", "localhost", "airline")
+conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("clara", "1234", "localhost", "airline")
 db = SQLAlchemy()
 mail = Mail()
 app = Flask(__name__)

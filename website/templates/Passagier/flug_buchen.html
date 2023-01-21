@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Buchung{% endblock %}
 {% block content %}
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <br>
 
 
@@ -8,27 +9,27 @@
 
         {% for count in range(anzahlPassagiere) %}
 
-            <div class="card" style="width: 68rem;">
+            <div class="card" style="width: auto">
                 <div class="card-body">
-                    <div class="container-fluid" style="width: 60rem; height: 10rem">
+                    <div class="container-fluid" style="width:auto;height:auto">
 
                         <p>Passagier {{ count + 1 }}</p>
 
 
                         <div class="form-row">
-                            <div class="col">
+                            <div class="col-auto">
                                 <label for="vorname{{ count + 1 }}">Vorname</label>
                                 <input type="text" class="form-control" id="vorname{{ count + 1 }}"
-                                       name="vorname{{ count + 1 }}" placeholder="" pattern="[a-zA-Z]+"
+                                       name="vorname{{ count + 1 }}" placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+"
                                        required>
                             </div>
-                            <div class="col">
+                            <div class="col-auto">
                                 <label for="nachname{{ count + 1 }}">Nachname:</label>
                                 <input type="text" class="form-control" id="nachname{{ count + 1 }}"
                                        name="nachname{{ count + 1 }}"
-                                       placeholder="" pattern="[a-zA-Z]+" required>
+                                       placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+" required>
                             </div>
-                            <div class="col">
+                            <div class="col-auto">
                                 <label for="geburtsdatum{{ count + 1 }}">Geburtsdatum:</label>
                                 <input type="date" class="form-control" id="geburtsdatum{{ count + 1 }}"
                                        name="geburtsdatum{{ count + 1 }}" value=""
@@ -39,7 +40,7 @@
 
                     <!-- Gepäckinformationen -->
 
-                    <div class="card" style="width: 30rem; height: 12rem">
+                    <div class="card" style="width: auto; height:auto">
                         <div class="card-body">
 
 
@@ -77,8 +78,8 @@
 
         <!-- Anzeige für Gesamtbetrag -->
 
-        <div class="card" style="width: 50rem;">
-            <div class="card-body" style="height: 4rem">
+        <div class="card" style="width: auto">
+            <div class="card-body" style="height: auto">
                 <h5>Gesamtbetrag: &emsp;{{ preis }}€ </h5>
 
             </div>
@@ -87,7 +88,7 @@
         <!-- Anzeige für Button -->
 
         <div class="col-md-12 text-right">
-            <button type="submit" class="btn btn-danger" style="height: 3rem">Kostenpflichtig buchen
+            <button type="submit" class="btn btn-danger" style="height: auto">Kostenpflichtig buchen
             </button>
 
         </div>
