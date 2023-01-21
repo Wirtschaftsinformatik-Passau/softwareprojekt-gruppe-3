@@ -1,0 +1,11 @@
+2023-01-18 11:14:01,260 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2023-01-18 11:14:01,267 - INFO - [33mPress CTRL+C to quit[0m
+2023-01-18 11:14:01,269 - INFO -  * Restarting with stat
+2023-01-18 11:14:01,881 - WARNING -  * Debugger is active!
+2023-01-18 11:14:01,883 - INFO -  * Debugger PIN: 922-625-802
+2023-01-18 11:14:02,757 - INFO - 127.0.0.1 - - [18/Jan/2023 11:14:02] "GET / HTTP/1.1" 200 -
+2023-01-18 11:14:02,773 - INFO - 127.0.0.1 - - [18/Jan/2023 11:14:02] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
+2023-01-18 11:14:02,889 - INFO - 127.0.0.1 - - [18/Jan/2023 11:14:02] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2023-01-18 11:14:02,908 - INFO - 127.0.0.1 - - [18/Jan/2023 11:14:02] "GET /buchung_suchen HTTP/1.1" 200 -
+2023-01-18 11:14:05,220 - INFO - 127.0.0.1 - - [18/Jan/2023 11:14:05] "GET /home-vp HTTP/1.1" 200 -

@@ -2,6 +2,9 @@
 
 {% block title %}Buchung suchen{% endblock %}
 {% block content %}
+
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
     <br>
     <br>
 
@@ -19,39 +22,42 @@
             <a class="nav-link" href="/fluglinien-anzeigen">Fluglinien</a>
         </li>
     </ul>
-    <div class="card" style="width: 68rem;">
-        <div class="card-body">
-            <div class="container" style="width: 60rem; height: 10rem">
+    <div class="card" style="width: auto; height:auto">
+        <div class="card-body" >
+            <div class="container-fluid" >
                 <div class="input-group mb-3">
                     <form action="#" method="GET">
+                        <div class="table-responsive-sm">
                         <table>
 
                             <td>
-                                <div class="col">
-                                    <label for="buchungsnummer">Buchungsnummer</label>
+                                <div class="col-auto">
+                                    <label style="height:auto; width:auto" for="buchungsnummer">Buchungsnummer</label>
                                     <input type="text" class="form-control input-lg" id="buchungsnummer"
-                                           name="buchungsnummer"
+                                           name="buchungsnummer" style="width:auto; height:auto"
                                            placeholder=""
                                            aria-label="buchungsnummer" aria-describedby="basic-addon2" >
                                 </div>
                             </td>
                             <td>
                                 <br>
-                                <div class="col">
+                                <div class="col-auto-sm">
                                     <button
                                             type="submit" class="btn btn-primary" id="inputGroup-sizing-lg"
-                                            style="height: 3rem">
+                                            style="height: auto">
                                         Buchung suchen
                                     </button>
                                 </div>
                             </td> <!-- td damit es nebeneinandersteht, td steht für column-->
                         </table>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+<div class="table-responsive">
     <table class="table">
 
         <thead>
@@ -103,6 +109,7 @@
                 </td>
             </tr>
 
+
             </table>
             <div class="modal fade bd-example-modal-lg" role="dialog" id="updateModal{{ buchung.buchungsnummer }}">
                 <div class="modal-dialog modal-xl">
@@ -147,6 +154,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
 
         {% endif %}

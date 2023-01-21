@@ -2,10 +2,13 @@
 
 {% block title %}Online Checkin{% endblock %}
 {% block content %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
     <form class="row gx-3 gy-2 align-items-center">
         <div class="row align-items-start"> <!-- zwei spalten ankündigen-->
             <form method="GET">
-                <div class="col"> <!--erste spalte-->
+                <div class="col-auto"> <!--erste spalte-->
                     <br>
                     <h4>Personenbezogene Daten:</h4>
                     <div class="col-auto">
@@ -61,7 +64,7 @@
                         </label>
                     </div>
                     <div class="col-md-12 text-right">
-                        <button type="submit" class="btn btn-danger" style="height: 3rem">Jetzt einchecken
+                        <button type="submit" class="btn btn-danger" style="height: auto">Jetzt einchecken
                         </button>
                     </div>
                 </form>
