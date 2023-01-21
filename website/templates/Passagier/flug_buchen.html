@@ -11,7 +11,7 @@
 
             <div class="card" style="width: auto">
                 <div class="card-body">
-                    <div class="container-fluid" style="width: 60rem; height: 10rem">
+                    <div class="container-fluid" style="width:auto;height:auto">
 
                         <p>Passagier {{ count + 1 }}</p>
 
@@ -20,14 +20,14 @@
                             <div class="col-auto">
                                 <label for="vorname{{ count + 1 }}">Vorname</label>
                                 <input type="text" class="form-control" id="vorname{{ count + 1 }}"
-                                       name="vorname{{ count + 1 }}" placeholder="" pattern="[a-zA-Z]+"
+                                       name="vorname{{ count + 1 }}" placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+"
                                        required>
                             </div>
                             <div class="col-auto">
                                 <label for="nachname{{ count + 1 }}">Nachname:</label>
                                 <input type="text" class="form-control" id="nachname{{ count + 1 }}"
                                        name="nachname{{ count + 1 }}"
-                                       placeholder="" pattern="[a-zA-Z]+" required>
+                                       placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+" required>
                             </div>
                             <div class="col-auto">
                                 <label for="geburtsdatum{{ count + 1 }}">Geburtsdatum:</label>

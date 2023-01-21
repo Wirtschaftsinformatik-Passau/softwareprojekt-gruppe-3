@@ -2,6 +2,7 @@
 
 {% block title %}Startseite{% endblock %}
 {% block content %}
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <br>
     <br>
 
@@ -19,15 +20,15 @@
             <a class="nav-link" href="/fluglinien-anzeigen">Fluglinien</a>
         </li>
     </ul>
-    <div class="card" style="width: 68rem;">
+    <div class="card" style="width: auto">
         <div class="card-body">
-            <div class="container" style="width: 60rem; height: 10rem">
+            <div class="container-fluid" style="width: auto; height: auto">
                 <form action="#" method="GET">
                     <div class="form-row">
                         <div class="col">
                             <label for="Von">Flugnummer:</label>
                             <input type="text" id="flugnummer" name="flugnummer" class="form-control"
-                                   style="width: 16rem"
+                                   style="width: auto"
                                    value="{{ request.args.get('flugnummer', 'PM1') }}" pattern="[A-Z0-9]+" required>
 
                         </div>
@@ -35,7 +36,7 @@
                         <div class="col">
                             <label for="abflugdatum">Abflugdatum:</label>
                             <input type="date" class="form-control" id="abflugdatum" name="abflugdatum"
-                                    style="width: 8rem" value="{{ request.args.get('abflugdatum', today) }}"
+                                    style="width: auto" value="{{ request.args.get('abflugdatum', today) }}"
                                    required>
                         </div>
                         <p id="result"></p>
@@ -43,7 +44,7 @@
                         <div class="col">
                             <div class="col-auto my-4">
                                 <button type="submit"
-                                        value="submit" class="btn btn-primary" style="height: 3rem">Flüge
+                                        value="submit" class="btn btn-primary" style="height: auto">Flüge
                                     finden
                                 </button>
                             </div>
@@ -58,6 +59,7 @@
     <br>
 
     {% if fluege %}
+        <div class="table-responsive">
         <table class="table">
             <thead>
             <tr>
@@ -114,5 +116,6 @@
             </tbody>
 
         </table>
+        </div>
     {% endif %}
 {% endblock %}

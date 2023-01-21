@@ -3,11 +3,14 @@
 
 {% block title %} Checkin{% endblock %}
 {% block content %}
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <br>
     <form class="row gx-3 gy-2 align-items-center">
         <div class="row align-items-start"> <!-- zwei spalten ankündigen-->
             <form method="GET">
-                <div class="col"> <!--erste spalte-->
+                <div class="col-auto"> <!--erste spalte-->
                     <br>
                     <h4>Personenbezogene Daten:</h4>
                     <div class="col-auto">
@@ -31,17 +34,16 @@
 
                 </div>
             </form> <!--end of GET request-->
-            <div class="col"> <!--zweite spalte-->
+            <div class="col-auto"> <!--zweite spalte-->
                 <br>
                 <form  method="POST" >
                     <h4>Ausweisdaten:</h4>
 
                     <label class="visually-hidden" for="ausweistyp">Art des Ausweis*:</label>
-                    <select class="form-select" id="ausweistyp" name="ausweistyp">
+                    <select class="form-select" id="ausweistyp" name="ausweistyp" required>
 
                         <option selected value="1">Reisepass</option>
                         <option value="2">Personalausweis</option>
-                        <!--required fehlt evtl -->
                     </select>
                     <br>
                     <label class="visually-hidden" for="ausweissnummer">Ausweisnummer*:</label>

@@ -4,6 +4,7 @@
 {% block content %}
     <br>
     <br>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
@@ -24,7 +25,7 @@
     </ul>
 
 
-    <div class="card" style="width: 63rem;">
+    <div class="card" style="width: auto;"> <!--63-->
         <div class="card-body">
 
             <ul class="nav nav-pills">
@@ -35,31 +36,31 @@
                     <a class="nav-link" href="/flugzeug-bearbeiten">Bearbeiten</a>
                 </li>
             </ul>
-            <div class="card" style="width: 60rem;">
+            <div class="card" style="width: auto">
                 <div class="card-body">
-                    <div class="container-fluid" style="width: 55rem; height: 10rem">
+                    <div class="container-fluid" style="width: auto; height: auto">
                         <br>
 
                         <form method="POST">
                             <div class="form-row">
-                                <div class="col">
+                                <div class="col-auto">
                                     <label for="Modell">Modell:</label>
                                     <input type="text" class="form-control" id="Modell" name="Modell" placeholder=""
                                            pattern="[A-Z0-9]+" required>
                                 </div>
-                                <div class="col">
+                                <div class="col-auto">
                                     <label for="Hersteller">Hersteller:</label>
                                     <input type="text" class="form-control" id="Hersteller" name="Hersteller"
                                            placeholder="" pattern="[a-zA-Z]+" required>
                                 </div>
-                                <div class="col">
+                                <div class="col-auto">
                                     <label for="Anzahl Sitzplätze">Anzahl der Sitzplätze:</label>
                                     <input type="number" class="form-control" id="anzahlsitzplaetze"
                                            name="anzahlsitzplaetze" min="1"
                                            placeholder="" required>
                                 </div>
                                 <div class="col-auto my-4">
-                                    <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">
+                                    <button type="submit" value="submit" class="btn btn-primary" style="height: auto">
                                         Flugzeug anlegen
                                     </button>
                                 </div>
@@ -69,9 +70,7 @@
 
                     </div>
                 </div>
-
             </div>
-
         </div>
     </div>
 
