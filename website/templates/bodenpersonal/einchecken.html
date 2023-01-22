@@ -61,10 +61,10 @@
                      <!-- Add dropdown field for nationality -->
   <label class="visually-hidden" for="staatsangehoerigkeit">Staatsangehörigkeit*:</label>
   <div class="input-group">
-    <select class="form-select" id="staatsangehoerigkeit" name="staatsangehoerigkeit">
-      <option selected value="Deutschland">Bitte auswählen</option>
+    <select class="form-select" id="staatsangehoerigkeit" name="staatsangehoerigkeit" required>
+      <option selected value="Deutschland" >Bitte auswählen </option>
       <!-- Include options file -->
-      {% include "bodenpersonal/options-nationalities.html" %}
+      {% include "bodenpersonal/options-nationalities.html"  %}
     </select>
   </div>
 

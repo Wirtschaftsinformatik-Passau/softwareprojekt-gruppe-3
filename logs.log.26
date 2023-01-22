@@ -1,0 +1,11 @@
+2023-01-22 01:40:13,776 - INFO -  * Restarting with stat
+2023-01-22 01:40:14,836 - WARNING -  * Debugger is active!
+2023-01-22 01:40:14,841 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 01:41:11,133 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\bodenpersonal_views.py', reloading
+2023-01-22 01:41:11,291 - INFO -  * Restarting with stat
+2023-01-22 01:41:12,435 - WARNING -  * Debugger is active!
+2023-01-22 01:41:12,442 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 01:41:14,237 - INFO - 127.0.0.1 - - [22/Jan/2023 01:41:14] "POST /koffer_label?passagier_id=1&gepaeckid=1 HTTP/1.1" 200 -
+2023-01-22 01:41:56,074 - INFO - 127.0.0.1 - - [22/Jan/2023 01:41:56] "POST /home_bp HTTP/1.1" 200 -
+2023-01-22 01:41:56,097 - INFO - 127.0.0.1 - - [22/Jan/2023 01:41:56] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
+2023-01-22 01:41:56,161 - INFO - 127.0.0.1 - - [22/Jan/2023 01:41:56] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -

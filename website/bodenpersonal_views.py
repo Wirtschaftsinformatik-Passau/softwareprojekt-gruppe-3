@@ -1,16 +1,16 @@
-from flask import Blueprint, render_template, request, flash, redirect,Response, url_for, send_file
+from flask import Blueprint, render_template, request, flash, redirect,Response, url_for
 from flask_login import current_user, login_required
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
-from sqlalchemy.orm import aliased
 from datetime import datetime
 import random, string
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.utils import ImageReader
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-from qrcode import QRCode
-from qrcode.constants import ERROR_CORRECT_L
+from reportlab.lib.pagesizes import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer,Image
+from reportlab.lib.styles import getSampleStyleSheet
+import qrcode
+import os
+
+
 
 # store the standard routes for a website where the user can navigate to
 bodenpersonal_views = Blueprint('bodenpersonal_views', __name__)
@@ -19,6 +19,7 @@ bodenpersonal_views = Blueprint('bodenpersonal_views', __name__)
 def generate_boarding_pass_number():
     boarding_pass_number = ''.join(random.choices(string.ascii_letters + string.digits, k=15))
     return boarding_pass_number
+
 
 
 def Kombination_1(buchungsnummer_1, vorname, nachname):
@@ -163,13 +164,69 @@ def koffer_einchecken():
 
     for id in gepaeckid:
         gepaeck = Gepaeck.query.filter(Gepaeck.gepaeckid == id).first()
-        gepaeck.status = "eingecheckt"
+        gepaeck.status = "Eingecheckt"
         db.session.commit()
 
     flash("Koffer erfolgreich eingecheckt!", category="success")
     return redirect(url_for('bodenpersonal_views.home', buchungsnummer=buchungsnummer, vorname=vorname, nachname=nachname))
 
+@bodenpersonal_views.route('/koffer_label', methods=['POST'])
+def koffer_label():
+    passagier_id = request.args.get('passagier_id')
+    gepaeckid = request.args.get('gepaeckid')
 
+    passagier = Passagier.query.filter(Passagier.passagierid == passagier_id).first()
+    flug = Flug.query.join(Buchung, Buchung.flugid == Flug.flugid).join(Passagier,Passagier.buchungsid == Buchung.buchungsid).filter(
+        Passagier.passagierid == passagier_id).first()
+
+    # Kennung des Ankunftflughafens
+    ankunft_flughafen = Flughafen.query.join(Flug, Flug.abflugid == Flughafen.flughafenid).join(
+        Buchung, Buchung.flugid == Flug.flugid).join(
+        Passagier,Passagier.buchungsid == Buchung.buchungsid).join(
+        Gepaeck,Gepaeck.passagierid ==passagier_id).filter(
+        Gepaeck.gepaeckid == gepaeckid).first()
+
+    # Kennung des Zielflughafens
+    ziel_flughafen =  Flughafen.query.join(Flug, Flug.zielid == Flughafen.flughafenid).join(
+        Buchung, Buchung.flugid == Flug.flugid).join(
+        Passagier,Passagier.buchungsid == Buchung.buchungsid).join(
+        Gepaeck,Gepaeck.passagierid ==passagier_id).filter(
+        Gepaeck.gepaeckid == gepaeckid).first()
+    try:
+        doc = SimpleDocTemplate("koffer_label.pdf", pagesize=(5 * inch, 5 * inch))
+        styles = getSampleStyleSheet()
+
+        # QR Code generieren
+        qr_code = qrcode.make(gepaeckid)
+        qr_code_path = "koffer_label_{}_{}.png".format(passagier.vorname, passagier.nachname)
+        qr_code.save(qr_code_path)
+
+        elements = []
+
+        # Add passenger information & QR Image
+        elements.append(Paragraph("<b>Gepäcketikett</b>" , styles["Heading2"]))
+        elements.append(Paragraph("<i>AirPassau</i>", styles["Heading4"]))
+        elements.append(Spacer(1, 5))
+        elements.append(Image(qr_code_path, width=1 * inch, height=1 * inch))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph(" Passagiername: {} {} ".format(passagier.vorname , passagier.nachname), styles["Normal"]))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph("Von: {}".format(ankunft_flughafen.kennung), styles["Normal"]))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph("Nach: {}".format(ziel_flughafen.kennung), styles["Normal"]))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph("Fluglinie: {}".format(flug.flugnummer), styles["Normal"]))
+        doc.build(elements)
+
+    finally:
+        os.remove(qr_code_path)
+    # Return the generated PDF file
+    with open("koffer_label.pdf", 'rb') as pdf:
+        pdf_data = pdf.read()
+        response = Response(pdf_data, content_type='application/pdf', headers={
+            "Content-Disposition": "attachment;filename=koffer_label_{}_{}.pdf".format(passagier.vorname,
+                                                                                        passagier.nachname)})
+        return response
 
 
 @bodenpersonal_views.route('/boarding', methods=['POST'])
@@ -179,59 +236,74 @@ def boarding():
     nachname = request.args.get('nachname')
     passagier= Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
         where(Passagier.nachname == nachname).first()
-    passagier.passagierstatus = "boarded"
+    passagier.passagierstatus = "Boarded"
     db.session.add(passagier)
     db.session.commit()
     flash("Passagier erfolgreich geboarded","success")
     return redirect(url_for('bodenpersonal_views.home',buchungsid=buchungsid, vorname=vorname, nachname=nachname))
 
-ziel_flughafen = aliased(Flughafen)
-ankunft_flughafen = aliased(Flughafen)
+
 
 
 @bodenpersonal_views.route('/generate_boarding_pass', methods=['POST'])
 def generate_boarding_pass():
+
     passagier_id = request.args.get('passagier_id')
-    passagier = Passagier.query.join(Buchung, Buchung.buchungsid == Passagier.buchungsid).join(Flug,
-        Buchung.flugid == Flug.flugid).join(
-        ankunft_flughafen, Flug.abflugid == ankunft_flughafen.flughafenid).join(
-        ziel_flughafen, Flug.zielid == ziel_flughafen.flughafenid).filter(
-        Passagier.passagierid == passagier_id).first()
-    qr = QRCode(version=5, error_correction=ERROR_CORRECT_L)
-    qr.add_data(passagier.boardingpassnummer)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
-    img.save("boarding_pass_{}_{}.png".format(passagier.vorname, passagier.nachname))
-    doc = SimpleDocTemplate("boarding_pass.pdf", pagesize=letter)
-    elements = []
-    data = [['Name:', passagier.vorname + ' ' + passagier.nachname],
-            #['Von:', passagier.flug.abflugid.kennung],
-            #['Nach:', passagier.flug.zielid.kennung],
-            #['Fluglinie:', passagier.flug.flugnummer],
-            #['Sollabflugzeit:', passagier.flug.sollabflugzeit],
-            #['Datum:', passagier.flug.sollabflugzeit.date()],
-            ['Boardingpassnummer:', passagier.boardingpassnummer]]
-    t = Table(data)
-    img = ImageReader('boarding_pass.png')
+    passagier = Passagier.query.filter(Passagier.passagierid == passagier_id).first()
+    flug=Flug.query.join(Buchung,Buchung.flugid == Flug.flugid).join(Passagier,
+        Passagier.buchungsid == Buchung.buchungsid).filter(Passagier.passagierid == passagier_id).first()
 
-    # Setting the table style
-    t.setStyle(TableStyle([ ('IMAGE',(0,-1),(-1,-1),img,(20,20),(200,200)),
-                           ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
-                           ('TEXTCOLOR', (0, 0), (-1, -1), colors.whitesmoke),
-                           ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                           ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                           ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                           ('BACKGROUND', (0, -1), (-1, -1), colors.beige),
-                           ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
-    # Adding the table to the elements list
-    elements.append(t)
-    # Building the PDF
-    doc.build(elements)
+    # Kennung des Ankunftflughafens
+    ankunft_flughafen = Flughafen.query.join(Flug, Flug.abflugid == Flughafen.flughafenid).join(
+        Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
+        Passagier.buchungsid == Buchung.buchungsid).filter(Passagier.passagierid == passagier_id).first()
+
+    # Kennung des Zielflughafens
+    ziel_flughafen = Flughafen.query.join(Flug, Flug.zielid == Flughafen.flughafenid).join(
+        Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
+        Passagier.buchungsid == Buchung.buchungsid).filter(Passagier.passagierid == passagier_id).first()
+
+    try:
+        doc = SimpleDocTemplate("boarding_pass.pdf", pagesize=(5 * inch, 5 * inch))
+        styles = getSampleStyleSheet()
+
+        # QR Code generieren
+        qr_code = qrcode.make(passagier.boardingpassnummer)
+        qr_code_path = "boarding_pass_{}_{}.png".format(passagier.vorname, passagier.nachname)
+        qr_code.save(qr_code_path)
+
+        elements = []
+
+        # Add passenger information & QR Image
+        elements.append(Paragraph("<b>Boarding Pass</b>" , styles["Heading2"]))
+        elements.append(Paragraph("<i>AirPassau</i>", styles["Heading4"]))
+        elements.append(Spacer(1, 5))
+        elements.append(Image(qr_code_path, width=1 * inch, height=1 * inch))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph(" Passagiername: {} {} ".format(passagier.vorname , passagier.nachname), styles["Normal"]))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph("Von: {}".format(ankunft_flughafen.kennung), styles["Normal"]))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph("Nach: {}".format(ziel_flughafen.kennung), styles["Normal"]))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph("Fluglinie: {}".format(flug.flugnummer), styles["Normal"]))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph("Sollabflugzeit: {}".format(flug.sollabflugzeit.time()), styles["Normal"]))
+        elements.append(Spacer(1, 1))
+        elements.append(Paragraph("Datum: {}".format(flug.sollabflugzeit.date()), styles["Normal"]))
+        doc.build(elements)
+
+
+
+    finally:
+        os.remove(qr_code_path)
+    # Return the generated PDF file
     with open("boarding_pass.pdf", 'rb') as pdf:
-        pdf_data =pdf.read()
-        response = Response(pdf_data,content_type='application/pdf',headers={"Content-Disposition":"attachment;filename=boarding_pass_{}_{}.pdf".format(passagier.vorname, passagier.nachname)})
+        pdf_data = pdf.read()
+        response = Response(pdf_data, content_type='application/pdf', headers={
+            "Content-Disposition": "attachment;filename=boarding_pass_{}_{}.pdf".format(passagier.vorname,
+                                                                                        passagier.nachname)})
         return response
-
 
 @bodenpersonal_views.route('/fluege_pruefen', methods=["GET", "POST"])
 def fluege_pruefen():

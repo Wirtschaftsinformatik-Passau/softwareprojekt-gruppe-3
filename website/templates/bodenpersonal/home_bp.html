@@ -88,7 +88,7 @@
             and  flug_datum >= today %}
 
              <form action="{{ url_for('bodenpersonal_views.boarding', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}" method="post">
-                <input type="submit" class="btn btn-warning btn-sm" value="Start Boarding">
+                <input type="submit" class="btn btn-warning btn-sm" value="Starte Boarding">
              </form>
 
             {% elif passagier_row.passagierstatus == "gebucht" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
@@ -98,7 +98,7 @@
 
              {% elif passagier_row.passagierstatus == "boarded" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
                 <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}" method="post">
-                <input type="submit" class="btn btn-warning btn-sm" value=" Boardingpass ausdrucken">
+                <input type="submit" class="btn btn-warning btn-sm" value=" Boarding Karte drucken">
              </form>
 
             {% endif %}
@@ -121,6 +121,11 @@
                      </form>
                  {% endif %}
            {% endif %}
+           {% elif gepaeck_row.status == "eingecheckt" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
+
+                     <form action="{{ url_for('bodenpersonal_views.koffer_label', passagier_id=passagier_row.passagierid,gepaeckid=gepaeck_row.gepaeckid) }}" method="post">
+                          <input type="submit" class="btn btn-warning btn-sm" value=" Etikett drucken">
+                     </form>
            {% endif %}
     {% endfor %}
 </td>
@@ -139,7 +144,8 @@
         <td>{{ ziel.kennung }}</td>
         {% endfor %}
         <td>{{  flug_datum }}</td>
-        {% for passagier_row in passagiere %} <td>
+        {% for passagier_row in passagiere %}
+        <td>
           {{ passagier_row.vorname }}
           {{ passagier_row.nachname }}
           <br> Geb: {{passagier_row.geburtsdatum }}
@@ -148,12 +154,12 @@
         <br>
         {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
           <form action="{{ url_for('bodenpersonal_views.boarding', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}" method="post">
-                <input type="submit" class="btn btn-warning btn-sm" value="Start Boarding">
+                <input type="submit" class="btn btn-warning btn-sm" value="Starte Boarding">
              </form>
 
              {% elif passagier_row.passagierstatus == "boarded" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
                 <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}" method="post">
-                <input type="submit" class="btn btn-warning btn-sm" value=" Boardingpass ausdrucken">
+                <input type="submit" class="btn btn-warning btn-sm" value="Boarding Karte drucken">
              </form>
 
             {% endif %}
@@ -176,6 +182,12 @@
                      </form>
                  {% endif %}
            {% endif %}
+   {% elif gepaeck_row.status == "eingecheckt" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
+
+                   <form action="{{ url_for('bodenpersonal_views.koffer_label', passagier_id=passagier_row.passagierid,gepaeckid=gepaeck_row.gepaeckid) }}" method="post">
+                       <input type="submit" class="btn btn-warning btn-sm" value=" Etikett drucken">
+                     </form>
+
            {% endif %}
     {% endfor %}
 </td>
