@@ -217,8 +217,8 @@ def koffer_label():
         elements = []
 
         # Add passenger information & QR Image
-        elements.append(Paragraph("<b>Gepäcketikett</b>" , styles["Heading2"]))
         elements.append(Paragraph("<i>AirPassau</i>", styles["Heading4"]))
+        elements.append(Paragraph("<b>Gepäcketikett</b>" , styles["Heading2"]))
         elements.append(Spacer(1, 5))
         elements.append(Image(qr_code_path, width=1 * inch, height=1 * inch))
         elements.append(Spacer(1, 1))
@@ -290,8 +290,8 @@ def generate_boarding_pass():
         elements = []
 
         # Add passenger information & QR Image
-        elements.append(Paragraph("<b>Boarding Pass</b>" , styles["Heading2"]))
         elements.append(Paragraph("<i>AirPassau</i>", styles["Heading4"]))
+        elements.append(Paragraph("<b>Boarding Pass</b>" , styles["Heading2"]) )
         elements.append(Spacer(1, 5))
         elements.append(Image(qr_code_path, width=1 * inch, height=1 * inch))
         elements.append(Spacer(1, 1))

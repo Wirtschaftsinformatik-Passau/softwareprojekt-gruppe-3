@@ -1,10 +1,11 @@
-2023-01-22 22:12:36,506 - INFO -  * Restarting with stat
-2023-01-22 22:12:38,179 - WARNING -  * Debugger is active!
-2023-01-22 22:12:38,188 - INFO -  * Debugger PIN: 123-827-586
-2023-01-22 22:12:38,897 - INFO - 127.0.0.1 - - [22/Jan/2023 22:12:38] "GET /home_bp HTTP/1.1" 200 -
-2023-01-22 22:12:38,931 - INFO - 127.0.0.1 - - [22/Jan/2023 22:12:38] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
-2023-01-22 22:12:38,994 - INFO - 127.0.0.1 - - [22/Jan/2023 22:12:38] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
-2023-01-22 22:12:39,023 - INFO - 127.0.0.1 - - [22/Jan/2023 22:12:39] "GET /buchung_suchen HTTP/1.1" 200 -
-2023-01-22 22:12:41,045 - INFO - 127.0.0.1 - - [22/Jan/2023 22:12:41] "GET /home_bp HTTP/1.1" 200 -
-2023-01-22 22:12:41,077 - INFO - 127.0.0.1 - - [22/Jan/2023 22:12:41] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
-2023-01-22 22:12:41,125 - INFO - 127.0.0.1 - - [22/Jan/2023 22:12:41] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2023-01-22 22:19:39,585 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2023-01-22 22:19:39,616 - INFO - [33mPress CTRL+C to quit[0m
+2023-01-22 22:19:39,619 - INFO -  * Restarting with stat
+2023-01-22 22:19:41,287 - WARNING -  * Debugger is active!
+2023-01-22 22:19:41,294 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 22:21:36,142 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:36] "GET /home_bp HTTP/1.1" 200 -
+2023-01-22 22:21:36,182 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:36] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
+2023-01-22 22:21:36,230 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:36] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2023-01-22 22:21:36,262 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:36] "GET /buchung_suchen HTTP/1.1" 200 -
+2023-01-22 22:21:41,198 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:41] "POST /home_bp HTTP/1.1" 200 -
