@@ -24,12 +24,12 @@
                             <div class="form-row">
                                 <div class="col-auto">
                                     <label for="flugnummer">Flugnummer:*</label>
-                                    <input type="text" class="form-control" id="flugnummer" name="flugnummer" placeholder="" pattern="[A-Z0-9]+" required>
+                                    <input type="text" class="form-control" id="flugnummer" name="flugnummer" placeholder="" pattern="[A-Z0-9]+" value="{{ session.get('flugnummer') }}" required>
                                 </div>
 
                                 <div class="col-auto">
                                     <label for="datum">Datum:*</label>
-                                    <input type="datetime-local" class="form-control" id="datum" name="datum" min="2010-01-01T00:00" placeholder="" required>
+                                    <input type="datetime-local" class="form-control" id="datum" name="datum" min="2010-01-01T00:00" placeholder="" value="{{ session.get('datum') }}" required>
                                 </div>
                                 <div class="col-auto my-4">
                                     <button type="submit" value="submit" class="btn btn-primary" style="height: auto">

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect,Response, url_for
+from flask import Blueprint, render_template, request, flash,session, redirect,Response, url_for
 from flask_login import current_user, login_required
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
@@ -328,11 +328,16 @@ def fluege_pruefen():
         flugnummer = request.form['flugnummer']
         datum = request.form['datum']
 
+        # Store the flight number and date in the session
+        session['flugnummer'] = flugnummer
+        session['datum'] = datum
+
         # query the database to get the flight with the specified flight number
         flug = Flug.query.filter_by(flugnummer=flugnummer, istabflugzeit=datum).first()
         # print(flug)
         if flug is None:
             flash("Zu Ihren Suchkriterien wurde kein passender Flug gefunden", "error")
+            return render_template('bodenpersonal/fluege_pruefen.html', user=current_user)
         else:
             # get the bookings for the flight
             buchungen = Buchung.query.filter(Buchung.flugid == Flug.flugid).where(Flug.flugnummer == flugnummer).where(
@@ -347,8 +352,40 @@ def fluege_pruefen():
                 passagiere.extend(p)
             return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer, passagiere=passagiere,
                                    buchungen=buchungen,user=current_user)
+        # Clear the session data
+        session.clear()
 
-    return render_template('bodenpersonal/fluege_pruefen.html',user=current_user)
+    else:
+        # check if the flight number and date are in the session
+        if 'flugnummer' in session and 'datum' in session:
+            flugnummer = session['flugnummer']
+            datum = session['datum']
+            # query the database to get the flight with the specified flight number
+            flug = Flug.query.filter_by(flugnummer=flugnummer, istabflugzeit=datum).first()
+            # print(flug)
+            if flug is None:
+                flash("Zu Ihren Suchkriterien wurde kein passender Flug gefunden", "error")
+                return render_template('bodenpersonal/fluege_pruefen.html', user=current_user)
+            else:
+                # get the bookings for the flight
+                buchungen = Buchung.query.filter(Buchung.flugid == Flug.flugid).where(
+                    Flug.flugnummer == flugnummer).where(
+                    Flug.istabflugzeit == datum).all()
+
+                # get the passenger info for each booking
+                passagiere = []
+                for buchung in buchungen:
+                    p = db.session.query(Buchung.buchungsnummer, Passagier.vorname, Passagier.nachname,
+                                         Passagier.passagierstatus, Passagier.geburtsdatum).join(Passagier).filter(
+                        Passagier.buchungsid == buchung.buchungsid).all()
+                    passagiere.extend(p)
+                return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer,
+                                       passagiere=passagiere,
+                                       buchungen=buchungen, user=current_user)
+        else:
+            return render_template('bodenpersonal/fluege_pruefen.html', user=current_user)
+
+
 
 
 

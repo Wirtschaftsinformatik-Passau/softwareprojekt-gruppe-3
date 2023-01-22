@@ -1,0 +1,13 @@
+2023-01-22 21:59:05,432 - INFO -  * Restarting with stat
+2023-01-22 21:59:07,144 - WARNING -  * Debugger is active!
+2023-01-22 21:59:07,151 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 21:59:24,686 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\bodenpersonal_views.py', reloading
+2023-01-22 21:59:24,934 - INFO -  * Restarting with stat
+2023-01-22 22:08:01,639 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2023-01-22 22:08:01,640 - INFO - [33mPress CTRL+C to quit[0m
+2023-01-22 22:08:01,643 - INFO -  * Restarting with stat
+2023-01-22 22:08:02,797 - WARNING -  * Debugger is active!
+2023-01-22 22:08:02,801 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 22:08:04,421 - INFO - 127.0.0.1 - - [22/Jan/2023 22:08:04] "GET / HTTP/1.1" 200 -
+2023-01-22 22:10:00,845 - INFO -  * Restarting with stat
