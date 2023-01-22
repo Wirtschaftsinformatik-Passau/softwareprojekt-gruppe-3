@@ -82,6 +82,7 @@ def Kombination_2(buchungsnummer_2, ausweisnummer):
 
 # Diese Funktion stellt die Starseite des Bodenpersonals & die passagier_suchen Funktion dar
 @bodenpersonal_views.route('/home_bp', methods=["GET", "POST"])
+@login_required
 def home():
     today = datetime.now().date()
     if request.method == 'POST':
@@ -99,7 +100,7 @@ def home():
                     vorname, nachname)
                 if not buchung_1 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
-                    return render_template("bodenpersonal/home_bp.html")
+                    return render_template("bodenpersonal/home_bp.html",user=current_user)
                 else:
                     flug_datum = 0
                     for flug_row in flug:
@@ -115,7 +116,7 @@ def home():
                     buchungsnummer_2, ausweisnummer)
                 if not buchung_2 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
-                    return render_template("bodenpersonal/home_bp.html")
+                    return render_template("bodenpersonal/home_bp.html",user=current_user)
                 else:
                     flug_datum = 0
                     for flug_row in flug:
@@ -128,10 +129,10 @@ def home():
         else:
             flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
                   " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
-            return render_template("bodenpersonal/home_bp.html")
+            return render_template("bodenpersonal/home_bp.html",user=current_user)
 
     else:
-        return render_template("bodenpersonal/home_bp.html")
+        return render_template("bodenpersonal/home_bp.html",user=current_user)
 
 
 
@@ -139,6 +140,7 @@ def home():
 
 
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
+@login_required
 def einchecken():
     buchungsnummer = request.args.get('buchungsnummer_1')
     vorname = request.args.get('vorname')
@@ -160,12 +162,13 @@ def einchecken():
         db.session.commit()
 
         flash("Check-In erfolgreich")
-        return redirect(url_for('bodenpersonal_views.home'))
+        return redirect(url_for('bodenpersonal_views.home',user=current_user))
 
     return render_template('bodenpersonal/einchecken.html', user=current_user, passagier=passagier, vorname=vorname,
                            nachname=nachname)
 
 @bodenpersonal_views.route('/koffer_einchecken', methods=["POST"])
+@login_required
 def koffer_einchecken():
     buchungsid = request.form.get('buchungsid')
     buchungsnummer = request.form.get('buchungsnummer')
@@ -179,9 +182,10 @@ def koffer_einchecken():
         db.session.commit()
 
     flash("Koffer erfolgreich eingecheckt!", category="success")
-    return redirect(url_for('bodenpersonal_views.home', buchungsnummer=buchungsnummer, vorname=vorname, nachname=nachname))
+    return redirect(url_for('bodenpersonal_views.home', buchungsnummer=buchungsnummer, vorname=vorname, nachname=nachname,user=current_user))
 
 @bodenpersonal_views.route('/koffer_label', methods=['POST'])
+@login_required
 def koffer_label():
     passagier_id = request.args.get('passagier_id')
     gepaeckid = request.args.get('gepaeckid')
@@ -239,6 +243,7 @@ def koffer_label():
 
 
 @bodenpersonal_views.route('/boarding', methods=['POST'])
+@login_required
 def boarding():
     buchungsid = request.args.get('buchungsid')
     vorname = request.args.get('vorname')
@@ -249,12 +254,13 @@ def boarding():
     db.session.add(passagier)
     db.session.commit()
     flash("Passagier erfolgreich geboarded","success")
-    return redirect(url_for('bodenpersonal_views.home',buchungsid=buchungsid, vorname=vorname, nachname=nachname))
+    return redirect(url_for('bodenpersonal_views.home',buchungsid=buchungsid, vorname=vorname, nachname=nachname,user=current_user))
 
 
 
 
 @bodenpersonal_views.route('/generate_boarding_pass', methods=['POST'])
+@login_required
 def generate_boarding_pass():
 
     passagier_id = request.args.get('passagier_id')
@@ -315,6 +321,7 @@ def generate_boarding_pass():
         return response
 
 @bodenpersonal_views.route('/fluege_pruefen', methods=["GET", "POST"])
+@login_required
 def fluege_pruefen():
     if request.method == 'POST':
         # get the flight number from the html form
@@ -339,9 +346,9 @@ def fluege_pruefen():
                     Passagier.buchungsid == buchung.buchungsid).all()
                 passagiere.extend(p)
             return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer, passagiere=passagiere,
-                                   buchungen=buchungen)
+                                   buchungen=buchungen,user=current_user)
 
-    return render_template('bodenpersonal/fluege_pruefen.html')
+    return render_template('bodenpersonal/fluege_pruefen.html',user=current_user)
 
 
 

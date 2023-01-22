@@ -1,13 +1,13 @@
-2023-01-22 16:22:47,807 - INFO -  * Restarting with stat
-2023-01-22 16:22:49,063 - WARNING -  * Debugger is active!
-2023-01-22 16:22:49,068 - INFO -  * Debugger PIN: 123-827-586
-2023-01-22 16:23:37,868 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\nutzer_ohne_account_views.py', reloading
-2023-01-22 16:23:38,175 - INFO -  * Restarting with stat
-2023-01-22 16:23:39,690 - WARNING -  * Debugger is active!
-2023-01-22 16:23:39,697 - INFO -  * Debugger PIN: 123-827-586
-2023-01-22 16:23:45,252 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\nutzer_ohne_account_views.py', reloading
-2023-01-22 16:23:45,506 - INFO -  * Restarting with stat
-2023-01-22 16:23:46,932 - WARNING -  * Debugger is active!
-2023-01-22 16:23:46,938 - INFO -  * Debugger PIN: 123-827-586
-2023-01-22 16:23:52,531 - INFO -  * Restarting with stat
-2023-01-22 16:23:53,523 - WARNING -  * Debugger is active!
+2023-01-22 16:24:07,956 - INFO -  * Restarting with stat
+2023-01-22 16:24:10,969 - WARNING -  * Debugger is active!
+2023-01-22 16:24:10,975 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 16:24:24,987 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\nutzer_ohne_account_views.py', reloading
+2023-01-22 16:24:25,223 - INFO -  * Restarting with stat
+2023-01-22 16:24:27,044 - WARNING -  * Debugger is active!
+2023-01-22 16:24:27,051 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 16:27:36,266 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2023-01-22 16:27:36,276 - INFO - [33mPress CTRL+C to quit[0m
+2023-01-22 16:27:36,280 - INFO -  * Restarting with stat
+2023-01-22 16:27:37,782 - WARNING -  * Debugger is active!
+2023-01-22 16:27:37,792 - INFO -  * Debugger PIN: 123-827-586
