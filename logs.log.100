@@ -1,11 +1,13 @@
-2023-01-22 15:29:09,672 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on http://127.0.0.1:5000
-2023-01-22 15:29:09,680 - INFO - [33mPress CTRL+C to quit[0m
-2023-01-22 15:29:09,684 - INFO -  * Restarting with stat
-2023-01-22 15:29:11,075 - WARNING -  * Debugger is active!
-2023-01-22 15:29:11,090 - INFO -  * Debugger PIN: 123-827-586
-2023-01-22 15:29:14,069 - INFO - 127.0.0.1 - - [22/Jan/2023 15:29:14] "GET / HTTP/1.1" 200 -
-2023-01-22 15:29:14,211 - INFO - 127.0.0.1 - - [22/Jan/2023 15:29:14] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
-2023-01-22 15:29:14,578 - INFO - 127.0.0.1 - - [22/Jan/2023 15:29:14] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
-2023-01-22 15:29:14,642 - INFO - 127.0.0.1 - - [22/Jan/2023 15:29:14] "GET /buchung_suchen HTTP/1.1" 200 -
-2023-01-22 15:29:16,438 - INFO - 127.0.0.1 - - [22/Jan/2023 15:29:16] "GET /home_bp HTTP/1.1" 200 -
+2023-01-22 16:22:47,807 - INFO -  * Restarting with stat
+2023-01-22 16:22:49,063 - WARNING -  * Debugger is active!
+2023-01-22 16:22:49,068 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 16:23:37,868 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\nutzer_ohne_account_views.py', reloading
+2023-01-22 16:23:38,175 - INFO -  * Restarting with stat
+2023-01-22 16:23:39,690 - WARNING -  * Debugger is active!
+2023-01-22 16:23:39,697 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 16:23:45,252 - INFO -  * Detected change in 'C:\\Users\\merie\\OneDrive\\Dokumente\\GitHub\\softwareprojekt-gruppe-3\\website\\nutzer_ohne_account_views.py', reloading
+2023-01-22 16:23:45,506 - INFO -  * Restarting with stat
+2023-01-22 16:23:46,932 - WARNING -  * Debugger is active!
+2023-01-22 16:23:46,938 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 16:23:52,531 - INFO -  * Restarting with stat
+2023-01-22 16:23:53,523 - WARNING -  * Debugger is active!

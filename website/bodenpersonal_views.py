@@ -100,13 +100,15 @@ def home():
                 if not buchung_1 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
                     return render_template("bodenpersonal/home_bp.html")
-                flug_datum=0
-                for flug_row in flug:
-                    flug_datum = flug_row.sollabflugzeit.date()
-                return render_template("bodenpersonal/home_bp.html", buchung_1=buchung_1,
+                else:
+                    flug_datum = 0
+                    for flug_row in flug:
+                        flug_datum = flug_row.sollabflugzeit.date()
+                    return render_template("bodenpersonal/home_bp.html", buchung_1=buchung_1,
                                            ankunft_flughafen=ankunft_flughafen,
                                            ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
                                            passagiere=passagiere, gepaeck=gepaeck, today=today, flug_datum=flug_datum)
+
 
             elif buchungsnummer_2 and ausweisnummer:
                 passagiere, buchung_2, ankunft_flughafen, ziel_flughafen, flug, gepaeck = Kombination_2(
@@ -114,13 +116,15 @@ def home():
                 if not buchung_2 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
                     return render_template("bodenpersonal/home_bp.html")
-                flug_datum = 0
-                for flug_row in flug:
-                    flug_datum = flug_row.sollabflugzeit.date()
-                return render_template("bodenpersonal/home_bp.html", buchung_2=buchung_2,
-                                       ankunft_flughafen=ankunft_flughafen,
-                                       ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
-                                       passagiere=passagiere, gepaeck=gepaeck, today=today, flug_datum=flug_datum)
+                else:
+                    flug_datum = 0
+                    for flug_row in flug:
+                        flug_datum = flug_row.sollabflugzeit.date()
+                    return render_template("bodenpersonal/home_bp.html", buchung_2=buchung_2,
+                                           ankunft_flughafen=ankunft_flughafen,
+                                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
+                                           passagiere=passagiere, gepaeck=gepaeck, today=today, flug_datum=flug_datum)
+
         else:
             flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
                   " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")

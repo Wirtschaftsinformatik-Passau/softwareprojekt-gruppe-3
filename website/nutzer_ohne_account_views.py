@@ -44,7 +44,7 @@ def registrieren():
             flash('Die angegebenen Passwörter müssen übereinstimmen.', category='error')
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', emailadresse):
             flash('Ungültige Email Adresse !', category='error')
-        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&/+])[A-Za-z\d@$!%*#?&/+]{8,}$', passwort1):
+        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[/().,;+#*!%&?"-])[A-Za-z\d/().,;+#*!%&?"-]{8,}$', passwort1):
             flash(
                 'Passwort muss mindestens 8 Zeichen lang sein und mindestens eine Zahl und ein Sonderzeichen enthalten!',
                 category='error')
