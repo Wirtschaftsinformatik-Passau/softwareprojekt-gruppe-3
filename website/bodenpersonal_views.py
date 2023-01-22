@@ -97,17 +97,24 @@ def home():
                 buchung_1, ankunft_flughafen, ziel_flughafen, flug, gepaeck, passagiere = Kombination_1(
                     buchungsnummer_1,
                     vorname, nachname)
+                if not buchung_1 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
+                    flash("Die eingegebenen Daten sind falsch!", category="error")
+                    return render_template("bodenpersonal/home_bp.html")
+                flug_datum=0
                 for flug_row in flug:
                     flug_datum = flug_row.sollabflugzeit.date()
-
                 return render_template("bodenpersonal/home_bp.html", buchung_1=buchung_1,
-                                       ankunft_flughafen=ankunft_flughafen,
-                                       ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
-                                       passagiere=passagiere, gepaeck=gepaeck, today=today, flug_datum=flug_datum)
+                                           ankunft_flughafen=ankunft_flughafen,
+                                           ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
+                                           passagiere=passagiere, gepaeck=gepaeck, today=today, flug_datum=flug_datum)
 
             elif buchungsnummer_2 and ausweisnummer:
                 passagiere, buchung_2, ankunft_flughafen, ziel_flughafen, flug, gepaeck = Kombination_2(
                     buchungsnummer_2, ausweisnummer)
+                if not buchung_2 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
+                    flash("Die eingegebenen Daten sind falsch!", category="error")
+                    return render_template("bodenpersonal/home_bp.html")
+                flug_datum = 0
                 for flug_row in flug:
                     flug_datum = flug_row.sollabflugzeit.date()
                 return render_template("bodenpersonal/home_bp.html", buchung_2=buchung_2,
@@ -182,16 +189,14 @@ def koffer_label():
     # Kennung des Ankunftflughafens
     ankunft_flughafen = Flughafen.query.join(Flug, Flug.abflugid == Flughafen.flughafenid).join(
         Buchung, Buchung.flugid == Flug.flugid).join(
-        Passagier,Passagier.buchungsid == Buchung.buchungsid).join(
-        Gepaeck,Gepaeck.passagierid ==passagier_id).filter(
-        Gepaeck.gepaeckid == gepaeckid).first()
+        Passagier,Passagier.buchungsid == Buchung.buchungsid).filter(
+        Passagier.passagierid == passagier_id).first()
 
     # Kennung des Zielflughafens
-    ziel_flughafen =  Flughafen.query.join(Flug, Flug.zielid == Flughafen.flughafenid).join(
+    ziel_flughafen = Flughafen.query.join(Flug, Flug.zielid == Flughafen.flughafenid).join(
         Buchung, Buchung.flugid == Flug.flugid).join(
-        Passagier,Passagier.buchungsid == Buchung.buchungsid).join(
-        Gepaeck,Gepaeck.passagierid ==passagier_id).filter(
-        Gepaeck.gepaeckid == gepaeckid).first()
+        Passagier,Passagier.buchungsid == Buchung.buchungsid).filter(
+        Passagier.passagierid == passagier_id).first()
     try:
         doc = SimpleDocTemplate("koffer_label.pdf", pagesize=(5 * inch, 5 * inch))
         styles = getSampleStyleSheet()

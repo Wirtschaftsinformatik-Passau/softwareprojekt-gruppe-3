@@ -1,0 +1,10 @@
+2023-01-22 15:58:54,354 - INFO -  * Restarting with stat
+2023-01-22 15:58:55,997 - WARNING -  * Debugger is active!
+2023-01-22 15:58:56,006 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 15:59:03,954 - INFO - 127.0.0.1 - - [22/Jan/2023 15:59:03] "POST /home_bp?buchungsid=6&vorname=Ani&nachname=Gevorgiyan HTTP/1.1" 200 -
+2023-01-22 15:59:04,004 - INFO - 127.0.0.1 - - [22/Jan/2023 15:59:04] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
+2023-01-22 15:59:04,050 - INFO - 127.0.0.1 - - [22/Jan/2023 15:59:04] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2023-01-22 15:59:04,082 - INFO - 127.0.0.1 - - [22/Jan/2023 15:59:04] "GET /buchung_suchen HTTP/1.1" 200 -
+2023-01-22 15:59:07,804 - INFO - 127.0.0.1 - - [22/Jan/2023 15:59:07] "POST /generate_boarding_pass?passagier_id=13 HTTP/1.1" 200 -
+2023-01-22 15:59:31,927 - INFO - 127.0.0.1 - - [22/Jan/2023 15:59:31] "POST /koffer_label?passagier_id=13&gepaeckid=10 HTTP/1.1" 200 -
+2023-01-22 16:01:46,550 - INFO -  * Restarting with stat
