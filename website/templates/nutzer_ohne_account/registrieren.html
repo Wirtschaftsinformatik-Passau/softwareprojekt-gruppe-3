@@ -1,6 +1,8 @@
 {% extends "base.html" %} {% block title %}Registrieren{% endblock %} {% block
 content %}
 
+     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
 
     <form method="POST">
         <br>
@@ -71,7 +73,8 @@ content %}
     <ul>
         <li>enthält mindestens 8 Zeichen</li>
         <li>enthält mindestens eine Zahl</li>
-        <li>enthält mindestens ein Sonderzeichen</li>
+        <li>enthält mindestens ein Sonderzeichen: <i>/().,;+#*!%&?"-</i></li>
+        <br>
     </ul>
 </div>
 

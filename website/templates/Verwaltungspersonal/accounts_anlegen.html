@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Buchung{% endblock %}
 {% block content %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <br>
     <br>
     <!-- upper nav bar with links to VP functions -->
@@ -26,7 +28,7 @@
 
     <!-- bigger box around form  -->
 
-    <div class="card" style="width: 63rem; height: 34rem">
+    <div class="card" style="width: auto; height: auto">
         <div class="card-body">
 
             <!-- smaller nav bar for anlegen und bearbeiten -->
@@ -42,9 +44,9 @@
 
             <!-- smaller box around input form -->
 
-            <div class="card" style="width: 60rem;">
+            <div class="card" style="width: auto;">
                 <div class="card-body">
-                    <div class="container" style="width: 55rem; height: 26rem">
+                    <div class="container-fluid" style="width: auto; height: auto">
 
                         <!-- form to input data -->
 
@@ -52,12 +54,12 @@
                             <div class="form-group">
                                 <label for="Vorname">Vorname:</label>
                                 <input type="text" class="form-control" id="vorname" name="vorname"
-                                       placeholder="" pattern="[a-zA-Z]+" required>
+                                       placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+" required>
                             </div>
                             <div class="form-group">
                                 <label for="Nachname">Nachname:</label>
                                 <input type="text" class="form-control" id="nachname" name="nachname"
-                                       placeholder="" pattern="[a-zA-Z]+" required>
+                                       placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+" required>
                             </div>
                             <div class="form-group">
                                 <label for="emailadresse">E-mail Adresse:</label>
@@ -74,7 +76,7 @@
                             <br>
 
 
-                            <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem">Account
+                            <button type="submit" value="submit" class="btn btn-primary" style="height: auto">Account
                                 anlegen
                             </button>
 

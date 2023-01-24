@@ -2,9 +2,11 @@
 
 {% block title %}Home für Verwaltungspersonal{% endblock %}
 {% block content %}
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <br>
     <br>
 
+    <!--nav bars are responsive by default-->
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-link" href="/home-vp">Flugzeuge</a>
@@ -25,7 +27,7 @@
     </ul>
 
 
-    <div class="card" style="width: 63rem;">
+    <div class="card" style="width: auto">
         <div class="card-body">
 
             <ul class="nav nav-pills">
@@ -39,9 +41,9 @@
 
             <!-- Suchfeld  -->
 
-            <div class="card" style="width: 60rem;height: 30rem">
+            <div class="card" style="width: auto;height: auto">
                 <div class="card-body">
-                    <div class="container" style="width: 55rem; height: 30rem">
+                    <div class="container-fluid" style="width: auto; height: auto">
                         <div class="col-12 col-md-8" align="right">
                             <form action="" method="post" autocomplete="on">
                                 <div class="row">
@@ -49,7 +51,7 @@
                                         <input type="text" class="form-control" name="tag" id="tag"
                                                placeholder="Flugnummer"/>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-auto">
                                         <input type="submit" value="Suchen" class="form-control btn btn-primary "
                                                name="">
                                     </div>
@@ -61,20 +63,20 @@
 
 
                         {% if fluege %}
-
+                        <div class="table-responsive">
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th scope="col">Von</th>
-                                    <th scope="col">Abflug</th>
+                                    <th scope="col" class="col-auto">Von</th>
+                                    <th scope="col" class="col-auto">Abflug</th>
 
-                                    <th scope="col">Nach</th>
-                                     <th scope="col">Ankunft</th>
+                                    <th scope="col" class="col-auto">Nach</th>
+                                     <th scope="col" class="col-auto">Ankunft</th>
 
-                                    <th scope="col">Flugzeug</th>
-                                    <th scope="col">Preis p.P.</th>
-                                    <th scope="col">Flugstatus</th>
-                                    <th scope="col"></th>
+                                    <th scope="col" class="col-auto">Flugzeug</th>
+                                    <th scope="col" class="col-auto">Preis p.P.</th>
+                                    <th scope="col" class="col-auto">Flugstatus</th>
+                                    <th scope="col" class="col-auto"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -266,8 +268,6 @@
                                                                class="btn btn-danger">Annulieren</a>
 
                                                             <input type="submit" class="btn btn-info" value="Speichern">
-
-
                                                         </div>
                                                     </div>
                                                 </form>
@@ -284,6 +284,7 @@
                                 </tbody>
 
                             </table>
+                        </div>
 
                             <!-- Pagination bar -->
 

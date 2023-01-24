@@ -72,7 +72,7 @@ def passwort_aendern():
         if not re.search(r'[0-9]', new_password):
             flash('Neues Passwort muss mindestens eine Ziffer enthalten.', category='error')
             return render_template("nutzer_mit_account/passwort_aendern.html")
-        if not re.search(r'[!@#$%^*_|.]', new_password):
+        if not re.search(r'[/().,;+#*!%&?"-]', new_password):
             flash('Neues Passwort muss mindestens ein Sonderzeichen enthalten.', category='error')
             return render_template("nutzer_mit_account/passwort_aendern.html")
         if len(new_password) < MINIMALE_PASSWORTLÄNGE:
@@ -103,7 +103,7 @@ def passwort_vergessen():
     emailadresse = request.form.get('emailadresse')
     user = Nutzerkonto.query.filter_by(emailadresse=emailadresse).first()
     if user:
-        special_characters = '!@#$%^&*/_+-'
+        special_characters = '/().,;+#*!%&?"-'
         neues_passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))
         while not (any(c.isdigit() for c in neues_passwort) and any(c in special_characters for c in neues_passwort)):
             neues_passwort = ''.join(random.choices(string.ascii_letters + string.digits + special_characters, k=8))

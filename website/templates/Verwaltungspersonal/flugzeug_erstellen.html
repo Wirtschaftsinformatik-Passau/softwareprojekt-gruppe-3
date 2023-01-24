@@ -2,25 +2,28 @@
 
 {% block title %}Flugzeug erstellen{% endblock %}
 {% block content %}
-    <div class="card" style="width: 68rem;">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <div class="card" style="width: auto">
     <div class="card-body">
-        <div class="container" style="width: 60rem; height: 10rem">
+        <div class="container-fluid" style="width: auto; height: auto">
             <form method="POST">
                 <div class="form-row">
-                    <div class="col">
+                    <div class="col-auto">
                         <label for="Modell">Modell:</label>
                         <input type="text" class="form-control" id="Modell" name="Modell" placeholder="" pattern="[A-Z0-9]+" required>
                     </div>
-                    <div class="col">
+                    <div class="col-auto">
                         <label for="Hersteller">Hersteller:</label>
-                        <input type="text" class="form-control" id="Hersteller" name="Hersteller" placeholder="" pattern="[a-zA-Z]+" required>
+                        <input type="text" class="form-control" id="Hersteller" name="Hersteller" placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+" required>
                     </div>
-                    <div class="col">
+                    <div class="col-auto">
                         <label for="Anzahl Sitzplätze">Anzahl der Sitzplätze:</label>
                         <input type="number" class="form-control" id="anzahlsitzplaetze" name="anzahlsitzplaetze" min="1"
                                placeholder="" required>
                     </div>
-                        <button type="submit" class="btn btn-primary" style="height: 3rem">Flugzeug anlegen</button>
+                        <button type="submit" class="btn btn-primary" style="height:auto">Flugzeug anlegen</button>
                 </div>
 
             </form>

@@ -2,6 +2,7 @@
 
 {% block title %}Startseite{% endblock %}
 {% block content %}
+     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 
     <br>
@@ -23,10 +24,11 @@
     </ul>
 
 
-    <div class="card" style="width: 68rem;">
+    <div class="card" style="width: auto">
         <div class="card-body">
-            <div class="container" style="width: 60rem; height: 20rem">
+            <div class="container-fluid" style="width: auto; height: auto">
                  {% if fluege %}
+ <div class="table-responsive">
         <table class="table">
             <thead>
             <tr>
@@ -60,6 +62,7 @@
             </tbody>
 
         </table>
+ </div>
                       <nav aria-label="Page navigation example">
                                 <ul class="pagination">
                                     {% if fluege.has_prev %}

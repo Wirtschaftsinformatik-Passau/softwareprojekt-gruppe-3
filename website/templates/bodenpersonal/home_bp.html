@@ -1,6 +1,7 @@
 {% extends "base.html" %} {% block title %}Home für Bodenpersonal {% endblock %} {% block content %} <br>
 <br>
-<div class="card" style="width: 69rem;">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<div class="card" style="width: auto">
   <div class="card-body">
     <ul class="nav nav-pills">
       <li class="nav-item">
@@ -10,38 +11,38 @@
         <a class="nav-link" href="/fluege_pruefen">Auslastung prüfen</a>
       </li>
     </ul>
-    <div class="card" style="width: 66rem;">
+    <div class="card" style="width: auto">
       <div class="card-body">
-        <div class="container-fluid" style="width: 55rem; height: 15rem">
+        <div class="container-fluid" style="width: auto; height: auto">
           <br>
           <form action="#" method="POST">
             <div class="form-row">
-              <div class="col">
+              <div class="col-auto">
                 <label for="buchungsnummer_1">Buchungsnummer:</label>
                 <input type="text" class="form-control" id="buchungsnummer_1" name="buchungsnummer_1" placeholder="" pattern="[A-Z0-9]+">
               </div>
-              <div class="col">
+              <div class="col-auto">
                 <label for="vorname">Vorname:</label>
-                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+">
+                <input type="text" class="form-control" id="vorname" name="vorname" placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+" >
               </div>
-              <div class="col">
+              <div class="col-auto">
                 <label for="nachname">Nachname:</label>
-                <input type="text" class="form-control" id="nachname" name="nachname" placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+">
+                <input type="text" class="form-control" id="nachname" name="nachname" placeholder="" pattern="[a-zA-ZäöüÄÖÜ]+" >
               </div>
             </div>
             <br>
             <p>oder</p>
             <div class="form-row">
-              <div class="col">
+              <div class="col-auto">
                 <label for="buchungsnummer_2">Buchungsnummer:</label>
-                <input style="width:17rem" type="text" class="form-control" id="buchungsnummer_2" name="buchungsnummer_2" placeholder="" pattern="[A-Z0-9]+">
+                <input style="width:auto" type="text" class="form-control" id="buchungsnummer_2" name="buchungsnummer_2" placeholder="" pattern="[A-Z0-9]+">
               </div>
-              <div class="col">
+              <div class="col-auto">
                 <label for="ausweisnummer">Ausweisnummer:</label>
-                <input style="width:17rem" type="text" class="form-control" id="ausweisnummer" name="ausweisnummer" placeholder="" pattern="[A-Z0-9]+">
+                <input style="width:auto" type="text" class="form-control" id="ausweisnummer" name="ausweisnummer" placeholder="" pattern="[A-Z0-9]+">
               </div>
               <div class="col-auto my-4">
-                <button type="submit" value="submit" class="btn btn-primary" style="height: 3rem"> Buchung suchen </button>
+                <button type="submit" value="submit" class="btn btn-primary" style="height: auto"> Buchung suchen </button>
               </div>
             </div>
           </form>
@@ -49,16 +50,17 @@
       </div>
     </div>
   </div>
+<div class="table-responsive-sm">
   <table class="table table-striped">
     <thead>
       <tr>
-        <th scope="col">Buchungsnummer</th>
-        <th scope="col">Buchungsstatus</th>
-        <th scope="col">Von</th>
-        <th scope="col">Nach</th>
-        <th scope="col">Abflugsdatum</th>
-        <th scope="col">Passagiere</th>
-        <th scope="col">Gepäckstatus</th>
+        <th scope="col" class="col-auto ">Buchungsnummer</th>
+        <th scope="col" class="col-auto">Buchungsstatus</th>
+        <th scope="col" class="col-auto">Von</th>
+        <th scope="col" class="col-auto">Nach</th>
+        <th scope="col" class="col-auto">Abflugsdatum</th>
+        <th scope="col" class="col-auto">Passagiere</th>
+        <th scope="col" class="col-auto">Gepäckstatus</th>
       </tr>
     </thead>
     <tbody>
@@ -86,7 +88,7 @@
             and  flug_datum >= today %}
 
              <form action="{{ url_for('bodenpersonal_views.boarding', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}" method="post">
-                <input type="submit" class="btn btn-warning btn-sm" value="Start Boarding">
+                <input type="submit" class="btn btn-warning btn-sm" value="Starte Boarding">
              </form>
 
             {% elif passagier_row.passagierstatus == "gebucht" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
@@ -96,7 +98,7 @@
 
              {% elif passagier_row.passagierstatus == "boarded" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
                 <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}" method="post">
-                <input type="submit" class="btn btn-warning btn-sm" value=" Boardingpass ausdrucken">
+                <input type="submit" class="btn btn-warning btn-sm" value=" Boarding Karte drucken">
              </form>
 
             {% endif %}
@@ -113,12 +115,17 @@
                          <input type="checkbox" name="gepaeckid" value="{{gepaeck_row.gepaeckid}}" required >
                          <input type="hidden" name="buchungsid" value="{{ row.buchungsid }}">
                          <input type="hidden" name="buchungsnummer" value="{{ row.buchungsnummer }}">
-                         <input type="hidden" name="vorname" value="{{ passagier_row.vorname }}">
+                         <input type="hidden" name="vorname"  value="{{ passagier_row.vorname }}">
                          <input type="hidden" name="nachname" value="{{ passagier_row.nachname }}">
                          <input type="submit" class="btn btn-warning btn-sm" value="Check-In">
                      </form>
                  {% endif %}
            {% endif %}
+           {% elif gepaeck_row.status == "eingecheckt" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
+
+                     <form action="{{ url_for('bodenpersonal_views.koffer_label', passagier_id=passagier_row.passagierid,gepaeckid=gepaeck_row.gepaeckid) }}" method="post">
+                          <input type="submit" class="btn btn-warning btn-sm" value=" Etikett drucken">
+                     </form>
            {% endif %}
     {% endfor %}
 </td>
@@ -137,21 +144,22 @@
         <td>{{ ziel.kennung }}</td>
         {% endfor %}
         <td>{{  flug_datum }}</td>
-        {% for passagier_row in passagiere %} <td>
+        {% for passagier_row in passagiere %}
+        <td>
           {{ passagier_row.vorname }}
           {{ passagier_row.nachname }}
           <br> Geb: {{passagier_row.geburtsdatum }}
           <br> Status: {{passagier_row.passagierstatus }}
-          <br> Ausweisnum: {{passagier_row.ausweisnummer }}
+          <br> Ausweisnummer: {{passagier_row.ausweisnummer }}
         <br>
         {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
           <form action="{{ url_for('bodenpersonal_views.boarding', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}" method="post">
-                <input type="submit" class="btn btn-warning btn-sm" value="Start Boarding">
+                <input type="submit" class="btn btn-warning btn-sm" value="Starte Boarding">
              </form>
 
              {% elif passagier_row.passagierstatus == "boarded" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
                 <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}" method="post">
-                <input type="submit" class="btn btn-warning btn-sm" value=" Boardingpass ausdrucken">
+                <input type="submit" class="btn btn-warning btn-sm" value="Boarding Karte drucken">
              </form>
 
             {% endif %}
@@ -174,6 +182,12 @@
                      </form>
                  {% endif %}
            {% endif %}
+   {% elif gepaeck_row.status == "eingecheckt" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
+
+                   <form action="{{ url_for('bodenpersonal_views.koffer_label', passagier_id=passagier_row.passagierid,gepaeckid=gepaeck_row.gepaeckid) }}" method="post">
+                       <input type="submit" class="btn btn-warning btn-sm" value=" Etikett drucken">
+                     </form>
+
            {% endif %}
     {% endfor %}
 </td>
@@ -183,6 +197,7 @@
     {% endif %}
     </tbody>
   </table>
+</div>
 </div>
 {% endblock %}
 

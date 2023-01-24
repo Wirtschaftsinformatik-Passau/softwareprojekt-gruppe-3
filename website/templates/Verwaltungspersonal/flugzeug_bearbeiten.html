@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Buchung{% endblock %}
 {% block content %}
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <br>
     <br>
 
@@ -23,7 +24,7 @@
     </ul>
 
 
-    <div class="card" style="width: 68rem; height: 35rem">
+    <div class="card" style="width: auto; height: auto"> <!--68, 35-->
         <div class="card-body">
 
             <ul class="nav nav-pills">
@@ -37,14 +38,14 @@
 
             <!-- Suchfeld  -->
 
-            <div class="card" style="width: 60rem;height: 30rem">
+            <div class="card" style="width: auto ;height: auto">
                 <div class="card-body">
-                    <div class="container" style="width: 55rem; height: 30rem">
+                    <div class="container" style="width: auto; height: auto">
                         <div class="col-12 col-md-8" align="right">
                             <form action="" method="post" autocomplete="on">
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <input type="text" class="form-control" name="tag" id="tag"
+                                        <input type="text" class="form-control" name="tag" id="tag" pattern="a-zA-ZäöüÄÖÜ"
                                                placeholder="Hersteller"/>
                                     </div>
                                     <div class="col-3">
@@ -59,14 +60,15 @@
 
 
                         {% if flugzeuge %}
+                            <div class="table-responsive-sm">
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Hersteller</th>
-                                    <th scope="col">Modell</th>
-                                    <th scope="col">Sitzplatzanzahl</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col" class="col-auto">ID</th>
+                                    <th scope="col" class="col-auto">Hersteller</th>
+                                    <th scope="col" class="col-auto">Modell</th>
+                                    <th scope="col" class="col-auto">Sitzplatzanzahl</th>
+                                    <th scope="col" class="col-auto">Status</th>
 
                                 </tr>
                                 </thead>
@@ -123,13 +125,13 @@
                                                                        name="modell" value="{{ rows.modell }}" pattern="[A-Z0-9]+"
                                                                        required>
                                                             </div>
-                                                            <div class="col">
+                                                            <div class="col-auto">
                                                                 <label for="Hersteller">Hersteller:</label>
                                                                 <input type="text" class="form-control" id="hersteller"
                                                                        name="hersteller"
                                                                        value="{{ rows.hersteller }}" pattern="[a-zA-Z]+" required>
                                                             </div>
-                                                            <div class="col">
+                                                            <div class="col-auto">
                                                                 <label for="Anzahl Sitzplätze">Anzahl der
                                                                     Sitzplätze:</label>
                                                                 <input type="number" class="form-control"
@@ -153,6 +155,7 @@
                                 </tbody>
 
                             </table>
+                            </div>
 
                             <!-- Pagination bar -->
 
@@ -198,13 +201,9 @@
                                 </ul>
                             </nav>
                         {% endif %}
-
-
                     </div>
                 </div>
-
             </div>
-
         </div>
     </div>
 {% endblock %}
