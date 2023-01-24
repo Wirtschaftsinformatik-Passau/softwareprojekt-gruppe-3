@@ -1,16 +1,14 @@
-from flask import Blueprint, render_template, request, flash,session, redirect,Response, url_for
+from flask import Blueprint, render_template, request, flash, session, redirect, Response, url_for
 from flask_login import current_user, login_required
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from datetime import datetime
 import random, string
 from reportlab.lib.pagesizes import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer,Image
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
 import qrcode
 import os
-
-
 
 # store the standard routes for a website where the user can navigate to
 bodenpersonal_views = Blueprint('bodenpersonal_views', __name__)
@@ -19,7 +17,6 @@ bodenpersonal_views = Blueprint('bodenpersonal_views', __name__)
 def generate_boarding_pass_number():
     boarding_pass_number = ''.join(random.choices(string.ascii_letters + string.digits, k=15))
     return boarding_pass_number
-
 
 
 def Kombination_1(buchungsnummer_1, vorname, nachname):
@@ -100,7 +97,7 @@ def home():
                     vorname, nachname)
                 if not buchung_1 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
-                    return render_template("bodenpersonal/home_bp.html",user=current_user)
+                    return render_template("bodenpersonal/home_bp.html", user=current_user)
                 else:
                     flug_datum = 0
                     for flug_row in flug:
@@ -116,7 +113,7 @@ def home():
                     buchungsnummer_2, ausweisnummer)
                 if not buchung_2 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
-                    return render_template("bodenpersonal/home_bp.html",user=current_user)
+                    return render_template("bodenpersonal/home_bp.html", user=current_user)
                 else:
                     flug_datum = 0
                     for flug_row in flug:
@@ -129,14 +126,10 @@ def home():
         else:
             flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
                   " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
-            return render_template("bodenpersonal/home_bp.html",user=current_user)
+            return render_template("bodenpersonal/home_bp.html", user=current_user)
 
     else:
-        return render_template("bodenpersonal/home_bp.html",user=current_user)
-
-
-
-
+        return render_template("bodenpersonal/home_bp.html", user=current_user)
 
 
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
@@ -162,10 +155,11 @@ def einchecken():
         db.session.commit()
 
         flash("Check-In erfolgreich")
-        return redirect(url_for('bodenpersonal_views.home',user=current_user))
+        return redirect(url_for('bodenpersonal_views.home', user=current_user))
 
     return render_template('bodenpersonal/einchecken.html', user=current_user, passagier=passagier, vorname=vorname,
                            nachname=nachname)
+
 
 @bodenpersonal_views.route('/koffer_einchecken', methods=["POST"])
 @login_required
@@ -182,7 +176,10 @@ def koffer_einchecken():
         db.session.commit()
 
     flash("Koffer erfolgreich eingecheckt!", category="success")
-    return redirect(url_for('bodenpersonal_views.home', buchungsnummer=buchungsnummer, vorname=vorname, nachname=nachname,user=current_user))
+    return redirect(
+        url_for('bodenpersonal_views.home', buchungsnummer=buchungsnummer, vorname=vorname, nachname=nachname,
+                user=current_user))
+
 
 @bodenpersonal_views.route('/koffer_label', methods=['POST'])
 @login_required
@@ -191,19 +188,20 @@ def koffer_label():
     gepaeckid = request.args.get('gepaeckid')
 
     passagier = Passagier.query.filter(Passagier.passagierid == passagier_id).first()
-    flug = Flug.query.join(Buchung, Buchung.flugid == Flug.flugid).join(Passagier,Passagier.buchungsid == Buchung.buchungsid).filter(
+    flug = Flug.query.join(Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
+                                                                        Passagier.buchungsid == Buchung.buchungsid).filter(
         Passagier.passagierid == passagier_id).first()
 
     # Kennung des Ankunftflughafens
     ankunft_flughafen = Flughafen.query.join(Flug, Flug.abflugid == Flughafen.flughafenid).join(
         Buchung, Buchung.flugid == Flug.flugid).join(
-        Passagier,Passagier.buchungsid == Buchung.buchungsid).filter(
+        Passagier, Passagier.buchungsid == Buchung.buchungsid).filter(
         Passagier.passagierid == passagier_id).first()
 
     # Kennung des Zielflughafens
     ziel_flughafen = Flughafen.query.join(Flug, Flug.zielid == Flughafen.flughafenid).join(
         Buchung, Buchung.flugid == Flug.flugid).join(
-        Passagier,Passagier.buchungsid == Buchung.buchungsid).filter(
+        Passagier, Passagier.buchungsid == Buchung.buchungsid).filter(
         Passagier.passagierid == passagier_id).first()
     try:
         doc = SimpleDocTemplate("koffer_label.pdf", pagesize=(5 * inch, 5 * inch))
@@ -218,11 +216,12 @@ def koffer_label():
 
         # Add passenger information & QR Image
         elements.append(Paragraph("<i>AirPassau</i>", styles["Heading4"]))
-        elements.append(Paragraph("<b>Gepäcketikett</b>" , styles["Heading2"]))
+        elements.append(Paragraph("<b>Gepäcketikett</b>", styles["Heading2"]))
         elements.append(Spacer(1, 5))
         elements.append(Image(qr_code_path, width=1 * inch, height=1 * inch))
         elements.append(Spacer(1, 1))
-        elements.append(Paragraph(" Passagiername: {} {} ".format(passagier.vorname , passagier.nachname), styles["Normal"]))
+        elements.append(
+            Paragraph(" Passagiername: {} {} ".format(passagier.vorname, passagier.nachname), styles["Normal"]))
         elements.append(Spacer(1, 1))
         elements.append(Paragraph("Von: {}".format(ankunft_flughafen.kennung), styles["Normal"]))
         elements.append(Spacer(1, 1))
@@ -238,7 +237,7 @@ def koffer_label():
         pdf_data = pdf.read()
         response = Response(pdf_data, content_type='application/pdf', headers={
             "Content-Disposition": "attachment;filename=koffer_label_{}_{}.pdf".format(passagier.vorname,
-                                                                                        passagier.nachname)})
+                                                                                       passagier.nachname)})
         return response
 
 
@@ -248,35 +247,36 @@ def boarding():
     buchungsid = request.args.get('buchungsid')
     vorname = request.args.get('vorname')
     nachname = request.args.get('nachname')
-    passagier= Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
+    passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
         where(Passagier.nachname == nachname).first()
     passagier.passagierstatus = "Boarded"
     db.session.add(passagier)
     db.session.commit()
-    flash("Passagier erfolgreich geboarded","success")
-    return redirect(url_for('bodenpersonal_views.home',buchungsid=buchungsid, vorname=vorname, nachname=nachname,user=current_user))
-
-
+    flash("Passagier erfolgreich geboarded", "success")
+    return redirect(url_for('bodenpersonal_views.home', buchungsid=buchungsid, vorname=vorname, nachname=nachname,
+                            user=current_user))
 
 
 @bodenpersonal_views.route('/generate_boarding_pass', methods=['POST'])
 @login_required
 def generate_boarding_pass():
-
     passagier_id = request.args.get('passagier_id')
     passagier = Passagier.query.filter(Passagier.passagierid == passagier_id).first()
-    flug=Flug.query.join(Buchung,Buchung.flugid == Flug.flugid).join(Passagier,
-        Passagier.buchungsid == Buchung.buchungsid).filter(Passagier.passagierid == passagier_id).first()
+    flug = Flug.query.join(Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
+                                                                        Passagier.buchungsid == Buchung.buchungsid).filter(
+        Passagier.passagierid == passagier_id).first()
 
     # Kennung des Ankunftflughafens
     ankunft_flughafen = Flughafen.query.join(Flug, Flug.abflugid == Flughafen.flughafenid).join(
         Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
-        Passagier.buchungsid == Buchung.buchungsid).filter(Passagier.passagierid == passagier_id).first()
+                                                     Passagier.buchungsid == Buchung.buchungsid).filter(
+        Passagier.passagierid == passagier_id).first()
 
     # Kennung des Zielflughafens
     ziel_flughafen = Flughafen.query.join(Flug, Flug.zielid == Flughafen.flughafenid).join(
         Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
-        Passagier.buchungsid == Buchung.buchungsid).filter(Passagier.passagierid == passagier_id).first()
+                                                     Passagier.buchungsid == Buchung.buchungsid).filter(
+        Passagier.passagierid == passagier_id).first()
 
     try:
         doc = SimpleDocTemplate("boarding_pass.pdf", pagesize=(5 * inch, 5 * inch))
@@ -291,11 +291,12 @@ def generate_boarding_pass():
 
         # Add passenger information & QR Image
         elements.append(Paragraph("<i>AirPassau</i>", styles["Heading4"]))
-        elements.append(Paragraph("<b>Boarding Pass</b>" , styles["Heading2"]) )
+        elements.append(Paragraph("<b>Boarding Pass</b>", styles["Heading2"]))
         elements.append(Spacer(1, 5))
         elements.append(Image(qr_code_path, width=1 * inch, height=1 * inch))
         elements.append(Spacer(1, 1))
-        elements.append(Paragraph(" Passagiername: {} {} ".format(passagier.vorname , passagier.nachname), styles["Normal"]))
+        elements.append(
+            Paragraph(" Passagiername: {} {} ".format(passagier.vorname, passagier.nachname), styles["Normal"]))
         elements.append(Spacer(1, 1))
         elements.append(Paragraph("Von: {}".format(ankunft_flughafen.kennung), styles["Normal"]))
         elements.append(Spacer(1, 1))
@@ -319,6 +320,7 @@ def generate_boarding_pass():
             "Content-Disposition": "attachment;filename=boarding_pass_{}_{}.pdf".format(passagier.vorname,
                                                                                         passagier.nachname)})
         return response
+
 
 @bodenpersonal_views.route('/fluege_pruefen', methods=["GET", "POST"])
 @login_required
@@ -347,11 +349,11 @@ def fluege_pruefen():
             passagiere = []
             for buchung in buchungen:
                 p = db.session.query(Buchung.buchungsnummer, Passagier.vorname, Passagier.nachname,
-                                     Passagier.passagierstatus,Passagier.geburtsdatum).join(Passagier).filter(
+                                     Passagier.passagierstatus, Passagier.geburtsdatum).join(Passagier).filter(
                     Passagier.buchungsid == buchung.buchungsid).all()
                 passagiere.extend(p)
             return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer, passagiere=passagiere,
-                                   buchungen=buchungen,user=current_user)
+                                   buchungen=buchungen, user=current_user)
         # Clear the session data
         session.clear()
 
@@ -384,8 +386,3 @@ def fluege_pruefen():
                                        buchungen=buchungen, user=current_user)
         else:
             return render_template('bodenpersonal/fluege_pruefen.html', user=current_user)
-
-
-
-
-

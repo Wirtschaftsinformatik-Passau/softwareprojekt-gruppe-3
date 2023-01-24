@@ -7,7 +7,7 @@ from logging.handlers import RotatingFileHandler
 from glob import glob
 import werkzeug
 
-
+"""
 # customizing the Log file can be saved in seperate file by adding: filename="logs.log",
 # logging.basicConfig(format="%(levelname)s:%(name)s_:%(message)s")
 
@@ -25,7 +25,7 @@ logger.addHandler(consoleHanlder)
 fileHandler = RotatingFileHandler("logs.log", backupCount=100, maxBytes=1024)  # displays latest 100 logs
 fileHandler.setFormatter(logFormatter)
 logger.addHandler(fileHandler)
-
+"""
 
 conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("merie", "1234", "localhost", "airline")
 db = SQLAlchemy()
@@ -69,7 +69,7 @@ def create_app():
 
     return app
 
-
+"""
 @app.route("/log/")
 def logging():
     # [2023-01-17 11:21:27,054] INFO in __init__: Hier ist ein Log.
@@ -83,4 +83,4 @@ def logging():
             log += f.read()
     return render_template("Verwaltungspersonal/log.html", log=log)
 
-
+"""
