@@ -419,4 +419,19 @@ def logging():
 
 @verwaltungspersonal_views.route('/reporting', methods=['GET', 'POST'])
 def reporting():
-    return render_template("Verwaltungspersonal/reporting.html", user=current_user)
+    flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
+    vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('von', default_flughafen_von)).with_entities(
+        Flughafen.flughafenid)
+    nachID = Flughafen.query.filter(Flughafen.stadt == request.args.get('nach', default_flughafen_nach)).with_entities(
+        Flughafen.flughafenid)
+    zeitvon = request.args.get('zeitvon')
+    zeitbis = request.args.get('zeitbis')
+
+    print(zeitbis, zeitvon)
+
+    alle_fluege = Flug.query.filter(Flug.abflugid == vonID).filter(Flug.zielid == nachID). \
+        filter(cast(Flug.sollabflugzeit, Date) >= zeitvon).filter(cast(Flug.sollankunftszeit, Date) <= zeitbis)
+
+    return render_template("Verwaltungspersonal/reporting.html", user=current_user, flughafen_liste=flughafen_liste,
+                           default_flughafen_von=default_flughafen_von, default_flughafen_nach=default_flughafen_nach,
+                           alle_fluege=alle_fluege)
