@@ -1,14 +1,11 @@
-2023-01-24 15:02:28,041 - INFO -  * Restarting with stat
-2023-01-24 15:02:28,675 - WARNING -  * Debugger is active!
-2023-01-24 15:02:28,678 - INFO -  * Debugger PIN: 101-719-810
-2023-01-24 15:02:43,806 - INFO -  * Detected change in 'C:\\Users\\Dani\\PycharmProjects\\softwareprojekt-gruppe-3\\website\\__init__.py', reloading
-2023-01-24 15:02:43,875 - INFO -  * Restarting with stat
-2023-01-24 15:02:44,446 - WARNING -  * Debugger is active!
-2023-01-24 15:02:44,448 - INFO -  * Debugger PIN: 101-719-810
-2023-01-24 15:06:41,401 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2023-01-22 22:19:39,585 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
-2023-01-24 15:06:41,402 - INFO - [33mPress CTRL+C to quit[0m
-2023-01-24 15:06:41,404 - INFO -  * Restarting with stat
-2023-01-24 15:06:41,975 - WARNING -  * Debugger is active!
-2023-01-24 15:06:41,977 - INFO -  * Debugger PIN: 101-719-810
-2023-01-24 15:08:47,967 - INFO -  * Restarting with stat
+2023-01-22 22:19:39,616 - INFO - [33mPress CTRL+C to quit[0m
+2023-01-22 22:19:39,619 - INFO -  * Restarting with stat
+2023-01-22 22:19:41,287 - WARNING -  * Debugger is active!
+2023-01-22 22:19:41,294 - INFO -  * Debugger PIN: 123-827-586
+2023-01-22 22:21:36,142 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:36] "GET /home_bp HTTP/1.1" 200 -
+2023-01-22 22:21:36,182 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:36] "[33mGET /static/index.js HTTP/1.1[0m" 404 -
+2023-01-22 22:21:36,230 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:36] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2023-01-22 22:21:36,262 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:36] "GET /buchung_suchen HTTP/1.1" 200 -
+2023-01-22 22:21:41,198 - INFO - 127.0.0.1 - - [22/Jan/2023 22:21:41] "POST /home_bp HTTP/1.1" 200 -

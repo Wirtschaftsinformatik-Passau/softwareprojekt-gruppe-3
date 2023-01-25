@@ -183,6 +183,7 @@ def online_check_in():
         if not len(passagier.ausweisnummer) >= MINDESTLÄNGE_AUSWEISNUMMER:
             flash('Bitte überprüfen Sie die Ausweisnummer', category='error')
             return redirect(url_for('passagier_views.buchung_suchen'))
+        
         db.session.commit()
         flash("Der Online-Check-In war erfolgreich! Ihre Boardingkarte können Sie im Anhang einsehen.")
 
