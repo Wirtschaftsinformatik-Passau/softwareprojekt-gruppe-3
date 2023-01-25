@@ -35,8 +35,7 @@ def is_date_after_yesterday(date, diff):
 
 
 def is_between(start_time, end_time):
-    start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M')
-    end_time = datetime.strptime(end_time, '%Y-%m-%d %H:%M')
+
     if start_time <= end_time:
         return start_time <= datetime.now() <= end_time
     else:  # over midnight e.g., 23:30-04:15
