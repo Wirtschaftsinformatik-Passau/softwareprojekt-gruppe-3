@@ -44,7 +44,6 @@ def flug_buchen(id, anzahlPassagiere):
     flug_data = Flug.query.filter_by(flugid=id).first()
     passagier_anzahl = 0
     buchung_preis = flug_data.preis * anzahlPassagiere
-    print(buchung_preis)
     if flug_data.flugstatus == 'annuliert':
         flash('Der Flug wurde annuliert, bitte wählen Sie ein alternatives Datum.')
 
