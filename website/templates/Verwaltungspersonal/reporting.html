@@ -4,9 +4,9 @@
 {% block content %}
     <br>
     <br>
-        <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link"  href="/home-vp">Flugzeuge</a>
+            <a class="nav-link" href="/home-vp">Flugzeuge</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/flug-anlegen">Flüge</a>
@@ -21,4 +21,118 @@
             <a class="nav-link" href="/accounts-anlegen">Accounts</a>
         </li>
     </ul>
+    <div class="card" style="width: auto;"> <!--63-->
+        <div class="card-body">
+
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Tabelle</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Diagramm</a>
+                </li>
+            </ul>
+            <div class="card" style="width: auto">
+                <div class="card-body">
+                    <div class="container-fluid" style="width: auto; height: auto">
+                        <br>
+
+                        <form method="GET">
+                            <div class="form-row">
+                                <div class="col-auto">
+                                    <label for="zeitvon">Zeit Von:*</label>
+                                    <input type="date" class="form-control" id="zeitvon" name="zeitvon"
+                                           style="height:auto; width:auto"
+                                           value="{{ request.args.get('zeitvon', "2023-01-01") }}" required>
+                                </div>
+                                <div class="col-auto">
+                                    <label for="zeitbis">Zeit Bis:*</label>
+                                    <input type="date" class="form-control" id="zeitbis" name="zeitbis"
+                                           style="height:auto; width:auto"
+                                           value="{{ request.args.get('zeitbis',  today) }}" required>
+                                </div>
+                                <div class="col-auto">
+                                    <label for="von">Von:</label>
+                                    <select id="von" name="von" class="form-control" required>
+                                        <option selected>{{ request.args.get('von', default_flughafen_von) }}  </option>
+                                        <option>...</option>
+                                        {% for rows in flughafen_liste %}
+                                            <option>  {{ rows.stadt }}  </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <label for="nach">Nach:</label>
+                                    <select id="nach" name="nach" class="form-control" required>
+                                        <option selected>{{ request.args.get('nach', default_flughafen_nach) }}</option>
+                                        <option>...</option>
+                                        {% for rows in flughafen_liste %}
+                                            <option> {{ rows.stadt }}  </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-auto my-4">
+                                    <button type="submit" value="submit" class="btn btn-primary" style="height: auto">
+                                        Suchen
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    {% if alle_fluege %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">FlugID</th>
+                    <th scope="col">Von</th>
+                    <th scope="col">Nach</th>
+                    <th scope="col">Flugstatus</th>
+                    <th scope="col">Umsätze</th>
+                    <th scope="col">Auslastung</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for rows in reporting_list %}
+                    <tr>
+                    <td>
+                        {{ rows[0] }}
+                    </td>
+                    <td>
+                        {% for e in flughafen_liste %}
+                            {% if e.flughafenid == rows[1] %}
+                                {{ e.kennung }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for e in flughafen_liste %}
+                            {% if e.flughafenid == rows[2] %}
+                                {{ e.kennung }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {{ rows[3] }}
+                    </td>
+                    <td>
+                        {{ rows[4] }}€
+                    </td>
+                    <td>
+                        {{ rows[5] }}
+                    </td>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    {% endif %}
 {% endblock %}

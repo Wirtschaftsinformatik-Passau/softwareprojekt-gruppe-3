@@ -35,7 +35,6 @@ def is_date_after_yesterday(date, diff):
 
 
 def is_between(start_time, end_time):
-
     if start_time <= end_time:
         return start_time <= datetime.now() <= end_time
     else:  # over midnight e.g., 23:30-04:15
@@ -225,8 +224,10 @@ def flug_annulieren(id):
     if flug.flugstatus == "annulliert":
         flash('Flug wurde bereits annulliert!', category='error')
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+
     elif is_between(flug.istabflugzeit, flug.istankunftszeit):
         flash('Flug ist bereits gestartet. Sie können diesen Flug nicht mehr annullieren', category='error')
+
     else:
         flug.flugstatus = 'annulliert'
         db.session.commit()
@@ -241,8 +242,6 @@ def flug_annulieren(id):
 
         for rows in alle_nutzer:
             emailadressen.append(str(rows.emailadresse))
-
-        print(emailadressen)
 
         msg = Message('Annullierung Ihres Fluges', sender='airpassau.de@gmail.com', recipients=emailadressen)
         msg.html = render_template('Verwaltungspersonal/Flug_annulliert_email.html',
@@ -418,19 +417,59 @@ def logging():
 
 @verwaltungspersonal_views.route('/reporting', methods=['GET', 'POST'])
 def reporting():
-    flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
-    vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('von', default_flughafen_von)).with_entities(
+    flughafen_liste = Flughafen.query.all()
+
+    vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('von')).with_entities(
         Flughafen.flughafenid)
-    nachID = Flughafen.query.filter(Flughafen.stadt == request.args.get('nach', default_flughafen_nach)).with_entities(
+    nachID = Flughafen.query.filter(Flughafen.stadt == request.args.get('nach')).with_entities(
         Flughafen.flughafenid)
-    zeitvon = request.args.get('zeitvon')
-    zeitbis = request.args.get('zeitbis')
+    zeitvon = datetime.strptime(request.args.get('zeitvon', "2022-01-01"), '%Y-%m-%d')
+    zeitbis = datetime.strptime(request.args.get('zeitbis', str(datetime.today().date())), '%Y-%m-%d')
 
-    print(zeitbis, zeitvon)
+    reporting_list = []
+    if zeitvon > zeitbis:
+        flash('"Zeit Von" darf nicht nach "Zeit Bis" liegen. Bitte kontrollieren Sie die Eingabe',
+              category='error')
+        return redirect(url_for('verwaltungspersonal_views.reporting'))
+    elif zeitbis > datetime.now():
+        flash('Die Datumseingaben dürfen nicht in der Zukunft liegen',
+              category='error')
+        return redirect(url_for('verwaltungspersonal_views.reporting'))
 
-    alle_fluege = Flug.query.filter(Flug.abflugid == vonID).filter(Flug.zielid == nachID). \
-        filter(cast(Flug.sollabflugzeit, Date) >= zeitvon).filter(cast(Flug.sollankunftszeit, Date) <= zeitbis)
+    if request.args.get('von') == "..." and request.args.get('nach') != "...":
+        alle_fluege = Flug.query.filter(Flug.zielid == nachID).filter(
+            Flug.sollabflugzeit). \
+            filter(Flug.sollabflugzeit >= zeitvon).filter(cast(Flug.sollankunftszeit, Date) <= zeitbis)
+    elif request.args.get('nach') == "..." and request.args.get('von') != "...":
+        alle_fluege = Flug.query.filter(Flug.abflugid == vonID).filter(
+            Flug.sollabflugzeit). \
+            filter(Flug.sollabflugzeit >= zeitvon).filter(cast(Flug.sollankunftszeit, Date) <= zeitbis)
+    elif request.args.get('nach') == "..." and request.args.get('von') == "...":
+        alle_fluege = Flug.query.filter(Flug.sollabflugzeit). \
+            filter(Flug.sollabflugzeit >= zeitvon).filter(cast(Flug.sollankunftszeit, Date) <= zeitbis)
+    else:
 
-    return render_template("Verwaltungspersonal/reporting.html", user=current_user,
+        alle_fluege = Flug.query.filter(Flug.abflugid == vonID).filter(Flug.zielid == nachID).filter(
+            Flug.sollabflugzeit). \
+            filter(Flug.sollabflugzeit >= zeitvon).filter(cast(Flug.sollankunftszeit, Date) <= zeitbis)
+
+    for rows in alle_fluege:
+        anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
+            filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
+            filter(Flug.flugzeugid == rows.flugzeugid).count()
+        abflugid = rows.abflugid
+        zielid = rows.zielid
+        flugid = rows.flugid
+        umsatz = rows.preis * anzahl_passagiere
+        status = rows.flugstatus
+        sitzplaetze = Flugzeug.query.filter(Flugzeug.flugzeugid == rows.flugzeugid).first().anzahlsitzplaetze
+        auslastung = '{:.1%}'.format(anzahl_passagiere / sitzplaetze)
+
+        reporting_list.append([flugid, abflugid, zielid, status, umsatz, auslastung])
+
+    if not reporting_list and request.args.get('von') is not None:
+        flash('In diesem Zeitraum oder zu diesen Flughäfen gibt es noch keine Daten', category='error')
+
+    return render_template("Verwaltungspersonal/reporting.html", user=current_user, flughafen_liste=flughafen_liste,
                            default_flughafen_von=default_flughafen_von, default_flughafen_nach=default_flughafen_nach,
-                           )
+                           alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date())
