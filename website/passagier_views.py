@@ -128,6 +128,7 @@ def flug_buchen(id, anzahlPassagiere):
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
 
 
+@login_required
 @passagier_views.route('/buchungsbestaetigung', methods=['POST', 'GET'])
 def buchungsbestaetigung():
     rechnungsnummer = request.args['rechnungsnummer']
@@ -182,7 +183,7 @@ def online_check_in():
         if not len(passagier.ausweisnummer) >= MINDESTLÄNGE_AUSWEISNUMMER:
             flash('Bitte überprüfen Sie die Ausweisnummer', category='error')
             return redirect(url_for('passagier_views.buchung_suchen'))
-        
+
         db.session.commit()
         flash("Der Online-Check-In war erfolgreich! Ihre Boardingkarte können Sie im Anhang einsehen.")
 
@@ -334,7 +335,8 @@ def storno(stor_buchungsnummer):
         rechnungsnummer = Rechnung.query.where(Rechnung.buchungsid == buchung.buchungsid).first().rechnungsnummer
 
         return redirect(url_for('passagier_views.stornierungsbestaetigung', user=current_user,
-                                rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer, buchungsid=buchung.buchungsid))
+                                rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer,
+                                buchungsid=buchung.buchungsid))
 
     else:
         return redirect(url_for('passagier_views.buchung_suchen'))

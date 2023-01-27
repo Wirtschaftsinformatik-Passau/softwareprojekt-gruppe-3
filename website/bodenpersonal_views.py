@@ -89,7 +89,7 @@ def home():
         nachname = request.form.get('nachname')
         ausweisnummer = request.form.get('ausweisnummer')
 
-        if ((buchungsnummer_1 and vorname and nachname) or (buchungsnummer_2 and ausweisnummer)):
+        if (buchungsnummer_1 and vorname and nachname) or (buchungsnummer_2 and ausweisnummer):
 
             if buchungsnummer_1 and vorname and nachname:
                 buchung_1, ankunft_flughafen, ziel_flughafen, flug, gepaeck, passagiere = Kombination_1(

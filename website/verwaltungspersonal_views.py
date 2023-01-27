@@ -157,7 +157,7 @@ def flug_anlegen():
 
         fluege = Flug.query.filter(Flug.abflugid == abflugid.flughafenid).filter(Flug.zielid == zielid.flughafenid). \
             filter(Flug.sollabflugzeit == abflugdatum).filter(Flug.sollankunftszeit == ankunftsdatum). \
-            filter(Flug.flugzeugid == flugzeugid)
+            filter(Flug.flugzeugid == flugzeugid).filter(Flug.flugstatus != "annulliert")
 
         if is_date_after_yesterday(abflugdatum, 0):
             flash('Das Abflugdatum darf nicht in der Vergangenheit liegen',
