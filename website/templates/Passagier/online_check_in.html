@@ -55,6 +55,16 @@
                                name="ausweisgueltigkeit"
                                placeholder="22.05.2030" required>
                     </div>
+                    <br>
+                     <!-- Add dropdown field for nationality -->
+                    <label class="visually-hidden" for="staatsangehoerigkeit">Staatsangehörigkeit*:</label>
+                    <div class="input-group">
+                        <select class="form-select" id="staatsangehoerigkeit" name="staatsangehoerigkeit" required>
+                         <option selected value="Deutschland" >Bitte auswählen </option>
+                           <!-- Include options file -->
+                            {% include "bodenpersonal/options-nationalities.html"  %}
+                         </select>
+                    </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" name="gepaecksbestimmungen" required>
                         <label class="form-check-label" for="flexCheckDefault">
