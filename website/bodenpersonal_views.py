@@ -89,6 +89,13 @@ def home():
         nachname = request.form.get('nachname')
         ausweisnummer = request.form.get('ausweisnummer')
 
+        session['buchungsnummer_1'] = buchungsnummer_1
+        session['buchungsnummer_2'] = buchungsnummer_2
+        session['vorname'] = vorname
+        session['nachname'] = nachname
+        session['ausweisnummer'] = ausweisnummer
+
+
         if (buchungsnummer_1 and vorname and nachname) or (buchungsnummer_2 and ausweisnummer):
 
             if buchungsnummer_1 and vorname and nachname:
@@ -128,8 +135,70 @@ def home():
                   " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
             return render_template("bodenpersonal/home_bp.html", user=current_user)
 
+        session.clear()
     else:
-        return render_template("bodenpersonal/home_bp.html", user=current_user)
+
+        if 'buchungsnummer_1' in session and 'vorname ' and 'nachname' in session and 'buchungsnummer_2' in session and 'ausweisnummer' in session :
+            buchungsnummer_1=session['buchungsnummer_1']
+            buchungsnummer_2=session['buchungsnummer_2']
+            vorname=session['vorname']
+            nachname=session['nachname']
+            ausweisnummer=session['ausweisnummer']
+
+            if (buchungsnummer_1 and vorname and nachname) or (buchungsnummer_2 and ausweisnummer):
+
+                if buchungsnummer_1 and vorname and nachname:
+                    buchung_1, ankunft_flughafen, ziel_flughafen, flug, gepaeck, passagiere = Kombination_1(
+                        buchungsnummer_1,
+                        vorname, nachname)
+                    if not buchung_1 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
+                        flash("Die eingegebenen Daten sind falsch!", category="error")
+                        return render_template("bodenpersonal/home_bp.html", user=current_user)
+                    else:
+                        flug_datum = 0
+                        for flug_row in flug:
+                            flug_datum = flug_row.sollabflugzeit.date()
+                        return render_template("bodenpersonal/home_bp.html", buchung_1=buchung_1,
+                                               ankunft_flughafen=ankunft_flughafen,
+                                               ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
+                                               passagiere=passagiere, gepaeck=gepaeck, today=today,
+                                               flug_datum=flug_datum)
+
+
+                elif buchungsnummer_2 and ausweisnummer:
+                    passagiere, buchung_2, ankunft_flughafen, ziel_flughafen, flug, gepaeck = Kombination_2(
+                        buchungsnummer_2, ausweisnummer)
+                    if not buchung_2 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
+                        flash("Die eingegebenen Daten sind falsch!", category="error")
+                        return render_template("bodenpersonal/home_bp.html", user=current_user)
+                    else:
+                        flug_datum = 0
+                        for flug_row in flug:
+                            flug_datum = flug_row.sollabflugzeit.date()
+                        return render_template("bodenpersonal/home_bp.html", buchung_2=buchung_2,
+                                               ankunft_flughafen=ankunft_flughafen,
+                                               ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
+                                               passagiere=passagiere, gepaeck=gepaeck, today=today,
+                                               flug_datum=flug_datum)
+
+            else:
+                flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
+                      " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
+                return render_template("bodenpersonal/home_bp.html", user=current_user)
+        else:
+            return render_template("bodenpersonal/home_bp.html", user=current_user)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
