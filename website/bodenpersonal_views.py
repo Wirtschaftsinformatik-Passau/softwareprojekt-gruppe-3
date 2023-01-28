@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, flash, session, redirect, Response, url_for
+import pdfkit
+from flask import Blueprint, render_template, request, flash, session, redirect, Response, url_for,make_response
 from flask_login import current_user, login_required
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
@@ -9,6 +10,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
 import qrcode
 import os
+import pdfkit
 
 # store the standard routes for a website where the user can navigate to
 bodenpersonal_views = Blueprint('bodenpersonal_views', __name__)
@@ -81,7 +83,9 @@ def Kombination_2(buchungsnummer_2, ausweisnummer):
 @bodenpersonal_views.route('/home_bp', methods=["GET", "POST"])
 @login_required
 def home():
+
     today = datetime.now().date()
+
     if request.method == 'POST':
         buchungsnummer_1 = request.form.get('buchungsnummer_1')
         buchungsnummer_2 = request.form.get('buchungsnummer_2')
@@ -116,6 +120,7 @@ def home():
 
 
             elif buchungsnummer_2 and ausweisnummer:
+
                 passagiere, buchung_2, ankunft_flughafen, ziel_flughafen, flug, gepaeck = Kombination_2(
                     buchungsnummer_2, ausweisnummer)
                 if not buchung_2 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
@@ -136,6 +141,7 @@ def home():
             return render_template("bodenpersonal/home_bp.html", user=current_user)
 
         session.clear()
+
     else:
 
         if 'buchungsnummer_1' in session and 'vorname ' and 'nachname' in session and 'buchungsnummer_2' in session and 'ausweisnummer' in session :
@@ -185,6 +191,8 @@ def home():
                 flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
                       " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
                 return render_template("bodenpersonal/home_bp.html", user=current_user)
+
+
         else:
             return render_template("bodenpersonal/home_bp.html", user=current_user)
 
@@ -346,49 +354,22 @@ def generate_boarding_pass():
         Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
                                                      Passagier.buchungsid == Buchung.buchungsid).filter(
         Passagier.passagierid == passagier_id).first()
+    # Generate QR code
+    qr_code = qrcode.make(passagier.boardingpassnummer)
+    qr_code_path = "boarding_pass_{}_{}.png".format(passagier.vorname, passagier.nachname)
+    qr_code.save(qr_code_path)
 
-    try:
-        doc = SimpleDocTemplate("boarding_pass.pdf", pagesize=(5 * inch, 5 * inch))
-        styles = getSampleStyleSheet()
-
-        # QR Code generieren
-        qr_code = qrcode.make(passagier.boardingpassnummer)
-        qr_code_path = "boarding_pass_{}_{}.png".format(passagier.vorname, passagier.nachname)
-        qr_code.save(qr_code_path)
-
-        elements = []
-
-        # Add passenger information & QR Image
-        elements.append(Paragraph("<i>AirPassau</i>", styles["Heading4"]))
-        elements.append(Paragraph("<b>Boarding Pass</b>", styles["Heading2"]))
-        elements.append(Spacer(1, 5))
-        elements.append(Image(qr_code_path, width=1 * inch, height=1 * inch))
-        elements.append(Spacer(1, 1))
-        elements.append(
-            Paragraph(" Passagiername: {} {} ".format(passagier.vorname, passagier.nachname), styles["Normal"]))
-        elements.append(Spacer(1, 1))
-        elements.append(Paragraph("Von: {}".format(ankunft_flughafen.kennung), styles["Normal"]))
-        elements.append(Spacer(1, 1))
-        elements.append(Paragraph("Nach: {}".format(ziel_flughafen.kennung), styles["Normal"]))
-        elements.append(Spacer(1, 1))
-        elements.append(Paragraph("Fluglinie: {}".format(flug.flugnummer), styles["Normal"]))
-        elements.append(Spacer(1, 1))
-        elements.append(Paragraph("Sollabflugzeit: {}".format(flug.sollabflugzeit.time()), styles["Normal"]))
-        elements.append(Spacer(1, 1))
-        elements.append(Paragraph("Datum: {}".format(flug.sollabflugzeit.date()), styles["Normal"]))
-        doc.build(elements)
+    html = render_template('bodenpersonal/boarding_pass.html', passagier=passagier, flug=flug,
+                           ankunft_flughafen=ankunft_flughafen, ziel_flughafen=ziel_flughafen, qr_code_path=qr_code_path)
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    pdf=pdfkit.from_file(html,False,configuration=config)
+    response=make_response(pdf)
+    response.headers['Content-Type']='application/pdf'
+    response.headers['Content-Disposition']="inline;filename=boarding_pass_{}_{}.pdf".format(passagier.vorname,
+                                                                                        passagier.nachname)
+    return response
 
 
-
-    finally:
-        os.remove(qr_code_path)
-    # Return the generated PDF file
-    with open("boarding_pass.pdf", 'rb') as pdf:
-        pdf_data = pdf.read()
-        response = Response(pdf_data, content_type='application/pdf', headers={
-            "Content-Disposition": "attachment;filename=boarding_pass_{}_{}.pdf".format(passagier.vorname,
-                                                                                        passagier.nachname)})
-        return response
 
 
 @bodenpersonal_views.route('/fluege_pruefen', methods=["GET", "POST"])

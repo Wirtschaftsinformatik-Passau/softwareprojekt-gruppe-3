@@ -1,0 +1,18 @@
+<html>
+<head>
+    <title>Boarding Pass</title>
+</head>
+<body>
+    <div>
+        <h1><i style="color: cornflowerblue;"> AirPassau </i></h1>
+        <h2>Boarding Pass</h2>
+        <img src="{{ qr_code_path }}" alt="QR Code">
+        <p>Passagiername: {{ passagier.vorname }} {{ passagier.nachname }}</p>
+        <p>Von: {{ ankunft_flughafen.kennung }}</p>
+        <p>Nach: {{ ziel_flughafen.kennung }}</p>
+        <p>Fluglinie: {{ flug.flugnummer }}</p>
+        <p>Sollabflugzeit: {{ flug.sollabflugzeit.time() }}</p>
+        <p>Datum: {{ flug.sollabflugzeit.date() }}</p>
+    </div>
+</body>
+</html>
