@@ -141,8 +141,6 @@ def home():
                   " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
             return render_template("bodenpersonal/home_bp.html", user=current_user)
 
-        session.clear()
-
     else:
 
         if 'buchungsnummer_1' in session and 'vorname ' and 'nachname' in session and 'buchungsnummer_2' in session and 'ausweisnummer' in session :
@@ -192,7 +190,8 @@ def home():
                 flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
                       " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
                 return render_template("bodenpersonal/home_bp.html", user=current_user)
-
+            # to clear session data
+            session.clear()
 
         else:
             return render_template("bodenpersonal/home_bp.html", user=current_user)
@@ -274,16 +273,17 @@ def koffer_label():
     # Kennung des Zielflughafens
     ziel_flughafen = Flughafen.query.filter_by(flughafenid=flug.zielid).first()
 
+    # QR Code generieren
+    qr_code = qrcode.make(gepaeckid)
+    qr_code_path = os.path.join(os.path.abspath(""),
+                                "koffer_label_{}_{}.png".format(passagier.vorname, passagier.nachname))
+    qr_code.save(qr_code_path)
+
 
     try:
-        doc = SimpleDocTemplate("koffer_label.pdf", pagesize=(5 * inch, 5 * inch))
+        path = os.path.abspath("koffer_label.pdf")
+        doc = SimpleDocTemplate(path, pagesize=(5 * inch, 5 * inch))
         styles = getSampleStyleSheet()
-
-        # QR Code generieren
-        qr_code = qrcode.make(gepaeckid)
-        qr_code_path = "koffer_label_{}_{}.png".format(passagier.vorname, passagier.nachname)
-        qr_code.save(qr_code_path)
-
         elements = []
 
         # Add passenger information & QR Image
@@ -305,7 +305,7 @@ def koffer_label():
     finally:
         os.remove(qr_code_path)
     # Return the generated PDF file
-    with open("koffer_label.pdf", 'rb') as pdf:
+    with open(os.path.abspath("koffer_label.pdf"), 'rb') as pdf:
         pdf_data = pdf.read()
         response = Response(pdf_data, content_type='application/pdf', headers={
             "Content-Disposition": "attachment;filename=koffer_label_{}_{}.pdf".format(passagier.vorname,
@@ -343,14 +343,16 @@ def generate_boarding_pass():
     # Kennung des Zielflughafens
     ziel_flughafen = Flughafen.query.filter_by(flughafenid=flug.zielid).first()
 
-    try:
-        doc = SimpleDocTemplate("boarding_pass.pdf", pagesize=(5 * inch, 5 * inch))
-        styles = getSampleStyleSheet()
+    # QR Code generieren
+    qr_code = qrcode.make(passagier.boardingpassnummer)
+    qr_code_path = os.path.join(os.path.abspath(""),
+                                "boarding_pass_{}_{}.png".format(passagier.vorname, passagier.nachname))
+    qr_code.save(qr_code_path)
 
-        # QR Code generieren
-        qr_code = qrcode.make(passagier.boardingpassnummer)
-        qr_code_path = "boarding_pass_{}_{}.png".format(passagier.vorname, passagier.nachname)
-        qr_code.save(qr_code_path)
+    try:
+        path = os.path.abspath("boarding_pass.pdf")
+        doc = SimpleDocTemplate(path, pagesize=(5 * inch, 5 * inch))
+        styles = getSampleStyleSheet()
 
         elements = []
 
@@ -377,7 +379,8 @@ def generate_boarding_pass():
     finally:
         os.remove(qr_code_path)
     # Return the generated PDF file
-    with open("boarding_pass.pdf", 'rb') as pdf:
+
+    with open(os.path.abspath("boarding_pass.pdf"), 'rb') as pdf:
         pdf_data = pdf.read()
         response = Response(pdf_data, content_type='application/pdf', headers={
             "Content-Disposition": "attachment;filename=boarding_pass_{}_{}.pdf".format(passagier.vorname,
@@ -418,8 +421,7 @@ def fluege_pruefen():
                 passagiere.extend(p)
             return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer, passagiere=passagiere,
                                    buchungen=buchungen, user=current_user)
-        # Clear the session data
-        session.clear()
+
 
     else:
         # check if the flight number and date are in the session
@@ -448,5 +450,7 @@ def fluege_pruefen():
                 return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer,
                                        passagiere=passagiere,
                                        buchungen=buchungen, user=current_user)
+                # Clear the session data
+            session.clear()
         else:
             return render_template('bodenpersonal/fluege_pruefen.html', user=current_user)
