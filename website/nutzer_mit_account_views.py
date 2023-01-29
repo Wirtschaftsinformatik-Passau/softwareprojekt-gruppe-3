@@ -1,6 +1,6 @@
 import re
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash,session
 from . import db
 from .models import Nutzerkonto
 from flask_login import login_user, logout_user, login_required, current_user
@@ -49,6 +49,7 @@ def anmelden():
 @nutzer_mit_account_views.route('/logout', methods=['GET'])
 @login_required
 def logout():
+    session.clear()
     logout_user()
     flash("Sie sind jetzt ausgeloggt!", category="error")
     return redirect(url_for('nutzer_mit_account_views.anmelden'))

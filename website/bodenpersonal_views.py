@@ -107,7 +107,7 @@ def home():
                 buchung_1, ankunft_flughafen, ziel_flughafen, flug, gepaeck, passagiere = Kombination_1(
                     buchungsnummer_1,
                     vorname, nachname)
-                if not buchung_1 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
+                if not buchung_1 or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
                     return render_template("bodenpersonal/home_bp.html", user=current_user)
                 else:
@@ -124,7 +124,7 @@ def home():
 
                 passagiere, buchung_2, ankunft_flughafen, ziel_flughafen, flug, gepaeck = Kombination_2(
                     buchungsnummer_2, ausweisnummer)
-                if not buchung_2 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
+                if not buchung_2 or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
                     return render_template("bodenpersonal/home_bp.html", user=current_user)
                 else:
@@ -156,7 +156,7 @@ def home():
                     buchung_1, ankunft_flughafen, ziel_flughafen, flug, gepaeck, passagiere = Kombination_1(
                         buchungsnummer_1,
                         vorname, nachname)
-                    if not buchung_1 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
+                    if not buchung_1 or not passagiere:
                         flash("Die eingegebenen Daten sind falsch!", category="error")
                         return render_template("bodenpersonal/home_bp.html", user=current_user)
                     else:
@@ -173,7 +173,7 @@ def home():
                 elif buchungsnummer_2 and ausweisnummer:
                     passagiere, buchung_2, ankunft_flughafen, ziel_flughafen, flug, gepaeck = Kombination_2(
                         buchungsnummer_2, ausweisnummer)
-                    if not buchung_2 or not ankunft_flughafen or not ziel_flughafen or not flug or not gepaeck or not passagiere:
+                    if not buchung_2 or not passagiere:
                         flash("Die eingegebenen Daten sind falsch!", category="error")
                         return render_template("bodenpersonal/home_bp.html", user=current_user)
                     else:
@@ -450,7 +450,8 @@ def fluege_pruefen():
                 return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer,
                                        passagiere=passagiere,
                                        buchungen=buchungen, user=current_user)
-                # Clear the session data
-            session.clear()
+
         else:
+            # Clear the session data
+            session.clear()
             return render_template('bodenpersonal/fluege_pruefen.html', user=current_user)
