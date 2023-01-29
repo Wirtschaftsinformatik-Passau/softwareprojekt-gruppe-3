@@ -12,6 +12,7 @@ nutzer_ohne_account_views = Blueprint('nutzer_ohne_account_views', __name__)
 default_flughafen_von = "Passau"
 default_flughafen_nach = "München"
 
+passwort_min_length=8
 
 def is_date_after_yesterday(date, diff):
     # Convert the input date to a datetime object
@@ -41,12 +42,14 @@ def registrieren():
             flash('Mit dieser E-Mail-Adresse existiert bereits ein Account. Bitte melden Sie sich mit diesem an.',
                   category='error')
         elif passwort1 != passwort2:
-            flash('Die angegebenen Passwörter müssen übereinstimmen.', category='error')
+            flash('Wiederholen Sie die Passworteingabe. Diese müssen übereinstimmen.', category='error')
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', emailadresse):
             flash('Ungültige Email Adresse !', category='error')
-        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[/().,;+#*!%&?"-])[A-Za-z\d/().,;+#*!%&?"-]{8,}$', passwort1):
+        elif  len(passwort1) < passwort_min_length:
+            flash('Bitte geben Sie ein Passwort ein, welches mehr als 8 Zeichen hat.', category='error')
+        elif not re.match(r'^(?=.*\d)(?=.*[/().,;+#*!%&?"-])[A-Za-z\d/().,;+#*!%&?"-]{8,}$', passwort1):
             flash(
-                'Passwort muss mindestens 8 Zeichen lang sein und mindestens eine Zahl und ein Sonderzeichen enthalten!',
+                'Bitte geben Sie ein Passwort ein, welches mindestens eine Zahl und mindestens ein Sonderzeichen enthält.',
                 category='error')
 
         else:
