@@ -191,7 +191,7 @@ def home():
                       " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
                 return render_template("bodenpersonal/home_bp.html", user=current_user)
             # to clear session data
-            session.clear()
+            #session.clear()
 
         else:
             return render_template("bodenpersonal/home_bp.html", user=current_user)
