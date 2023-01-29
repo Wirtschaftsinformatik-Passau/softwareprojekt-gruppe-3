@@ -69,31 +69,26 @@ def passwort_aendern():
         confirm_password = request.form['confirm_password']
 
         # Check that the new password meets the requirements
-        if not re.search(r'[0-9]', new_password):
-            flash('Neues Passwort muss mindestens eine Ziffer enthalten.', category='error')
-            return render_template("nutzer_mit_account/passwort_aendern.html")
-        if not re.search(r'[/().,;+#*!%&?"-]', new_password):
-            flash('Neues Passwort muss mindestens ein Sonderzeichen enthalten.', category='error')
-            return render_template("nutzer_mit_account/passwort_aendern.html")
-        if len(new_password) < MINIMALE_PASSWORTLÄNGE:
-            flash('Neues Passwort muss mindestens 8 Zeichen lang sein.', category='error')
-            return render_template("nutzer_mit_account/passwort_aendern.html")
-        if new_password != confirm_password:
-            flash('Neues Passwort und Passwort wiederholen stimmen nicht überein.', category='error')
-            return render_template("nutzer_mit_account/passwort_aendern.html")
-            # Check that the old password is correct
         if not check_password_hash(current_user.passwort, current_password):
             flash('Altes Passwort ist falsch!.', category='error')
-            return render_template("nutzer_mit_account/passwort_aendern.html")
-
+        elif new_password != confirm_password:
+            flash('Neues Passwort und Passwort wiederholen stimmen nicht überein!', category='error')
+        elif len(new_password) < MINIMALE_PASSWORTLÄNGE:
+            flash('Bitte geben Sie ein Passwort ein, welches mehr als 8 Zeichen hat.', category='error')
+        elif not re.match(r'^(?=.*\d)(?=.*[/().,;+#*!%&?"-])[A-Za-z\d/().,;+#*!%&?"-]{8,}$', new_password):
+            flash(
+                'Bitte geben Sie ein Passwort ein, welches mindestens eine Zahl und mindestens ein Sonderzeichen enthält.',
+                category='error')
+        else:
             # Hash the new password and update the user's password in the database
-        current_user.passwort = generate_password_hash(new_password)
-        db.session.commit()
-        # logout user after password_aendern and then he would be redirected to the home page
-        logout_user()
-        flash('Passwort wurde erfolgreich geändert! Jetzt erneut anmelden.', category='success')
-        return redirect(
-            url_for('nutzer_mit_account_views.anmelden'))  # maybe it'd better to be redirected to the anmelden page!!
+            current_user.passwort = generate_password_hash(new_password)
+            db.session.commit()
+            # logout user after password_aendern and then he would be redirected to the home page
+            logout_user()
+            flash('Passwort wurde erfolgreich geändert!', category='success')
+            return redirect(
+                url_for('nutzer_ohne_account_views.home'))
+
 
     return render_template("nutzer_mit_account/passwort_aendern.html")
 
