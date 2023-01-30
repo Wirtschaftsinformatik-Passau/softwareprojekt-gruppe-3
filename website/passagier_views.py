@@ -15,6 +15,7 @@ passagier_views = Blueprint('passagier_views', __name__)
 
 MINDESTLÄNGE_AUSWEISNUMMER = 9
 
+
 def generate_boarding_pass_number():
     boarding_pass_number = ''.join(random.choices(string.ascii_letters + string.digits, k=15))
     return boarding_pass_number
