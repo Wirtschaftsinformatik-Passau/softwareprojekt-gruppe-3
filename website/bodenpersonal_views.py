@@ -1,5 +1,4 @@
-
-from flask import Blueprint, render_template, request, flash, session, redirect, Response, url_for,make_response
+from flask import Blueprint, render_template, request, flash, session, redirect, Response, url_for, make_response
 from flask_login import current_user, login_required
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
@@ -10,8 +9,6 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
 import qrcode
 import os
-
-
 
 # store the standard routes for a website where the user can navigate to
 bodenpersonal_views = Blueprint('bodenpersonal_views', __name__)
@@ -84,7 +81,6 @@ def Kombination_2(buchungsnummer_2, ausweisnummer):
 @bodenpersonal_views.route('/home_bp', methods=["GET", "POST"])
 @login_required
 def home():
-
     today = datetime.now().date()
 
     if request.method == 'POST':
@@ -99,7 +95,6 @@ def home():
         session['vorname'] = vorname
         session['nachname'] = nachname
         session['ausweisnummer'] = ausweisnummer
-
 
         if (buchungsnummer_1 and vorname and nachname) or (buchungsnummer_2 and ausweisnummer):
 
@@ -143,12 +138,12 @@ def home():
 
     else:
 
-        if 'buchungsnummer_1' in session and 'vorname ' and 'nachname' in session and 'buchungsnummer_2' in session and 'ausweisnummer' in session :
-            buchungsnummer_1=session['buchungsnummer_1']
-            buchungsnummer_2=session['buchungsnummer_2']
-            vorname=session['vorname']
-            nachname=session['nachname']
-            ausweisnummer=session['ausweisnummer']
+        if 'buchungsnummer_1' in session and 'vorname ' and 'nachname' in session and 'buchungsnummer_2' in session and 'ausweisnummer' in session:
+            buchungsnummer_1 = session['buchungsnummer_1']
+            buchungsnummer_2 = session['buchungsnummer_2']
+            vorname = session['vorname']
+            nachname = session['nachname']
+            ausweisnummer = session['ausweisnummer']
 
             if (buchungsnummer_1 and vorname and nachname) or (buchungsnummer_2 and ausweisnummer):
 
@@ -191,22 +186,10 @@ def home():
                       " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
                 return render_template("bodenpersonal/home_bp.html", user=current_user)
             # to clear session data
-            #session.clear()
+            # session.clear()
 
         else:
             return render_template("bodenpersonal/home_bp.html", user=current_user)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
@@ -279,7 +262,6 @@ def koffer_label():
                                 "koffer_label_{}_{}.png".format(passagier.vorname, passagier.nachname))
     qr_code.save(qr_code_path)
 
-
     try:
         path = os.path.abspath("koffer_label.pdf")
         doc = SimpleDocTemplate(path, pagesize=(5 * inch, 5 * inch))
@@ -330,7 +312,6 @@ def boarding():
 
 
 @bodenpersonal_views.route('/generate_boarding_pass', methods=['POST'])
-@login_required
 def generate_boarding_pass():
     passagier_id = request.args.get('passagier_id')
     passagier = Passagier.query.filter(Passagier.passagierid == passagier_id).first()
@@ -386,7 +367,6 @@ def generate_boarding_pass():
             "Content-Disposition": "attachment;filename=boarding_pass_{}_{}.pdf".format(passagier.vorname,
                                                                                         passagier.nachname)})
         return response
-
 
 
 @bodenpersonal_views.route('/fluege_pruefen', methods=["GET", "POST"])

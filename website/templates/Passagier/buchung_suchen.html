@@ -3,7 +3,7 @@
 {% block title %}Buchung suchen{% endblock %}
 {% block content %}
 
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
     <br>
     <br>
@@ -23,33 +23,34 @@
         </li>
     </ul>
     <div class="card" style="width: auto; height:auto">
-        <div class="card-body" >
-            <div class="container-fluid" >
+        <div class="card-body">
+            <div class="container-fluid">
                 <div class="input-group mb-3">
                     <form action="#" method="GET">
                         <div class="table-responsive-sm">
-                        <table>
+                            <table>
 
-                            <td>
-                                <div class="col-auto">
-                                    <label style="height:auto; width:auto" for="buchungsnummer">Buchungsnummer</label>
-                                    <input type="text" class="form-control input-lg" id="buchungsnummer"
-                                           name="buchungsnummer" style="width:auto; height:auto"
-                                           value="{{ request.args.get('buchungsnummer', '') }}" pattern="[A-Z0-9]+"
-                                           aria-label="buchungsnummer" aria-describedby="basic-addon2" >
-                                </div>
-                            </td>
-                            <td>
-                                <br>
-                                <div class="col-auto-sm">
-                                    <button
-                                            type="submit" class="btn btn-primary" id="inputGroup-sizing-lg"
-                                            style="height: auto">
-                                        Buchung suchen
-                                    </button>
-                                </div>
-                            </td> <!-- td damit es nebeneinandersteht, td steht für column-->
-                        </table>
+                                <td>
+                                    <div class="col-auto">
+                                        <label style="height:auto; width:auto"
+                                               for="buchungsnummer">Buchungsnummer</label>
+                                        <input type="text" class="form-control input-lg" id="buchungsnummer"
+                                               name="buchungsnummer" style="width:auto; height:auto"
+                                               value="{{ request.args.get('buchungsnummer', '') }}" pattern="[A-Z0-9]+"
+                                               aria-label="buchungsnummer" aria-describedby="basic-addon2">
+                                    </div>
+                                </td>
+                                <td>
+                                    <br>
+                                    <div class="col-auto-sm">
+                                        <button
+                                                type="submit" class="btn btn-primary" id="inputGroup-sizing-lg"
+                                                style="height: auto">
+                                            Buchung suchen
+                                        </button>
+                                    </div>
+                                </td> <!-- td damit es nebeneinandersteht, td steht für column-->
+                            </table>
                         </div>
                     </form>
                 </div>
@@ -57,88 +58,97 @@
         </div>
     </div>
 
-<div class="table-responsive">
-    <table class="table">
+    <div class="table-responsive">
+        <table class="table">
 
-        <thead>
-        <tr>
-            <th scope="col">Buchungsnummer</th>
-            <th scope="col">Buchungsstatus</th>
-            <th scope="col">Von</th>
-            <th scope="col">Nach</th>
-            <th scope="col">Datum</th>
-
-            <th scope="col">Passagier</th>
-            <th scope="col">Gepaeckstatus</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-        </tr>
-        </thead>
-        {% if buchung %}
-
+            <thead>
             <tr>
-                <td>{{ buchung.buchungsnummer }}</td>
-                <td>{{ buchung.buchungsstatus }}</td>
-                <td>{{ ankunft_flughafen.kennung }}</td>
-                <td>{{ ziel_flughafen.kennung }}</td>
-                <td>{{ flug.sollabflugzeit.strftime("%d.%m.%Y %H:%M") }}</td>
+                <th scope="col">Buchungsnummer</th>
+                <th scope="col">Buchungsstatus</th>
+                <th scope="col">Von</th>
+                <th scope="col">Nach</th>
+                <th scope="col">Datum</th>
 
-            <td>
-
-                {% for passagier_row in passagier %}
-
-
-                        {{ passagier_row.vorname }}
-                        {{ passagier_row.nachname }}
-                        <br>
-                        {{ passagier_row.geburtsdatum.strftime("%d.%m.%Y") }}
-                        <br>
-                        {{ passagier_row.passagierstatus }}
-                        <br>
-
-
-                        {% if buchung.buchungsstatus != "storniert" and flug.flugstatus != "annulliert" and check_in_available and passagier_row.passagierstatus != "eingecheckt" and passagier_row.passagierstatus != "boarded" %}
-                            <a href="{{ url_for('passagier_views.online_check_in', buchungsid = buchung.buchungsid, buchungsnummer=buchung.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
-                               class="btn btn-warning btn-sm">Online Check In</a>
-                             <br>
-                             <br>
-                        {% endif %}
-
-
-             {% endfor %}
-
-
-             </td>
-
-                <!-- Gepäckstatus -->
-                <td>
-                {% for gepaeck_row, passagier_row, buchung_row in gepaeck %}
-
-
-                        {{ gepaeck_row.status }} <br>
-
-                    {% endfor %}
-                </td>
-
-            {% if buchung.buchungsstatus != "storniert" and storno_possbile %}
-                    <td><a href="{{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}"
-                           data-toggle="modal" data-target="#updateModal{{ buchung.buchungsnummer }}"
-                           class="btn btn-danger">Stornieren</a></td>
-                {% endif %}
+                <th scope="col">Passagier</th>
+                <th scope="col">Gepaeckstatus</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
             </tr>
+            </thead>
+            {% if buchung %}
+
+                <tr>
+                    <td>{{ buchung.buchungsnummer }}</td>
+                    <td>{{ buchung.buchungsstatus }}</td>
+                    <td>{{ ankunft_flughafen.kennung }}</td>
+                    <td>{{ ziel_flughafen.kennung }}</td>
+                    <td>{{ flug.sollabflugzeit.strftime("%d.%m.%Y %H:%M") }}</td>
+
+                    <td>
+
+                        {% for passagier_row in passagier %}
 
 
-            </table>
-            <div class="modal fade bd-example-modal-lg" role="dialog" id="updateModal{{ buchung.buchungsnummer }}">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Stornierung Ihrer Buchung (Buchungsnummer = {{ buchung.buchungsnummer }})
-                            </h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
+                            {{ passagier_row.vorname }}
+                            {{ passagier_row.nachname }}
+                            <br>
+                            {{ passagier_row.geburtsdatum.strftime("%d.%m.%Y") }}
+                            <br>
+                            {{ passagier_row.passagierstatus }}
+                            <br>
+                            <br>
+
+
+
+                            {% if buchung.buchungsstatus != "storniert" and flug.flugstatus != "annulliert" and check_in_available and passagier_row.passagierstatus != "eingecheckt" and passagier_row.passagierstatus != "boarded" %}
+                                <a href="{{ url_for('passagier_views.online_check_in', buchungsid = buchung.buchungsid, buchungsnummer=buchung.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
+                                   class="btn btn-warning btn-sm">Online Check In</a><br><br>
+                            {% elif passagier_row.passagierstatus == "eingecheckt" and passagier_row.passagierstatus != "boarded" %}
+                                 <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}"
+                                              method="post">
+                                            <input type="submit" class="btn btn-warning btn-sm"
+                                                   value=" Boarding Karte drucken">
+                                        </form>
+                                <br>
+                                <br>
+                            {% endif %}
+
+
+                        {% endfor %}
+
+
+                    </td>
+
+                    <!-- Gepäckstatus -->
+                    <td>
+                        {% if gepaeckanzahl > 0 %}
+                            {{ gepaeckanzahl }} x Zusatzgepäck gebucht
+                        {% else %}
+                            nicht gebucht
+                        {% endif %}
+                    </td>
+
+                    {% if buchung.buchungsstatus != "storniert" and storno_possbile %}
+                        <td>
+                            <a href="{{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}"
+                               data-toggle="modal" data-target="#updateModal{{ buchung.buchungsnummer }}"
+                               class="btn btn-danger">Stornieren</a></td>
+                    {% endif %}
+                </tr>
+
+
+                </table>
+                <div class="modal fade bd-example-modal-lg" role="dialog" id="updateModal{{ buchung.buchungsnummer }}">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Stornierung Ihrer Buchung (Buchungsnummer
+                                    = {{ buchung.buchungsnummer }})
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
 
                             <tr>
                                 {% if passagier.passagierstatus == "eingecheckt" %}
@@ -149,31 +159,31 @@
                             </tr>
 
 
+                            <div class="modal-body">
+                                <div class="card" style="width: 60rem;height: 10rem">
+                                    <div class="card-body">
+                                        <div class="container" style="width: auto; height: auto">
+                                            <b><font size="4"> {{ storno_text }} </font></b>
 
-                        <div class="modal-body">
-                            <div class="card" style="width: 60rem;height: 10rem">
-                                <div class="card-body">
-                                    <div class="container" style="width: auto; height: auto">
-                                        <b><font size="4"> {{ storno_text }} </font></b>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                Abbrechen
+                                            </button>
 
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen
-                                        </button>
+                                            <form action="{{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}">
+                                                <button type="submit" class="btn btn-danger">Buchung stornieren</button>
+                                            </form>
 
-                                        <form action="{{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}">
-                                            <button type="submit" class="btn btn-danger">Buchung stornieren</button>
-                                        </form>
-
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            </div>
+                </div>
 
-        {% endif %}
+            {% endif %}
 {% endblock %}

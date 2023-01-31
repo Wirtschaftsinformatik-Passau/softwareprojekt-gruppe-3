@@ -1,6 +1,8 @@
 import random, re
 import string
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+
+import qrcode
+from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response
 from flask_login import current_user, login_required
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash
@@ -9,6 +11,8 @@ from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
 from sqlalchemy import or_, cast, Date
 from datetime import date, datetime, timedelta
+import pdfkit
+
 
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
@@ -222,8 +226,8 @@ def buchung_suchen():
 
     input_buchungsnummer = request.args.get('buchungsnummer')
 
-    buchung = Buchung.query.join(Flug).filter(Buchung.buchungsnummer == input_buchungsnummer).\
-        filter(Buchung.nutzerid == current_user.id).filter(Flug.istankunftszeit > datetime.now()).\
+    buchung = Buchung.query.join(Flug).filter(Buchung.buchungsnummer == input_buchungsnummer). \
+        filter(Buchung.nutzerid == current_user.id).filter(Flug.istankunftszeit > datetime.now()). \
         order_by(Buchung.buchungsid.desc()).first()
 
     # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst
@@ -233,7 +237,7 @@ def buchung_suchen():
 
         # hier wird gesucht ob es buchungen zu dem angemeldeteten account gibt und die oberste angezeigt
 
-        buchung = Buchung.query.join(Flug).filter(Buchung.nutzerid == current_user.id).\
+        buchung = Buchung.query.join(Flug).filter(Buchung.nutzerid == current_user.id). \
             filter(Flug.istankunftszeit > datetime.now()).order_by(Buchung.buchungsid.desc()).first()
 
         if buchung is None:
@@ -253,8 +257,10 @@ def buchung_suchen():
             flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
                 Buchung.buchungsnummer == buchung.buchungsnummer).first()
             flugzeug = Flugzeug.query.filter(Flugzeug.flugzeugid == flug.flugid).first()
-            gepaeck = db.session.query(Gepaeck, Passagier, Buchung).join(Passagier, Gepaeck.passagierid == Passagier.passagierid).\
-                join(Buchung, Passagier.buchungsid == Buchung.buchungsid).filter(Buchung.buchungsid == buchung.buchungsid).all()
+            gepaeckanzahl = db.session.query(Passagier, Buchung, Gepaeck).join(Buchung,
+                                                                               Buchung.buchungsid == Passagier.buchungsid). \
+                join(Gepaeck, Gepaeck.passagierid == Passagier.passagierid).filter(
+                Buchung.buchungsid == buchung.buchungsid).count()
 
             storno_possbile = True
             for i in passagier:
@@ -280,7 +286,7 @@ def buchung_suchen():
                                    ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
                                    check_in_available=check_in_available,
                                    passagier=passagier, storno_text=storno_text, storno_possbile=storno_possbile,
-                                   gepaeck=gepaeck)
+                                   gepaeckanzahl=gepaeckanzahl)
 
     # hier kann speziell nach nummer gesucht werden (muss aber mit nutzer id des angemedletetn nutzer
     # zusammenhängen)
@@ -300,13 +306,10 @@ def buchung_suchen():
         flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
             Buchung.buchungsnummer == input_buchungsnummer).first()
         check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
-        gepaeck = db.session.query(Gepaeck, Passagier, Buchung).join(Passagier,
-                                                                     Gepaeck.passagierid == Passagier.passagierid). \
-            join(Buchung, Passagier.buchungsid == Buchung.buchungsid).filter(
-            Buchung.buchungsid == buchung.buchungsid).all()
-
-        for gepaeck_row, passagier_row, buchung_row in gepaeck:
-            print(gepaeck_row.status)
+        gepaeckanzahl = db.session.query(Passagier, Buchung, Gepaeck).join(Buchung,
+                                                                           Buchung.buchungsid == Passagier.buchungsid). \
+            join(Gepaeck, Gepaeck.passagierid == Passagier.passagierid).filter(
+            Buchung.buchungsid == buchung.buchungsid).count()
 
         # check if passagier is schon eingecheckt oder boarded
 
@@ -332,7 +335,7 @@ def buchung_suchen():
         return render_template('Passagier/buchung_suchen.html', buchung=buchung, ankunft_flughafen=ankunft_flughafen,
                                ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
                                passagier=passagier, check_in_available=check_in_available, storno_text=storno_text,
-                               storno_possbile=storno_possbile, gepaeck=gepaeck)
+                               storno_possbile=storno_possbile, gepaeckanzahl=gepaeckanzahl)
     else:
         flash('Kein Buchungen gefunden', category='error')
         return render_template('Passagier/buchung_suchen.html', user=current_user)
@@ -380,3 +383,12 @@ def stornierungsbestaetigung():
 @passagier_views.route('/gepaecksbestimmungen', methods=['GET'])
 def gepaecksbestimmungen_anzeigen():
     return render_template("Passagier/gepaecksbestimmungen.html", user=current_user)
+
+
+@passagier_views.route('/boardingkarte', methods=['GET', 'POST'])
+def boarding_karte():
+    passagierid = request.args.get('passagier_id')
+
+    return redirect(url_for('passagier_views.buchung_suchen'))
+
+
