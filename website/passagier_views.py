@@ -11,7 +11,7 @@ from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
 from sqlalchemy import or_, cast, Date
 from datetime import date, datetime, timedelta
-import pdfkit
+
 
 
 # store the standard routes for a website where the user can navigate to
