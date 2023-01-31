@@ -86,9 +86,10 @@
                            data-toggle="modal" data-target="#updateModal{{ buchung.buchungsnummer }}"
                            class="btn btn-danger">Stornieren</a></td>
                 {% endif %}
+            <td>
 
                 {% for passagier_row in passagier %}
-                    <td>
+
                         {{ passagier_row.vorname }}
                         {{ passagier_row.nachname }}
                         <br>
@@ -100,8 +101,9 @@
                             <a href="{{ url_for('passagier_views.online_check_in', buchungsid = buchung.buchungsid, buchungsnummer=buchung.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
                                class="btn btn-primary">Online Check In</a>
                         {% endif %}
-                    </td>
+
                 {% endfor %}
+             </td>
 
                 <!-- Gepäckstatus -->
                 <td>
