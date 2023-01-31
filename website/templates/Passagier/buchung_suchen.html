@@ -35,7 +35,7 @@
                                     <label style="height:auto; width:auto" for="buchungsnummer">Buchungsnummer</label>
                                     <input type="text" class="form-control input-lg" id="buchungsnummer"
                                            name="buchungsnummer" style="width:auto; height:auto"
-                                           placeholder=""
+                                           value="{{ request.args.get('buchungsnummer', '') }}" pattern="[A-Z0-9]+"
                                            aria-label="buchungsnummer" aria-describedby="basic-addon2" >
                                 </div>
                             </td>
@@ -67,9 +67,10 @@
             <th scope="col">Von</th>
             <th scope="col">Nach</th>
             <th scope="col">Datum</th>
-            <th scope="col"></th>
+
             <th scope="col">Passagier</th>
             <th scope="col">Gepaeckstatus</th>
+            <th scope="col"></th>
             <th scope="col"></th>
         </tr>
         </thead>
@@ -80,15 +81,12 @@
                 <td>{{ buchung.buchungsstatus }}</td>
                 <td>{{ ankunft_flughafen.kennung }}</td>
                 <td>{{ ziel_flughafen.kennung }}</td>
-                <td>{{ flug.sollabflugzeit.strftime("%d.%m.%Y %H:%m") }}</td>
-                {% if buchung.buchungsstatus != "storniert" and storno_possbile %}
-                    <td><a href="{{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}"
-                           data-toggle="modal" data-target="#updateModal{{ buchung.buchungsnummer }}"
-                           class="btn btn-danger">Stornieren</a></td>
-                {% endif %}
+                <td>{{ flug.sollabflugzeit.strftime("%d.%m.%Y %H:%M") }}</td>
+
             <td>
 
                 {% for passagier_row in passagier %}
+
 
                         {{ passagier_row.vorname }}
                         {{ passagier_row.nachname }}
@@ -97,18 +95,36 @@
                         <br>
                         {{ passagier_row.passagierstatus }}
                         <br>
+
+
                         {% if buchung.buchungsstatus != "storniert" and flug.flugstatus != "annulliert" and check_in_available and passagier_row.passagierstatus != "eingecheckt" and passagier_row.passagierstatus != "boarded" %}
                             <a href="{{ url_for('passagier_views.online_check_in', buchungsid = buchung.buchungsid, buchungsnummer=buchung.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
-                               class="btn btn-primary">Online Check In</a>
+                               class="btn btn-warning btn-sm">Online Check In</a>
+                             <br>
+                             <br>
                         {% endif %}
 
-                {% endfor %}
+
+             {% endfor %}
+
+
              </td>
 
                 <!-- Gepäckstatus -->
                 <td>
-                    {{ gepaeck.status }}
+                {% for gepaeck_row, passagier_row, buchung_row in gepaeck %}
+
+
+                        {{ gepaeck_row.status }} <br>
+
+                    {% endfor %}
                 </td>
+
+            {% if buchung.buchungsstatus != "storniert" and storno_possbile %}
+                    <td><a href="{{ url_for('passagier_views.storno', stor_buchungsnummer=buchung.buchungsnummer) }}"
+                           data-toggle="modal" data-target="#updateModal{{ buchung.buchungsnummer }}"
+                           class="btn btn-danger">Stornieren</a></td>
+                {% endif %}
             </tr>
 
 
@@ -137,7 +153,7 @@
                         <div class="modal-body">
                             <div class="card" style="width: 60rem;height: 10rem">
                                 <div class="card-body">
-                                    <div class="container" style="width: 55rem; height: 5rem">
+                                    <div class="container" style="width: auto; height: auto">
                                         <b><font size="4"> {{ storno_text }} </font></b>
 
                                     </div>
