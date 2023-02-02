@@ -490,8 +490,8 @@ def logging():
     return render_template("Verwaltungspersonal/logging.html", logs=logs, user=current_user)
 
 
-# Example usage
-logger.info("User logged in")
-logger.info("User logged out")
+
+#logger.info("User logged in")
+#logger.info("User logged out")
 
 
