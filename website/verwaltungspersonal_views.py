@@ -10,6 +10,7 @@ from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
 from flask_mail import Mail, Message
 import re
+import logging
 
 # import __init__
 
@@ -410,9 +411,7 @@ def accounts_loeschen(id):
     return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
 
 
-@verwaltungspersonal_views.route('/logging/')
-def logging():
-    return redirect(url_for('logging'))
+
 
 
 @verwaltungspersonal_views.route('/reporting', methods=['GET', 'POST'])
@@ -473,3 +472,26 @@ def reporting():
     return render_template("Verwaltungspersonal/reporting.html", user=current_user, flughafen_liste=flughafen_liste,
                            default_flughafen_von=default_flughafen_von, default_flughafen_nach=default_flughafen_nach,
                            alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date())
+
+
+# Create a logger object
+logger = logging.getLogger(__name__)
+
+# Configure logging
+logging.basicConfig(filename="logfile.log", level=logging.INFO,
+                    format="%(asctime)s:%(levelname)s:%(message)s")
+
+@verwaltungspersonal_views.route("/logging/",methods=["GET","POST"])
+def logging():
+    logs = []
+    with open("logfile.log", "r") as f:
+        for line in f:
+            logs.append(line)
+    return render_template("Verwaltungspersonal/logging.html", logs=logs, user=current_user)
+
+
+# Example usage
+logger.info("User logged in")
+logger.info("User logged out")
+
+

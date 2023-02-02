@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Logging{% endblock %}
+{% block content %}
+    <br>
+    <br>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="/home-vp">Flugzeuge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/flug-anlegen">Flüge</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active"  aria-current="page" href="#">Log</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"  href="/reporting">Reporting</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/accounts-anlegen">Accounts</a>
+        </li>
+    </ul>
+<br>
+    <br>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Timestamp</th>
+                <th scope="col">Event</th>
+                <th scope="col">Username</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--{% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>{{ log.event }}</td>
+                    <td>{{ log.username }}</td>
+                </tr>
+            {% endfor %}-->
+        </tbody>
+    </table>
+{% endblock %}
+
+

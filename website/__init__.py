@@ -81,6 +81,6 @@ def logging():
     for log_file in log_files:
         with open(log_file, 'r') as f:
             log += f.read()
-    return render_template("Verwaltungspersonal/log.html", log=log)
+    return render_template("Verwaltungspersonal/logging.html", log=log)
 
 """
