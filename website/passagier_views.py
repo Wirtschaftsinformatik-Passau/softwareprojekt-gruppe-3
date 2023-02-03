@@ -56,10 +56,23 @@ def flug_buchen(id, anzahlPassagiere):
     flug_data = Flug.query.filter_by(flugid=id).first()
     passagier_anzahl = 0
     buchung_preis = flug_data.preis * anzahlPassagiere
-    if flug_data.flugstatus == 'annuliert':
-        flash('Der Flug wurde annuliert, bitte wählen Sie ein alternatives Datum.')
 
     if request.method == 'POST':
+        #check ob nicht annulliert
+        if flug_data.flugstatus == 'annuliert':
+            flash('Der Flug wurde annuliert, bitte wählen Sie ein alternatives Datum.')
+            return redirect(url_for('nutzer_ohne_account_views.home'))
+
+        #check if still available seats
+
+        anzahl_geb_passagiere = Passagier.query.join(Buchung). \
+            filter(Buchung.flugid == flug_data.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).count()
+        flugzeug_kapa = Flugzeug.query.get(flug_data.flugzeugid).anzahlsitzplaetze
+
+        if (int(anzahl_geb_passagiere) + int(anzahlPassagiere)) > int(flugzeug_kapa):
+            flash('Der Flug wurde ist ausgebucht, bitte wählen Sie ein alternatives Datum.')
+            return redirect(url_for('nutzer_ohne_account_views.home'))
+
         zusatzgepaeck_counter = 0
         # neue Buchung erstellen
 
