@@ -411,9 +411,6 @@ def accounts_loeschen(id):
     return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
 
 
-
-
-
 @verwaltungspersonal_views.route('/reporting', methods=['GET', 'POST'])
 def reporting():
     flughafen_liste = Flughafen.query.all()
@@ -481,7 +478,8 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(filename="logfile.log", level=logging.INFO,
                     format="%(asctime)s:%(levelname)s:%(message)s")
 
-@verwaltungspersonal_views.route("/logging/",methods=["GET","POST"])
+
+@verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
 def logging():
     logs = []
     with open("logfile.log", "r") as f:
@@ -489,9 +487,5 @@ def logging():
             logs.append(line)
     return render_template("Verwaltungspersonal/logging.html", logs=logs, user=current_user)
 
-
-
-#logger.info("User logged in")
-#logger.info("User logged out")
-
-
+# logger.info("User logged in")
+# logger.info("User logged out")
