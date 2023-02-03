@@ -36,7 +36,7 @@
                         <div class="col">
                             <label for="abflugdatum">Abflugdatum:</label>
                             <input type="date" class="form-control" id="abflugdatum" name="abflugdatum"
-                                    style="width: auto" value="{{ request.args.get('abflugdatum', today) }}"
+                                    style="width: auto" min="1799-01-02" max="3000-12-31" value="{{ request.args.get('abflugdatum', today) }}"
                                    required>
                         </div>
                         <p id="result"></p>

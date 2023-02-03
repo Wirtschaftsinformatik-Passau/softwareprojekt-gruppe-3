@@ -51,7 +51,8 @@
                         </div>
                         <div class="col-auto">
                             <label for="Abflugdatum">Abflugdatum:</label>
-                            <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum" style="height:auto; width:auto"
+                            <input type="date" class="form-control" id="Abflugdatum" name="Abflugdatum"
+                                   min="1899-01-02" max="3000-12-31" style="height:auto; width:auto"
                                    value="{{ request.args.get('Abflugdatum', tomorrow) }}" required>
                         </div>
                         <div class="col-auto">

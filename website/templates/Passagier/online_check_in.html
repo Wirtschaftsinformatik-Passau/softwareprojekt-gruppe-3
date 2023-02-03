@@ -52,8 +52,9 @@
                     <label class="visually-hidden" for="ausweisgueltigkeit">Ablaufdatum*:</label>
                     <div class="input-group">
                         <input type="date" class="form-control" id="ausweisgueltigkeit"
-                               name="ausweisgueltigkeit"
-                               placeholder="22.05.2030" required>
+                               name="ausweisgueltigkeit" min="1799-01-02" max="3000-12-31"
+                               value="{{ request.args.get('ausweisgültigkeit', ' ') }}" required>
+
                     </div>
                     <br>
                      <!-- Add dropdown field for nationality -->
