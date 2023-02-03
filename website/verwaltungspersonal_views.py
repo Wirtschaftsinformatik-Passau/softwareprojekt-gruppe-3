@@ -56,7 +56,8 @@ def flugzeug_erstellen():
             new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
             db.session.add(new_flugzeug)
             db.session.commit()
-            log_event('Nutzer (ID=' + str(current_user.id) + ') hat ein Flugzeug hinzugefügt:  ' + new_flugzeug.hersteller + ' '
+            log_event('Nutzer (ID=' + str(
+                current_user.id) + ') hat ein Flugzeug hinzugefügt:  ' + new_flugzeug.hersteller + ' '
                       + new_flugzeug.modell)
             flash('Flugzeug angelegt!', category='success')
 
@@ -139,8 +140,9 @@ def flugzeug_inaktiv_setzen(id):
         flugzeug_inaktiv.status = "inaktiv"
         db.session.merge(flugzeug_inaktiv)
         db.session.commit()
-        flash('Das Flugzeug wurde erfolgreich auf inaktiv gesetzt. Er befindet sich noch in der Datenbank aber kann nicht '
-              'mehr für einen Flug ausgewählt werden', category="error")
+        flash(
+            'Das Flugzeug wurde erfolgreich auf inaktiv gesetzt. Er befindet sich noch in der Datenbank aber kann nicht '
+            'mehr für einen Flug ausgewählt werden', category="error")
         log_event('Nutzer (ID=' + str(
             current_user.id) + ') hat ein Flugzeug auf inaktiv gesetzt:  ' + flugzeug_inaktiv.hersteller + ' '
                   + flugzeug_inaktiv.modell)
@@ -490,22 +492,8 @@ def reporting():
                            alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date())
 
 
-"""
-# Create a logger object
-logger = logging.getLogger(__name__)
-
-# Configure logging
-logging.basicConfig(filename="logfile.log", level=logging.INFO,
-                    format="%(asctime)s:%(levelname)s:%(message)s")
-
-"""
-
-
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
 def logging():
-
     with open("flask.log", "r") as logfile:
-            logs = logfile.readlines()
+        logs = logfile.readlines()
     return render_template("Verwaltungspersonal/logging.html", logs=logs, user=current_user)
-
-
