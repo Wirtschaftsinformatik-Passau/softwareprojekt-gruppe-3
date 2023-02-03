@@ -418,6 +418,10 @@ def accounts_ändern():
         nutzer.email = request.form['emailadresse']
         nutzer.rolle = request.form['rolle']
         db.session.commit()
+
+        log_event('Nutzerdaten (ID=' + str(
+            nutzer.id) + ') wurden geändert [by UserID = ' + str(current_user.id) + ']')
+
         flash("Nutzerdaten erfolgreich geändert")
 
         return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
@@ -428,6 +432,8 @@ def accounts_loeschen(id):
     account = Nutzerkonto.query.get_or_404(id)
     db.session.delete(account)
     db.session.commit()
+    log_event('Nutzer (ID=' + str(
+        account.id) + ') wurde gelöscht')
 
     return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
 
