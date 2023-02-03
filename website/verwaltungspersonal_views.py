@@ -45,6 +45,7 @@ def is_between(start_time, end_time):
 # Flugzeug funktionen
 @verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
 @verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
+@login_required
 def flugzeug_erstellen():
     if request.method == 'POST':
         modell = request.form.get('Modell')
@@ -56,9 +57,8 @@ def flugzeug_erstellen():
             new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
             db.session.add(new_flugzeug)
             db.session.commit()
-            log_event('Nutzer (ID=' + str(
-                current_user.id) + ') hat ein Flugzeug hinzugefügt:  ' + new_flugzeug.hersteller + ' '
-                      + new_flugzeug.modell)
+            log_event('Flugzeug (id = ' + str(
+                new_flugzeug.flugzeugid) + ') wurde hinzugefügt. [von NutzerID = ' + str(current_user.id) + ']')
             flash('Flugzeug angelegt!', category='success')
 
     return render_template("Verwaltungspersonal/home_vp.html", user=current_user)
@@ -66,6 +66,7 @@ def flugzeug_erstellen():
 
 @verwaltungspersonal_views.route('/flugzeug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/flugzeug-bearbeiten/<int:page>', methods=['GET', 'POST'])
+@login_required
 def flugzeug_bearbeiten(page):
     page = page
     pages = 4
@@ -89,6 +90,7 @@ def flugzeug_bearbeiten(page):
 
 
 @verwaltungspersonal_views.route('/flugzeug-ändern', methods=['GET', 'POST'])
+@login_required
 def flugzeug_ändern():
     if request.method == 'POST':
         flugzeug = Flugzeug.query.get_or_404(request.form.get('id'))
@@ -118,14 +120,15 @@ def flugzeug_ändern():
             flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
             db.session.commit()
 
-            log_event('Nutzer (ID=' + str(
-                current_user.id) + ') hat ein Flugzeug geändert:  ' + flugzeug.hersteller + ' '
-                      + flugzeug.modell)
+            log_event('Flugzeugdaten (id = ' + str(
+                flugzeug.flugzeugid) + ') wurden geändert. [von NutzerID = ' + str(current_user.id) + ']')
+
             flash("Flugzeugdaten erfolgreich geändert")
         return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
 
 @verwaltungspersonal_views.route('/flugzeug-inaktiv-setzen/<int:id>', methods=['GET', 'POST'])
+@login_required
 def flugzeug_inaktiv_setzen(id):
     flugzeug_inaktiv = Flugzeug.query.filter_by(flugzeugid=id).first()
     anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
@@ -141,17 +144,19 @@ def flugzeug_inaktiv_setzen(id):
         db.session.merge(flugzeug_inaktiv)
         db.session.commit()
         flash(
-            'Das Flugzeug wurde erfolgreich auf inaktiv gesetzt. Er befindet sich noch in der Datenbank aber kann nicht '
+            'Das Flugzeug wurde erfolgreich auf inaktiv gesetzt. Er befindet sich noch in der Datenbank aber kann '
+            'nicht '
             'mehr für einen Flug ausgewählt werden', category="error")
-        log_event('Nutzer (ID=' + str(
-            current_user.id) + ') hat ein Flugzeug auf inaktiv gesetzt:  ' + flugzeug_inaktiv.hersteller + ' '
-                  + flugzeug_inaktiv.modell)
+
+        log_event('Flugzeug (id = ' + str(
+            flugzeug_inaktiv.flugzeugid) + ') wurde auf inaktiv gesetzt. [von NutzerID = ' + str(current_user.id) + ']')
 
     return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
 
 # Flug funktionen
 @verwaltungspersonal_views.route('/flug-anlegen', methods=['GET', 'POST'])
+@login_required
 def flug_anlegen():
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
     flugzeug_liste = Flugzeug.query.filter(Flugzeug.status == "aktiv").with_entities(Flugzeug.flugzeugid,
@@ -195,8 +200,8 @@ def flug_anlegen():
             db.session.add(new_flug)
             db.session.commit()
 
-            log_event('Nutzer (ID=' + str(
-                current_user.id) + ') hat ein neuen Flug (FlugID=' + str(new_flug.flugid) + ') hinzugefügt')
+            log_event('Flug (id = ' + str(
+                new_flug.flugid) + ') wurde angelegt. [von NutzerID = ' + str(current_user.id) + ']')
 
             flash('Flug hinzugefügt!', category='success')
 
@@ -207,6 +212,7 @@ def flug_anlegen():
 
 @verwaltungspersonal_views.route('/flug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/flug-bearbeiten/<int:page>', methods=['GET', 'POST'])
+@login_required
 def flug_bearbeiten(page):
     flughafen_liste = Flughafen.query.all()
     flugzeug_liste = Flugzeug.query.filter(Flugzeug.status == "aktiv").with_entities(Flugzeug.flugzeugid,
@@ -237,6 +243,7 @@ def flug_bearbeiten(page):
 
 
 @verwaltungspersonal_views.route('/flug-annulieren/<int:id>', methods=['GET', 'POST'])
+@login_required
 def flug_annulieren(id):
     flug = Flug.query.get_or_404(id)
     if flug.flugstatus == "annulliert":
@@ -266,14 +273,15 @@ def flug_annulieren(id):
                                    user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
         mail.send(msg)
 
-        log_event('Nutzer (ID=' + str(
-            current_user.id) + ') hat ein neuen Flug (FlugID=' + str(flug.flugid) + ') annulliert')
+        log_event('Flug (id = ' + str(
+            flug.flugid) + ') wurde annulliert. [von NutzerID = ' + str(current_user.id) + ']')
 
         flash('Flug wurde erfolgreich annulliert', category='success')
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
 
 @verwaltungspersonal_views.route('/flug-ändern/', methods=['GET', 'POST'])
+@login_required
 def flug_ändern():
     if request.method == 'POST':
         flug = Flug.query.get_or_404(request.form.get('id'))
@@ -340,6 +348,9 @@ def flug_ändern():
                                        user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
             mail.send(msg)
 
+            log_event('Flugdaten (id = ' + str(
+                flug.id) + ') wurden geändert. [von NutzerID = ' + str(current_user.id) + ']')
+
             flash("Flugdaten erfolgreich geändert", category='success')
 
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
@@ -347,6 +358,7 @@ def flug_ändern():
 
 # Funktionen zu Accounte: anzeigen bearbeiten und löschen
 @verwaltungspersonal_views.route('/accounts-anlegen', methods=['GET', 'POST'])
+@login_required
 def accounts_anlegen():
     if request.method == 'POST':
         vorname = request.form.get('vorname')
@@ -377,6 +389,10 @@ def accounts_anlegen():
             mail.send(msg)
 
             flash(rolle + "account wurde erfolgreich erstellt")
+
+            log_event(rolle + 'account (id = ' + str(
+                new_account.id) + ') wurden erstellt [von NutzerID = ' + str(current_user.id) + '].')
+
             return render_template("Verwaltungspersonal/accounts_anlegen.html", user=current_user)
 
     return render_template("Verwaltungspersonal/accounts_anlegen.html", user=current_user)
@@ -385,6 +401,7 @@ def accounts_anlegen():
 # Seite die das Bearbeiten und löschen ermöglicht
 @verwaltungspersonal_views.route('/accounts-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/accounts-bearbeiten/<int:page>', methods=['GET', 'POST'])
+@login_required
 def accounts_bearbeiten(page):
     page = page
     pages = 4
@@ -409,6 +426,7 @@ def accounts_bearbeiten(page):
 
 # konkrete Funktion um Accountdaten über Modal zu ändern
 @verwaltungspersonal_views.route('/accounts-ändern', methods=['GET', 'POST'])
+@login_required
 def accounts_ändern():
     if request.method == 'POST':
         nutzer = Nutzerkonto.query.get_or_404(request.form.get('id'))
@@ -419,8 +437,8 @@ def accounts_ändern():
         nutzer.rolle = request.form['rolle']
         db.session.commit()
 
-        log_event('Nutzerdaten (ID=' + str(
-            nutzer.id) + ') wurden geändert [by UserID = ' + str(current_user.id) + ']')
+        log_event('Nutzerdaten (id = ' + str(
+            nutzer.id) + ') wurden geändert. [von NutzerID = ' + str(current_user.id) + ']')
 
         flash("Nutzerdaten erfolgreich geändert")
 
@@ -428,17 +446,23 @@ def accounts_ändern():
 
 
 @verwaltungspersonal_views.route('/accounts-loeschen/<int:id>', methods=['GET', 'POST'])
+@login_required
 def accounts_loeschen(id):
-    account = Nutzerkonto.query.get_or_404(id)
-    db.session.delete(account)
-    db.session.commit()
-    log_event('Nutzer (ID=' + str(
-        account.id) + ') wurde gelöscht')
+    if id == current_user.id:
+        flash('Sie können nicht Ihren eigenen Account löschen!', category='error')
+        return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
+    else:
+        account = Nutzerkonto.query.get_or_404(id)
+        db.session.delete(account)
+        db.session.commit()
+        log_event('Nutzer (id = ' + str(
+            account.id) + ') wurde gelöscht. [von NutzerID = ' + str(current_user.id) + ']')
 
-    return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
+        return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
 
 
 @verwaltungspersonal_views.route('/reporting', methods=['GET', 'POST'])
+@login_required
 def reporting():
     flughafen_liste = Flughafen.query.all()
 
@@ -499,6 +523,7 @@ def reporting():
 
 
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
+@login_required
 def logging():
     with open("flask.log", "r") as logfile:
         logs = logfile.readlines()

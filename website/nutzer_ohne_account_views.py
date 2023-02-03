@@ -61,6 +61,7 @@ def registrieren():
             db.session.commit()
             # Log the user in
             login_user(user, remember=True)
+            log_event(current_user.emailadresse + ' hat ein Konto erstellt')
             flash('Sie haben sich erfolgreich registriert !', category='success')
 
             log_event(user.emailadresse + ' hat ein Konto erstellt')
@@ -140,7 +141,7 @@ def home():
         if not buchbare_fluege:
             flash('Zu Ihren Suchkriterien wurde kein passender Flug gefunden', category='error')
 
-        log_event('User logged in')
+
 
         return render_template("nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
                                user=current_user,

@@ -1,7 +1,7 @@
 import re
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash,session
-from . import db
+from . import db, log_event
 from .models import Nutzerkonto
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -29,14 +29,17 @@ def anmelden():
             if check_password_hash(nutzer.passwort, passwort) and nutzer.rolle == "Passagier":
                 flash('Erfolgreich angemeldet', category='success')
                 login_user(nutzer, remember=True)
+                log_event(current_user.emailadresse + ' hat sich eingeloggt')
                 return redirect(url_for('nutzer_ohne_account_views.home'))
             elif check_password_hash(nutzer.passwort, passwort) and nutzer.rolle == "Verwaltungspersonal":
                 flash('Erfolgreich angemeldet', category='success')
                 login_user(nutzer, remember=True)
+                log_event(current_user.emailadresse + ' hat sich eingeloggt')
                 return redirect(url_for('verwaltungspersonal_views.flugzeug_erstellen'))
             elif check_password_hash(nutzer.passwort, passwort) and nutzer.rolle == "Bodenpersonal":
                 flash('Erfolgreich angemeldet', category='success')
                 login_user(nutzer, remember=True)
+                log_event(current_user.emailadresse + ' hat sich eingeloggt')
                 return redirect(url_for('bodenpersonal_views.home'))  # should be changed later
             else:
                 flash(' Passwort oder Email Adresse ist falsch! Versuchen Sie es erneut.', category='error')
@@ -49,9 +52,12 @@ def anmelden():
 @nutzer_mit_account_views.route('/logout', methods=['GET'])
 @login_required
 def logout():
+    email = current_user.emailadresse
     session.clear()
     logout_user()
     flash("Sie sind jetzt ausgeloggt!", category="error")
+
+    log_event(email + ' hat sich ausgeloggt')
     return redirect(url_for('nutzer_mit_account_views.anmelden'))
 
 
