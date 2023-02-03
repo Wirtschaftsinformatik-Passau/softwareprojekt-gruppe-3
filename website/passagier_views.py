@@ -2,11 +2,11 @@ import random, re
 import string
 
 import qrcode
-from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response,Response
+from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response, Response
 from flask_login import current_user, login_required
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash
-from . import mail
+from . import mail, log_event
 from . import db
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
 from sqlalchemy import or_, cast, Date
@@ -16,8 +16,6 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
 import qrcode
 import os
-
-
 
 # store the standard routes for a website where the user can navigate to
 passagier_views = Blueprint('passagier_views', __name__)
@@ -397,7 +395,6 @@ def gepaecksbestimmungen_anzeigen():
     return render_template("Passagier/gepaecksbestimmungen.html", user=current_user)
 
 
-
 def boarding_karte(passagier_id):
     passagier = Passagier.query.filter(Passagier.passagierid == passagier_id).first()
     flug = Flug.query.join(Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
@@ -449,8 +446,3 @@ def boarding_karte(passagier_id):
     with open(os.path.abspath("boarding_pass.pdf"), 'rb') as pdf:
         pdf_data = pdf.read()
         return pdf_data
-
-
-
-
-

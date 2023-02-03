@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required, login_user
 from werkzeug.security import generate_password_hash
-from . import db
+from . import db, log_event
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy import or_, cast, Date
 import re
@@ -62,6 +62,8 @@ def registrieren():
             # Log the user in
             login_user(user, remember=True)
             flash('Sie haben sich erfolgreich registriert !', category='success')
+
+            log_event(user.emailadresse + ' hat ein Konto erstellt')
 
             return redirect(url_for('nutzer_ohne_account_views.home'))
 
@@ -137,6 +139,8 @@ def home():
 
         if not buchbare_fluege:
             flash('Zu Ihren Suchkriterien wurde kein passender Flug gefunden', category='error')
+
+        log_event('User logged in')
 
         return render_template("nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
                                user=current_user,

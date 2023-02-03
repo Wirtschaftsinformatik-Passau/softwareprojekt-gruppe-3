@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
-from . import db, mail
+from . import db, mail, log_event
 from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
 from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
@@ -56,6 +56,8 @@ def flugzeug_erstellen():
             new_flugzeug = Flugzeug(modell=modell, hersteller=hersteller, anzahlsitzplaetze=anzahlsitzplaetze)
             db.session.add(new_flugzeug)
             db.session.commit()
+            log_event('Nutzer (ID=' + str(current_user.id) + ') hat ein Flugzeug hinzugefügt:  ' + new_flugzeug.hersteller + ' '
+                      + new_flugzeug.modell)
             flash('Flugzeug angelegt!', category='success')
 
     return render_template("Verwaltungspersonal/home_vp.html", user=current_user)
@@ -114,6 +116,10 @@ def flugzeug_ändern():
         else:
             flugzeug.anzahlsitzplaetze = request.form['anzahlsitzplaetze']
             db.session.commit()
+
+            log_event('Nutzer (ID=' + str(
+                current_user.id) + ') hat ein Flugzeug geändert:  ' + flugzeug.hersteller + ' '
+                      + flugzeug.modell)
             flash("Flugzeugdaten erfolgreich geändert")
         return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
@@ -133,6 +139,11 @@ def flugzeug_inaktiv_setzen(id):
         flugzeug_inaktiv.status = "inaktiv"
         db.session.merge(flugzeug_inaktiv)
         db.session.commit()
+        flash('Das Flugzeug wurde erfolgreich auf inaktiv gesetzt. Er befindet sich noch in der Datenbank aber kann nicht '
+              'mehr für einen Flug ausgewählt werden', category="error")
+        log_event('Nutzer (ID=' + str(
+            current_user.id) + ') hat ein Flugzeug auf inaktiv gesetzt:  ' + flugzeug_inaktiv.hersteller + ' '
+                  + flugzeug_inaktiv.modell)
 
     return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
@@ -181,6 +192,10 @@ def flug_anlegen():
 
             db.session.add(new_flug)
             db.session.commit()
+
+            log_event('Nutzer (ID=' + str(
+                current_user.id) + ') hat ein neuen Flug (FlugID=' + str(new_flug.flugid) + ') hinzugefügt')
+
             flash('Flug hinzugefügt!', category='success')
 
     return render_template("Verwaltungspersonal/flug_anlegen.html", flughafen_liste=flughafen_liste, user=current_user,
@@ -248,6 +263,10 @@ def flug_annulieren(id):
         msg.html = render_template('Verwaltungspersonal/Flug_annulliert_email.html',
                                    user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
         mail.send(msg)
+
+        log_event('Nutzer (ID=' + str(
+            current_user.id) + ') hat ein neuen Flug (FlugID=' + str(flug.flugid) + ') annulliert')
+
         flash('Flug wurde erfolgreich annulliert', category='success')
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
@@ -471,6 +490,7 @@ def reporting():
                            alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date())
 
 
+"""
 # Create a logger object
 logger = logging.getLogger(__name__)
 
@@ -478,14 +498,14 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(filename="logfile.log", level=logging.INFO,
                     format="%(asctime)s:%(levelname)s:%(message)s")
 
+"""
+
 
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
 def logging():
-    logs = []
-    with open("logfile.log", "r") as f:
-        for line in f:
-            logs.append(line)
+
+    with open("flask.log", "r") as logfile:
+            logs = logfile.readlines()
     return render_template("Verwaltungspersonal/logging.html", logs=logs, user=current_user)
 
-# logger.info("User logged in")
-# logger.info("User logged out")
+
