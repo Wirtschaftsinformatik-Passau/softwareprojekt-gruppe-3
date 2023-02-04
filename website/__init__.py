@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 import datetime
 
-conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("clara", "1234", "localhost", "airline")
+conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("merie", "1234", "localhost", "airline")
 db = SQLAlchemy()
 mail = Mail()
 app = Flask(__name__)
@@ -21,11 +21,10 @@ def create_app():
     # app = Flask(__name__)
     app.config['SECRET_KEY'] = 'hdfsoanfi sfnkosnfmeu'
     app.config['SQLALCHEMY_DATABASE_URI'] = conn
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = 'airpassau.de@gmail.com'
-    app.config['MAIL_PASSWORD'] = 'xelxozlfzphverxt'
+    app.config['MAIL_SERVER'] = '132.231.36.210'
+    app.config['MAIL_PORT'] = 1103
+    app.config['MAIL_USERNAME'] = 'mailhog_grup3'
+    app.config['MAIL_PASSWORD'] = 'give73http40up'
     db.init_app(app)
 
     from website.controller.nutzer_ohne_account_controller import nutzer_ohne_account_views
