@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, flash, session, redirect, Response, url_for, make_response
+from flask import Blueprint, render_template, request, flash, session, redirect, Response, url_for
 from flask_login import current_user, login_required
-from . import db
-from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
+from website import db
+from website.model.models import Flug, Flughafen, Buchung, Passagier, Gepaeck
 from datetime import datetime
 import random, string
 from reportlab.lib.pagesizes import inch
@@ -104,12 +104,12 @@ def home():
                     vorname, nachname)
                 if not buchung_1 or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
-                    return render_template("bodenpersonal/home_bp.html", user=current_user)
+                    return render_template("Bodenpersonal/home_bp.html", user=current_user)
                 else:
                     flug_datum = 0
                     for flug_row in flug:
                         flug_datum = flug_row.sollabflugzeit.date()
-                    return render_template("bodenpersonal/home_bp.html", buchung_1=buchung_1,
+                    return render_template("Bodenpersonal/home_bp.html", buchung_1=buchung_1,
                                            ankunft_flughafen=ankunft_flughafen,
                                            ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
                                            passagiere=passagiere, gepaeck=gepaeck, today=today, flug_datum=flug_datum)
@@ -121,12 +121,12 @@ def home():
                     buchungsnummer_2, ausweisnummer)
                 if not buchung_2 or not passagiere:
                     flash("Die eingegebenen Daten sind falsch!", category="error")
-                    return render_template("bodenpersonal/home_bp.html", user=current_user)
+                    return render_template("Bodenpersonal/home_bp.html", user=current_user)
                 else:
                     flug_datum = 0
                     for flug_row in flug:
                         flug_datum = flug_row.sollabflugzeit.date()
-                    return render_template("bodenpersonal/home_bp.html", buchung_2=buchung_2,
+                    return render_template("Bodenpersonal/home_bp.html", buchung_2=buchung_2,
                                            ankunft_flughafen=ankunft_flughafen,
                                            ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
                                            passagiere=passagiere, gepaeck=gepaeck, today=today, flug_datum=flug_datum)
@@ -134,7 +134,7 @@ def home():
         else:
             flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
                   " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
-            return render_template("bodenpersonal/home_bp.html", user=current_user)
+            return render_template("Bodenpersonal/home_bp.html", user=current_user)
 
     else:
 
@@ -153,12 +153,12 @@ def home():
                         vorname, nachname)
                     if not buchung_1 or not passagiere:
                         flash("Die eingegebenen Daten sind falsch!", category="error")
-                        return render_template("bodenpersonal/home_bp.html", user=current_user)
+                        return render_template("Bodenpersonal/home_bp.html", user=current_user)
                     else:
                         flug_datum = 0
                         for flug_row in flug:
                             flug_datum = flug_row.sollabflugzeit.date()
-                        return render_template("bodenpersonal/home_bp.html", buchung_1=buchung_1,
+                        return render_template("Bodenpersonal/home_bp.html", buchung_1=buchung_1,
                                                ankunft_flughafen=ankunft_flughafen,
                                                ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
                                                passagiere=passagiere, gepaeck=gepaeck, today=today,
@@ -170,12 +170,12 @@ def home():
                         buchungsnummer_2, ausweisnummer)
                     if not buchung_2 or not passagiere:
                         flash("Die eingegebenen Daten sind falsch!", category="error")
-                        return render_template("bodenpersonal/home_bp.html", user=current_user)
+                        return render_template("Bodenpersonal/home_bp.html", user=current_user)
                     else:
                         flug_datum = 0
                         for flug_row in flug:
                             flug_datum = flug_row.sollabflugzeit.date()
-                        return render_template("bodenpersonal/home_bp.html", buchung_2=buchung_2,
+                        return render_template("Bodenpersonal/home_bp.html", buchung_2=buchung_2,
                                                ankunft_flughafen=ankunft_flughafen,
                                                ziel_flughafen=ziel_flughafen, flug=flug, user=current_user,
                                                passagiere=passagiere, gepaeck=gepaeck, today=today,
@@ -184,12 +184,12 @@ def home():
             else:
                 flash("Entweder müssen die Felder Buchungsnummer, Vorname und Nachname oder die Felder"
                       " Buchungsnummer und Ausweisnummer  ausgefüllt werden.", category="error")
-                return render_template("bodenpersonal/home_bp.html", user=current_user)
+                return render_template("Bodenpersonal/home_bp.html", user=current_user)
             # to clear session data
             # session.clear()
 
         else:
-            return render_template("bodenpersonal/home_bp.html", user=current_user)
+            return render_template("Bodenpersonal/home_bp.html", user=current_user)
 
 
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
@@ -217,7 +217,7 @@ def einchecken():
         flash("Check-In erfolgreich")
         return redirect(url_for('bodenpersonal_views.home', user=current_user))
 
-    return render_template('bodenpersonal/einchecken.html', user=current_user, passagier=passagier, vorname=vorname,
+    return render_template('Bodenpersonal/einchecken.html', user=current_user, passagier=passagier, vorname=vorname,
                            nachname=nachname)
 
 
@@ -386,7 +386,7 @@ def fluege_pruefen():
         # print(flug)
         if flug is None:
             flash("Zu Ihren Suchkriterien wurde kein passender Flug gefunden", "error")
-            return render_template('bodenpersonal/fluege_pruefen.html', user=current_user)
+            return render_template('Bodenpersonal/fluege_pruefen.html', user=current_user)
         else:
             # get the bookings for the flight
             buchungen = Buchung.query.filter(Buchung.flugid == Flug.flugid).where(Flug.flugnummer == flugnummer).where(
@@ -399,7 +399,7 @@ def fluege_pruefen():
                                      Passagier.passagierstatus, Passagier.geburtsdatum).join(Passagier).filter(
                     Passagier.buchungsid == buchung.buchungsid).all()
                 passagiere.extend(p)
-            return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer, passagiere=passagiere,
+            return render_template('Bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer, passagiere=passagiere,
                                    buchungen=buchungen, user=current_user)
 
 
@@ -413,7 +413,7 @@ def fluege_pruefen():
             # print(flug)
             if flug is None:
                 flash("Zu Ihren Suchkriterien wurde kein passender Flug gefunden", "error")
-                return render_template('bodenpersonal/fluege_pruefen.html', user=current_user)
+                return render_template('Bodenpersonal/fluege_pruefen.html', user=current_user)
             else:
                 # get the bookings for the flight
                 buchungen = Buchung.query.filter(Buchung.flugid == Flug.flugid).where(
@@ -427,11 +427,11 @@ def fluege_pruefen():
                                          Passagier.passagierstatus, Passagier.geburtsdatum).join(Passagier).filter(
                         Passagier.buchungsid == buchung.buchungsid).all()
                     passagiere.extend(p)
-                return render_template('bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer,
+                return render_template('Bodenpersonal/fluege_pruefen.html', flugnummer=flugnummer,
                                        passagiere=passagiere,
                                        buchungen=buchungen, user=current_user)
 
         else:
             # Clear the session data
             session.clear()
-            return render_template('bodenpersonal/fluege_pruefen.html', user=current_user)
+            return render_template('Bodenpersonal/fluege_pruefen.html', user=current_user)

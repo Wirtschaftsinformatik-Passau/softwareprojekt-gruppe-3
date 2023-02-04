@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import current_user, login_required, login_user
+from flask_login import current_user, login_user
 from werkzeug.security import generate_password_hash
-from . import db, log_event
-from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
-from sqlalchemy import or_, cast, Date
+from website import db, log_event
+from website.model.models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier
+from sqlalchemy import cast, Date
 import re
 from datetime import date, datetime, timedelta
 
@@ -68,11 +68,11 @@ def registrieren():
 
             return redirect(url_for('nutzer_ohne_account_views.home'))
 
-    return render_template("nutzer_ohne_account/registrieren.html", user=current_user)
+    return render_template("Nutzer_ohne_account/registrieren.html", user=current_user)
 
 
-# nutzer_ohne_account Funktionen
-# nutzer_ohne_account Funktionen
+# Nutzer_ohne_account Funktionen
+# Nutzer_ohne_account Funktionen
 @nutzer_ohne_account_views.route('/', methods=['GET', 'POST'])
 def home():
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
@@ -101,7 +101,7 @@ def home():
             if (int(anzahl_geb_passagiere) + int(passagiere)) <= int(flugzeug_kapa):
                 buchbare_fluege.append(rows)
 
-        return render_template("nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
+        return render_template("Nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
                                user=current_user,
                                passagiere=1,
                                tomorrow=date.today() + timedelta(days=1), abflug=abflug,
@@ -115,7 +115,7 @@ def home():
 
     if request.args.get('Abflugdatum') is not None and is_date_after_yesterday(request.args.get('Abflugdatum'), 0):
         flash('Bitte geben Sie ein Datum ein, welches in der Zukunft liegt', category='error')
-        return render_template("nutzer_ohne_account/home.html", user=current_user, flughafen_liste=flughafen_liste)
+        return render_template("Nutzer_ohne_account/home.html", user=current_user, flughafen_liste=flughafen_liste)
 
     else:
 
@@ -143,7 +143,7 @@ def home():
 
 
 
-        return render_template("nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
+        return render_template("Nutzer_ohne_account/home.html", flughafen_liste=flughafen_liste,
                                user=current_user,
                                passagiere=passagiere,
                                today=date.today(), abflug=abflug, default_flughafen_von=default_flughafen_von,
@@ -161,7 +161,7 @@ def flugstatus_überprüfen():
         if request.args.get('abflugdatum') is not None and is_date_after_yesterday(
                 request.args.get('abflugdatum'), 1):
             flash('Bitte geben Sie ein Datum ein, welches nicht in der Vergangenheit liegt', category='error')
-            return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user)
+            return render_template("Nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user)
         else:
 
             fluege = Flug.query.join(Flugzeug).filter(Flug.flugzeugid == Flugzeug.flugzeugid). \
@@ -171,7 +171,7 @@ def flugstatus_überprüfen():
             if fluege is None:
                 flash('Zu Ihren Suchenkriterien wurde kein passender Flug gefunden.', category='error')
 
-        return render_template("nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege,
+        return render_template("Nutzer_ohne_account/flugstatus_überprüfen.html", user=current_user, fluege=fluege,
                                abflug=abflug, flugnummer=flugnummer, today=date.today(),
                                flughafen_liste=flughafen_liste)
 
@@ -190,5 +190,5 @@ def fluglinien_anzeigen(page):
                                                               Flug.abflugid,
                                                               Flug.zielid).distinct().paginate(
         page=page, per_page=pages, error_out=False)
-    return render_template("nutzer_ohne_account/fluglinien_anzeigen.html", user=current_user, fluege=fluege,
+    return render_template("Nutzer_ohne_account/fluglinien_anzeigen.html", user=current_user, fluege=fluege,
                            flughafen_liste=flughafen_liste)

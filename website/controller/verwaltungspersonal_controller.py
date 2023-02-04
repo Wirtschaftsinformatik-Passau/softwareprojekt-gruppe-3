@@ -1,16 +1,15 @@
 import random
 import string
-from datetime import date, datetime, timedelta
+from datetime import datetime
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
-from . import db, mail, log_event
-from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck
+from website import db, mail, log_event
+from website.model.models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier
 from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
-from flask_mail import Mail, Message
+from flask_mail import Message
 import re
-import logging
 
 # import __init__
 

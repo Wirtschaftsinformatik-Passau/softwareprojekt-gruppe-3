@@ -38,19 +38,19 @@
                 <a class="nav-item nav-link" id="profil_bp" href="/profil">Profil</a>
                 <a class="nav-item nav-link" id="logout_bp" href="/logout" data-toggle="modal"
                    data-target="#logoutModal">Abmelden</a>
-                {% include 'nutzer_mit_account/logout.html' %}
+                {% include 'Nutzer_mit_account/logout.html' %}
             {% elif current_user.is_authenticated and current_user.rolle=="Verwaltungspersonal" %}
                 <a class="nav-item nav-link" id="home_vp" href="/home-vp">Startseite</a>
                 <a class="nav-item nav-link" id="profil_vp" href="/profil">Profil</a>
                 <a class="nav-item nav-link" id="logout_vp" href="/logout" data-toggle="modal"
                    data-target="#logoutModal">Abmelden</a>
-                {% include 'nutzer_mit_account/logout.html' %}
+                {% include 'Nutzer_mit_account/logout.html' %}
             {% elif current_user.is_authenticated and current_user.rolle=="Passagier" %}
                 <a class="nav-item nav-link" id="home_p" href="/">Startseite</a>
                 <a class="nav-item nav-link" id="profil_p" href="/profil">Profil</a>
                 <a class="nav-item nav-link" id="logout_p" href="/logout" data-toggle="modal"
                    data-target="#logoutModal">Abmelden</a>
-                {% include 'nutzer_mit_account/logout.html' %}
+                {% include 'Nutzer_mit_account/logout.html' %}
             {% else %}
                 <a class="nav-item nav-link" id="home" href="/">Startseite</a>
                 <a class="nav-item nav-link" id="registrieren" href="/registrieren">Registrieren</a>

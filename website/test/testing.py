@@ -1,5 +1,4 @@
-from website.models import Flug, Flughafen, Flugzeug
-
+from website.model.models import Flughafen
 
 flughafen = Flughafen.query.get()
 for f in flughafen:

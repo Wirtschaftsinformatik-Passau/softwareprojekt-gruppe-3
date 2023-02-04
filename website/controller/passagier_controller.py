@@ -1,15 +1,12 @@
-import random, re
+import random
 import string
 
-import qrcode
-from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response, Response
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
-from flask_mail import Mail, Message
-from werkzeug.security import generate_password_hash
-from . import mail, log_event
-from . import db
-from .models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
-from sqlalchemy import or_, cast, Date
+from flask_mail import Message
+from website import mail
+from website import db
+from website.model.models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
 from datetime import date, datetime, timedelta
 from reportlab.lib.pagesizes import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image

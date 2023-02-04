@@ -1,14 +1,10 @@
-from flask import Flask, request, jsonify, has_request_context, render_template
+from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 import datetime
-import logging
-from logging.handlers import RotatingFileHandler
-from glob import glob
-import werkzeug
 
-conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("merie", "1234", "localhost", "airline")
+conn = "mysql+pymysql://{0}:{1}@{2}/{3}".format("clara", "1234", "localhost", "airline")
 db = SQLAlchemy()
 mail = Mail()
 app = Flask(__name__)
@@ -32,11 +28,11 @@ def create_app():
     app.config['MAIL_PASSWORD'] = 'xelxozlfzphverxt'
     db.init_app(app)
 
-    from .nutzer_ohne_account_views import nutzer_ohne_account_views
-    from .nutzer_mit_account_views import nutzer_mit_account_views
-    from .passagier_views import passagier_views
-    from .verwaltungspersonal_views import verwaltungspersonal_views
-    from .bodenpersonal_views import bodenpersonal_views
+    from website.controller.nutzer_ohne_account_controller import nutzer_ohne_account_views
+    from website.controller.nutzer_mit_account_controller import nutzer_mit_account_views
+    from website.controller.passagier_controller import passagier_views
+    from website.controller.verwaltungspersonal_controller import verwaltungspersonal_views
+    from website.controller.bodenpersonal_controller import bodenpersonal_views
 
     app.register_blueprint(nutzer_ohne_account_views, url_prefix='/')
     app.register_blueprint(nutzer_mit_account_views, url_prefix='/')
@@ -44,7 +40,7 @@ def create_app():
     app.register_blueprint(verwaltungspersonal_views, url_prefix='/')
     app.register_blueprint(bodenpersonal_views, url_prefix='/')
 
-    from .models import Flughafen, Flugzeug, Nutzerkonto, Passagier, Gepaeck
+    from website.model.models import Flughafen, Flugzeug, Nutzerkonto, Passagier, Gepaeck
     login_manager = LoginManager()
     login_manager.login_view = "nutzer_mit_account_views.anmelden"  # if the user is not logged in then he will be directed to login page
     login_manager.init_app(app)
