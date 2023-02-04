@@ -58,19 +58,19 @@ def flug_buchen(id, anzahlPassagiere):
     buchung_preis = flug_data.preis * anzahlPassagiere
 
     if request.method == 'POST':
-        #check ob nicht annulliert
+        # check ob nicht annulliert
         if flug_data.flugstatus == 'annuliert':
             flash('Der Flug wurde annuliert, bitte wählen Sie ein alternatives Datum.')
             return redirect(url_for('nutzer_ohne_account_views.home'))
 
-        #check if still available seats
+        # check if still available seats
 
         anzahl_geb_passagiere = Passagier.query.join(Buchung). \
             filter(Buchung.flugid == flug_data.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).count()
         flugzeug_kapa = Flugzeug.query.get(flug_data.flugzeugid).anzahlsitzplaetze
 
         if (int(anzahl_geb_passagiere) + int(anzahlPassagiere)) > int(flugzeug_kapa):
-            flash('Der Flug wurde ist ausgebucht, bitte wählen Sie ein alternatives Datum.')
+            flash('Der Flug ist leider ausgebucht.')
             return redirect(url_for('nutzer_ohne_account_views.home'))
 
         zusatzgepaeck_counter = 0
@@ -328,7 +328,7 @@ def buchung_suchen():
             Buchung.buchungsid == Passagier.buchungsid).all()
         flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
             Buchung.buchungsnummer == input_buchungsnummer).first()
-        check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
+        check_in_available = is_flight_within_days(flug.istabflugzeit, 1)
         gepaeckanzahl = db.session.query(Passagier, Buchung, Gepaeck).join(Buchung,
                                                                            Buchung.buchungsid == Passagier.buchungsid). \
             join(Gepaeck, Gepaeck.passagierid == Passagier.passagierid).filter(
