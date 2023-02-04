@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash,session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from website import db, log_event
 from website.model.models import Nutzerkonto
 from flask_login import login_user, logout_user, login_required, current_user
@@ -15,6 +15,8 @@ nutzer_mit_account_views = Blueprint('nutzer_mit_account_views', __name__)
 MINIMALE_PASSWORTLÄNGE = 8
 
 
+# /F210/
+# Diese Funktion erlaubt es einem Nutzer mit Account, sich anzumelden.
 @nutzer_mit_account_views.route('anmelden', methods=['GET', 'POST'])
 def anmelden():
     if request.method == 'POST':
@@ -47,24 +49,18 @@ def anmelden():
     return render_template("Nutzer_mit_account/anmelden.html")
 
 
-@nutzer_mit_account_views.route('/logout', methods=['GET'])
-@login_required
-def logout():
-    email = current_user.emailadresse
-    session.clear()
-    logout_user()
-    flash("Sie sind jetzt ausgeloggt!", category="error")
-
-    log_event(email + ' hat sich ausgeloggt')
-    return redirect(url_for('nutzer_mit_account_views.anmelden'))
-
-
+# /F220/
+# Diese Funktion erlaubt es einem Nutzer mit Account, sein Profil anzuziegen.
+# Dabei sieht man die NutzerID, Vorname, Nachname und EMailAdresse
 @nutzer_mit_account_views.route('/profil', methods=['GET'])
 def profil():
     user = Nutzerkonto.query.get(current_user.id)
     return render_template("Nutzer_mit_account/profil.html", user=user)
 
 
+# /F230/
+# Diese Funktion erlaubt es einem Nutzer mit Account, sein Passwort zu ändern.
+# Daraufhin wird man ausgeloggt und muss sich neu anmelden.
 @nutzer_mit_account_views.route('/passwort_aendern', methods=['GET', 'POST'])
 def passwort_aendern():
     if request.method == 'POST':
@@ -94,10 +90,12 @@ def passwort_aendern():
             return redirect(
                 url_for('nutzer_ohne_account_views.home'))
 
-
     return render_template("Nutzer_mit_account/passwort_aendern.html")
 
 
+# /F240/
+# Diese Funktion erlaubt es einem Nutzer mit Account, ein neues Passwort zu erhalten.
+# Daraufhin erhält der Nutzer eine Mail mit einem zufällig generierten Passwort.
 @nutzer_mit_account_views.route('/passwort_vergessen', methods=['POST'])
 def passwort_vergessen():
     emailadresse = request.form.get('emailadresse')
@@ -120,3 +118,17 @@ def passwort_vergessen():
         return redirect(url_for('nutzer_mit_account_views.anmelden'))
     flash('Die Email Adresse existiert nicht!', 'error')
     return render_template("Nutzer_mit_account/anmelden.html")
+
+
+# /F250/
+# Diese Funktion erlaubt es einem Nutzer mit Account, sich auszuloggen.
+@nutzer_mit_account_views.route('/logout', methods=['GET'])
+@login_required
+def logout():
+    email = current_user.emailadresse
+    session.clear()
+    logout_user()
+    flash("Sie sind jetzt ausgeloggt!", category="error")
+
+    log_event(email + ' hat sich ausgeloggt')
+    return redirect(url_for('nutzer_mit_account_views.anmelden'))

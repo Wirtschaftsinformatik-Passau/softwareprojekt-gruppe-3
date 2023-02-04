@@ -11,8 +11,6 @@ from datetime import date, timedelta
 from flask_mail import Message
 import re
 
-# import __init__
-
 # store the standard routes for a website where the user can navigate to
 verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
 
@@ -41,7 +39,8 @@ def is_between(start_time, end_time):
         return datetime.now() >= start_time or datetime.now() <= end_time
 
 
-# Flugzeug funktionen
+# /F520/
+# Diese Funktion erlaubt es dem Verwaltungspersonal, ein Flugzeug zu erstellen
 @verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
 @verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
 @login_required
@@ -62,7 +61,8 @@ def flugzeug_erstellen():
 
     return render_template("Verwaltungspersonal/home_vp.html", user=current_user)
 
-
+# /F530/
+# Diese Funktion erlaubt es dem Verwaltungspersonal, ein Flugzeug zu bearbeiten.
 @verwaltungspersonal_views.route('/flugzeug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/flugzeug-bearbeiten/<int:page>', methods=['GET', 'POST'])
 @login_required
@@ -87,7 +87,7 @@ def flugzeug_bearbeiten(page):
 
     return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge, user=current_user)
 
-
+#
 @verwaltungspersonal_views.route('/flugzeug-ändern', methods=['GET', 'POST'])
 @login_required
 def flugzeug_ändern():
@@ -125,7 +125,7 @@ def flugzeug_ändern():
             flash("Flugzeugdaten erfolgreich geändert")
         return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
-
+# Diese Hilfsfunktion setzt einen Flug inaktiv.
 @verwaltungspersonal_views.route('/flugzeug-inaktiv-setzen/<int:id>', methods=['GET', 'POST'])
 @login_required
 def flugzeug_inaktiv_setzen(id):
@@ -153,7 +153,8 @@ def flugzeug_inaktiv_setzen(id):
     return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
 
-# Flug funktionen
+# /F540/
+# Diese Funktion erlaubt es dem Verwaltungspersonal, einen Flug anzulegen.
 @verwaltungspersonal_views.route('/flug-anlegen', methods=['GET', 'POST'])
 @login_required
 def flug_anlegen():
@@ -208,7 +209,8 @@ def flug_anlegen():
                            flugzeug_liste=flugzeug_liste, default_flughafen_von=default_flughafen_von,
                            default_flughafen_nach=default_flughafen_nach, tomorrow=date.today() + timedelta(days=1))
 
-
+# /F550/
+# Diese Funktion erlaubt es dem Verwaltungspersonal, einen Flug zu bearbeiten.
 @verwaltungspersonal_views.route('/flug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/flug-bearbeiten/<int:page>', methods=['GET', 'POST'])
 @login_required
@@ -240,7 +242,7 @@ def flug_bearbeiten(page):
                            flugzeug_liste=flugzeug_liste,
                            flughafen_liste=flughafen_liste)
 
-
+# Diese Funktion ermöglicht es dem Verwaltungspersonal, einen Flug zu annulieren.
 @verwaltungspersonal_views.route('/flug-annulieren/<int:id>', methods=['GET', 'POST'])
 @login_required
 def flug_annulieren(id):
@@ -354,8 +356,8 @@ def flug_ändern():
 
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
-
-# Funktionen zu Accounte: anzeigen bearbeiten und löschen
+# /F580/
+# Diese Funktion erlaubt es dem Verwaltungspersonal, Accounts für Boden- oder Verwaltungspersonal anzulegen.
 @verwaltungspersonal_views.route('/accounts-anlegen', methods=['GET', 'POST'])
 @login_required
 def accounts_anlegen():
@@ -397,7 +399,8 @@ def accounts_anlegen():
     return render_template("Verwaltungspersonal/accounts_anlegen.html", user=current_user)
 
 
-# Seite die das Bearbeiten und löschen ermöglicht
+# /F590/
+# Diese Funktion erlaubt es dem Verwaltungspersonal, Accounts für Boden- oder Verwaltungspersonal zu bearbeiten.
 @verwaltungspersonal_views.route('/accounts-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/accounts-bearbeiten/<int:page>', methods=['GET', 'POST'])
 @login_required
@@ -443,7 +446,7 @@ def accounts_ändern():
 
         return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
 
-
+# Diese Hilfsfunktion erlaubt es dem Verwaltungspersonal, Accounts für Boden- oder Verwaltungspersonal zu löschen.
 @verwaltungspersonal_views.route('/accounts-loeschen/<int:id>', methods=['GET', 'POST'])
 @login_required
 def accounts_loeschen(id):

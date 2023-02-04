@@ -77,6 +77,7 @@ def Kombination_2(buchungsnummer_2, ausweisnummer):
     return passagiere, buchung_2, ankunft_flughafen, ziel_flughafen, flug, gepaeck
 
 
+# /F410/
 # Diese Funktion stellt die Starseite des Bodenpersonals & die passagier_suchen Funktion dar
 @bodenpersonal_views.route('/home_bp', methods=["GET", "POST"])
 @login_required
@@ -192,6 +193,8 @@ def home():
             return render_template("Bodenpersonal/home_bp.html", user=current_user)
 
 
+# /F430/
+# Diese Funktion erlaubt es dem Bodenpersonal einen oder mehrere Passagiere einzuchecken.
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
 @login_required
 def einchecken():
@@ -221,6 +224,7 @@ def einchecken():
                            nachname=nachname)
 
 
+# Diese Hilfsfunktion erlaubt es dem Bodenpersonal Koffer pro Person einzuchecken.
 @bodenpersonal_views.route('/koffer_einchecken', methods=["POST"])
 @login_required
 def koffer_einchecken():
@@ -241,6 +245,7 @@ def koffer_einchecken():
                 user=current_user))
 
 
+# Diese Hilfsfunktion erstellt einen QR Code für einen Koffer
 @bodenpersonal_views.route('/koffer_label', methods=['POST'])
 @login_required
 def koffer_label():
@@ -295,6 +300,7 @@ def koffer_label():
         return response
 
 
+# Diese Funktion erlaubt es dem Bodenpersonal einzelne Passagiere zu boarden.
 @bodenpersonal_views.route('/boarding', methods=['POST'])
 @login_required
 def boarding():
@@ -311,6 +317,7 @@ def boarding():
                             user=current_user))
 
 
+# Diese Hilfsfunktion erstellt pro Boarding einen Boardingpass in Form einer PDF-Datei
 @bodenpersonal_views.route('/generate_boarding_pass', methods=['POST'])
 def generate_boarding_pass():
     passagier_id = request.args.get('passagier_id')
@@ -369,6 +376,8 @@ def generate_boarding_pass():
         return response
 
 
+# /F440/
+# Diese Funktion erlaubt es dem Bodenpersonal Flüge zu prüfen.
 @bodenpersonal_views.route('/fluege_pruefen', methods=["GET", "POST"])
 @login_required
 def fluege_pruefen():

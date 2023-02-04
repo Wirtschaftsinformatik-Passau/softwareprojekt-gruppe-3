@@ -18,19 +18,22 @@ import os
 passagier_views = Blueprint('passagier_views', __name__)
 
 MINDESTLÄNGE_AUSWEISNUMMER = 9
+EINE_WOCHE = 7
+ZWEI_WOCHEN = 14
 
 
+# Diese Hilfsfunktion generiert eine zufällige Boardingpassnummer
 def generate_boarding_pass_number():
     boarding_pass_number = ''.join(random.choices(string.ascii_letters + string.digits, k=15))
     return boarding_pass_number
 
 
-# Passagierfunktionen
-# Id generator für Buchungsnummer
+# Diese Hilfsfunktion generiert eine zufällige Buchungsnummer
 def id_generator(size=8, chars=string.ascii_uppercase):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
+# Diese Hilfsfunktion prüft, ob das eingegebene Datum in der Vergangenheit liegt
 def is_date_in_past(date):
     # Convert the input date to a datetime object
     date = datetime.strptime(date, '%Y-%m-%d')
@@ -45,7 +48,8 @@ def is_date_in_past(date):
         return False
 
 
-# Passagierfunktionen
+# /F310/
+# Diese Funktion erlaubt es einem Passagier, einen Flug zu buchen.
 @passagier_views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
 def flug_buchen(id, anzahlPassagiere):
@@ -150,6 +154,8 @@ def flug_buchen(id, anzahlPassagiere):
                            anzahlPassagiere=anzahlPassagiere, preis=buchung_preis)
 
 
+# Diese Hilfsfunktion erstellt eine Datei, in der alle Buchungsinformationen der Buchung zusammengefasst werden.
+# Diese werden per Mail an Passagiere versendet.
 @login_required
 @passagier_views.route('/buchungsbestaetigung', methods=['POST', 'GET'])
 def buchungsbestaetigung():
@@ -180,63 +186,8 @@ def buchungsbestaetigung():
                            gepaeck=gepaeck, flughafen_liste=flughafen_liste)
 
 
-@passagier_views.route('/online_check_in', methods=['POST', 'GET'])
-def online_check_in():
-    # Übergabe jener Variablen aus der Buchung_suchen Funktion.
-    # Abhängig von dem Button auf den geklickt wird, wird der eine oder andere Passagier ausgesucht
-    buchungsnummer = request.args.get('buchungsnummer')
-    vorname = request.args.get('vorname')
-    nachname = request.args.get('nachname')
-    buchungsid = request.args.get('buchungsid')
-    emailadresse = Nutzerkonto.query.get_or_404(current_user.id).emailadresse
-
-    # die restlichen Daten müssen nun mit jenem Passagier übereinstimmen, welcher denselben Vornamen hat.
-    # Das wird erreicht durch die Überprüfung, welche Reihe zu dem Passagier gehört, auf dessen Button geklickt wurde
-    passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
-        where(Passagier.nachname == nachname).first()
-
-    if request.method == 'POST':
-        passagier.nachname = nachname
-        passagier.vorname = vorname
-        passagier.ausweistyp = request.form['ausweistyp']
-        passagier.ausweisnummer = request.form['ausweissnummer']
-        passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
-        passagier.staatsbuergerschaft = request.form['staatsangehoerigkeit']
-        passagier.boardingpassnummer = generate_boarding_pass_number()
-        passagier.passagierstatus = "eingecheckt"
-
-        if not len(passagier.ausweisnummer) >= MINDESTLÄNGE_AUSWEISNUMMER:
-            flash('Bitte überprüfen Sie die Ausweisnummer', category='error')
-            return redirect(url_for('passagier_views.buchung_suchen'))
-
-        db.session.commit()
-
-        flash("Der Online-Check-In war erfolgreich! Ihre Boardingkarte können Sie im Anhang einsehen.")
-
-        msg = Message('Boarding Pass', sender='airpassau.de@gmail.com', recipients=[emailadresse])
-        msg.html = render_template("Passagier/online_check_in_email.html", user=current_user)
-        msg.attach("boardingkarte.pdf", "application/pdf", boarding_karte(passagier.passagierid))
-        mail.send(msg)
-
-        return redirect(url_for('passagier_views.buchung_suchen'))
-
-    return render_template("Passagier/online_check_in.html", user=current_user, passagier=passagier, vorname=vorname,
-                           nachname=nachname)
-
-
-def is_flight_within_days(flight_time, num_days):
-    # Get the current time
-    current_time = datetime.now()
-
-    # Calculate the time difference between the current time and the flight time
-    time_difference = flight_time - current_time
-
-    # Check if the time difference is less than the specified number of days
-    return time_difference <= timedelta(days=num_days)
-
-
-# Passagierfunktionen
-
+# /F320/
+# Diese Funktion erlaubt es einem Passagier, eine Buchung zu suchen.
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
     # Der Nutzer wird zur Login-Seite weitergeleitet, falls er noch nicht angemeldet ist
@@ -250,8 +201,8 @@ def buchung_suchen():
         filter(Buchung.nutzerid == current_user.id).filter(Flug.istankunftszeit > datetime.now()). \
         order_by(Buchung.buchungsid.desc()).first()
 
-    # für den ersten aufruf falls. Da keine Buchungsnummer eingegeben wird kann keine gefunden werden (sonst
-    # fehlermeldung)
+    # für den ersten aufruf falls keine Buchungsnummer eingegeben wird kann keine gefunden werden
+    # (sonst fehlermeldung)
 
     if buchung is None:
 
@@ -289,11 +240,11 @@ def buchung_suchen():
 
             check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
 
-            if is_flight_within_days(flug.sollabflugzeit, 7):
+            if is_flight_within_days(flug.sollabflugzeit, EINE_WOCHE):
                 storno_text = "Ihr Flug ist in weniger als sieben Tagen. Wenn Sie Ihre Buchung jetzt stornieren, " \
                               "erhalten Sie keine Rückerstattung"
 
-            elif is_flight_within_days(flug.sollabflugzeit, 14):
+            elif is_flight_within_days(flug.sollabflugzeit, ZWEI_WOCHEN):
                 storno_text = "Das Abflugdatum ihres Fluges ist zwischen 14 und 7 Tagen.Wenn Sie jetzt stornieren, " \
                               "wird Ihnen 50% des Buchungspreis zurückerstattet"
 
@@ -361,6 +312,65 @@ def buchung_suchen():
         return render_template('Passagier/buchung_suchen.html', user=current_user)
 
 
+# /F330/
+# Diese Funktion erlaubt es einem Passagier, sich und Mitreisende online einzuchecken.
+@passagier_views.route('/online_check_in', methods=['POST', 'GET'])
+def online_check_in():
+    # Übergabe jener Variablen aus der Buchung_suchen Funktion.
+    # Abhängig von dem Button auf den geklickt wird, wird der eine oder andere Passagier ausgesucht
+    buchungsnummer = request.args.get('buchungsnummer')
+    vorname = request.args.get('vorname')
+    nachname = request.args.get('nachname')
+    buchungsid = request.args.get('buchungsid')
+    emailadresse = Nutzerkonto.query.get_or_404(current_user.id).emailadresse
+
+    # die restlichen Daten müssen nun mit jenem Passagier übereinstimmen, welcher denselben Vornamen hat.
+    # Das wird erreicht durch die Überprüfung, welche Reihe zu dem Passagier gehört, auf dessen Button geklickt wurde
+    passagier = Passagier.query.filter(Passagier.buchungsid == buchungsid).where(Passagier.vorname == vorname). \
+        where(Passagier.nachname == nachname).first()
+
+    if request.method == 'POST':
+        passagier.nachname = nachname
+        passagier.vorname = vorname
+        passagier.ausweistyp = request.form['ausweistyp']
+        passagier.ausweisnummer = request.form['ausweissnummer']
+        passagier.ausweisgueltigkeit = request.form['ausweisgueltigkeit']
+        passagier.staatsbuergerschaft = request.form['staatsangehoerigkeit']
+        passagier.boardingpassnummer = generate_boarding_pass_number()
+        passagier.passagierstatus = "eingecheckt"
+
+        if not len(passagier.ausweisnummer) >= MINDESTLÄNGE_AUSWEISNUMMER:
+            flash('Bitte überprüfen Sie die Ausweisnummer', category='error')
+            return redirect(url_for('passagier_views.buchung_suchen'))
+
+        db.session.commit()
+
+        flash("Der Online-Check-In war erfolgreich! Ihre Boardingkarte können Sie im Anhang einsehen.")
+
+        msg = Message('Boarding Pass', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+        msg.html = render_template("Passagier/online_check_in_email.html", user=current_user)
+        msg.attach("boardingkarte.pdf", "application/pdf", boarding_karte(passagier.passagierid))
+        mail.send(msg)
+
+        return redirect(url_for('passagier_views.buchung_suchen'))
+
+    return render_template("Passagier/online_check_in.html", user=current_user, passagier=passagier, vorname=vorname,
+                           nachname=nachname)
+
+# Eingabe: Flugzeit, Anzahl an Tagen
+# Diese Hilfsfunktion prüft, wie viele Tage die aktuelle Zeit von der übergebenen Flugzeit entfernt ist.
+def is_flight_within_days(flight_time, num_days):
+    # Get the current time
+    current_time = datetime.now()
+
+    # Calculate the time difference between the current time and the flight time
+    time_difference = flight_time - current_time
+
+    # Check if the time difference is less than the specified number of days
+    return time_difference <= timedelta(days=num_days)
+
+# /F340/
+# Diese Funktion erlaubt es einem Passagier, eine Buchung zu stornieren.
 @passagier_views.route('/<stor_buchungsnummer>', methods=['GET', 'POST'])
 def storno(stor_buchungsnummer):
     buchung = Buchung.query.filter(Buchung.buchungsnummer == stor_buchungsnummer).first()
@@ -379,7 +389,7 @@ def storno(stor_buchungsnummer):
     else:
         return redirect(url_for('passagier_views.buchung_suchen'))
 
-
+# Diese Hilfsfunktion sendet nach einer Storniernung eine Stornierungsbestätigung per Mail an den Ex-Passagier
 @passagier_views.route('/stornierungsbestaetigung', methods=['POST', 'GET'])
 def stornierungsbestaetigung():
     rechnungsnummer = request.args['rechnungsnummer']
@@ -399,12 +409,12 @@ def stornierungsbestaetigung():
     return render_template("Passagier/stornierungsbestaetigung.html", user=current_user,
                            rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer)
 
-
+# Diese Hilfsfunktion dient dazu, die Gepäcksbestimmungen bei der Buchung anzuzeigen
 @passagier_views.route('/gepaecksbestimmungen', methods=['GET'])
 def gepaecksbestimmungen_anzeigen():
     return render_template("Passagier/gepaecksbestimmungen.html", user=current_user)
 
-
+# Diese Hilfsfunktion erstellt basierend auf dem Online Check In eine Boardingkarte.
 def boarding_karte(passagier_id):
     passagier = Passagier.query.filter(Passagier.passagierid == passagier_id).first()
     flug = Flug.query.join(Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
