@@ -1,0 +1,2 @@
+[console_scripts]
+repo = repo.__main__:main

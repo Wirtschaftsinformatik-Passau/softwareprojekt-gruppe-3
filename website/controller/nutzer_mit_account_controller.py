@@ -109,7 +109,7 @@ def passwort_vergessen():
         passwort_hash = generate_password_hash(neues_passwort)
         user.passwort = passwort_hash
         db.session.commit()
-        msg = Message('Passwort wiederherstellen', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+        msg = Message('Passwort wiederherstellen', sender='mailhog_grup3', recipients=[emailadresse])
         msg.html = render_template('Nutzer_mit_account/passwort_vergessen_email.html', password=neues_passwort,
                                    user=user)
         mail.send(msg)
