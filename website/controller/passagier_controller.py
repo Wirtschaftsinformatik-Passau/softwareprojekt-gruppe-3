@@ -67,11 +67,12 @@ def flug_buchen(id, anzahlPassagiere):
         # check if still available seats
 
         anzahl_geb_passagiere = Passagier.query.join(Buchung). \
-            filter(Buchung.flugid == flug_data.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).count()
+            filter(Buchung.flugid == flug_data.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).\
+            filter(Buchung.buchungsstatus != 'storniert').count()
         flugzeug_kapa = Flugzeug.query.get(flug_data.flugzeugid).anzahlsitzplaetze
 
         if (int(anzahl_geb_passagiere) + int(anzahlPassagiere)) > int(flugzeug_kapa):
-            flash('Der Flug ist leider ausgebucht.')
+            flash('Der Flug ist leider ausgebucht.', category='error')
             return redirect(url_for('nutzer_ohne_account_views.home'))
 
         zusatzgepaeck_counter = 0

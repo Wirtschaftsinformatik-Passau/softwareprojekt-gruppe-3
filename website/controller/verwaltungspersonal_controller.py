@@ -34,9 +34,9 @@ def is_date_after_yesterday(date, diff):
 
 def is_between(start_time, end_time):
     if start_time <= end_time:
-        return start_time <= datetime.now() <= end_time
+        return start_time <= str(datetime.now()) <= end_time
     else:  # over midnight e.g., 23:30-04:15
-        return datetime.now() >= start_time or datetime.now() <= end_time
+        return str(datetime.now()) >= start_time or str(datetime.now()) <= end_time
 
 
 # /F520/
@@ -101,7 +101,8 @@ def flugzeug_ändern():
 
             anzahl = Passagier.query.join(Buchung, Flug). \
                 filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
-                filter(Flug.flugid == rows.flugid).filter(Flug.sollabflugzeit > date.today()).count()
+                filter(Flug.flugid == rows.flugid).\
+                filter(Buchung.buchungsstatus != 'storniert').filter(Flug.sollabflugzeit > date.today()).count()
             if anzahl > max_anzahl_passagier:
                 max_anzahl_passagier = anzahl
 
@@ -130,12 +131,17 @@ def flugzeug_ändern():
 @login_required
 def flugzeug_inaktiv_setzen(id):
     flugzeug_inaktiv = Flugzeug.query.filter_by(flugzeugid=id).first()
+
+    flug_mit_flugzeug = Flug.query.filter(Flug.flugzeugid == id).filter(Flug.flugstatus != "annuliert").\
+        filter(Flug.sollabflugzeit > date.today()).first()
+    """
     anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
         filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
-        filter(Flug.flugzeugid == id). \
+        filter(Flug.flugzeugid == id).filter(Buchung.buchungsstatus != 'storniert'). \
         filter(Flug.flugstatus != "annuliert").filter(Flug.sollabflugzeit > date.today()).count()
+    """
 
-    if anzahl_passagiere > 0:
+    if flug_mit_flugzeug:
         flash('Das Flugzeug welches Sie löschen wollen ist mit einem aktiven Flug verbunden. Bitte wenden Sie sich '
               'an einen Vorgesetzten.', category="error")
     else:
@@ -145,7 +151,7 @@ def flugzeug_inaktiv_setzen(id):
         flash(
             'Das Flugzeug wurde erfolgreich auf inaktiv gesetzt. Er befindet sich noch in der Datenbank aber kann '
             'nicht '
-            'mehr für einen Flug ausgewählt werden', category="error")
+            'mehr für einen Flug ausgewählt werden', category="success")
 
         log_event('Flugzeug (id = ' + str(
             flugzeug_inaktiv.flugzeugid) + ') wurde auf inaktiv gesetzt. [von NutzerID = ' + str(current_user.id) + ']')
@@ -172,7 +178,7 @@ def flug_anlegen():
         flugnummer = request.form.get('fluglinie')
         preis = request.form.get('preis')
 
-        # chec, ob ein Flug mit gleichen von und nach und abflugzeit existiert
+        # check, ob ein Flug mit gleichen von und nach und abflugzeit existiert
 
         fluege = Flug.query.filter(Flug.abflugid == abflugid.flughafenid).filter(Flug.zielid == zielid.flughafenid). \
             filter(Flug.sollabflugzeit == abflugdatum).filter(Flug.sollankunftszeit == ankunftsdatum). \
@@ -264,7 +270,7 @@ def flug_annulieren(id):
         emailadressen = ["test@default.com"]
 
         alle_nutzer = Nutzerkonto.query.join(Buchung).filter(Nutzerkonto.id == Buchung.nutzerid). \
-            filter(Buchung.flugid == id)
+            filter(Buchung.flugid == id).filter(Buchung.buchungsstatus != 'storniert')
 
         for rows in alle_nutzer:
             emailadressen.append(str(rows.emailadresse))
@@ -323,7 +329,7 @@ def flug_ändern():
             if flug.istankunftszeit > flug.sollankunftszeit:
                 flug.flugstatus = "verspätet"
 
-            elif flug.istankunftszeit == flug.sollankunftszeit:
+            elif flug.istankunftszeit == flug.sollankunftszeit or flug.istankunftszeit < flug.sollankunftszeit:
                 flug.flugstatus = "pünktlich"
 
             flughafen_von = Flughafen.query.filter(Flughafen.flughafenid == flug.abflugid).first()
@@ -337,7 +343,7 @@ def flug_ändern():
             emailadressen = ["test@default.com"]
 
             alle_nutzer = Nutzerkonto.query.join(Buchung).filter(Nutzerkonto.id == Buchung.nutzerid). \
-                filter(Buchung.flugid == request.form.get('id'))
+                filter(Buchung.flugid == request.form.get('id')).filter(Buchung.buchungsstatus != 'storniert')
 
             for rows in alle_nutzer:
                 emailadressen.append(str(rows.emailadresse))
@@ -350,7 +356,7 @@ def flug_ändern():
             mail.send(msg)
 
             log_event('Flugdaten (id = ' + str(
-                flug.id) + ') wurden geändert. [von NutzerID = ' + str(current_user.id) + ']')
+                flug.flugid) + ') wurden geändert. [von NutzerID = ' + str(current_user.id) + ']')
 
             flash("Flugdaten erfolgreich geändert", category='success')
 
