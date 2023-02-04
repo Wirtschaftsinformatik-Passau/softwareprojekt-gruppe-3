@@ -61,6 +61,7 @@ def flugzeug_erstellen():
 
     return render_template("Verwaltungspersonal/home_vp.html", user=current_user)
 
+
 # /F530/
 # Diese Funktion erlaubt es dem Verwaltungspersonal, ein Flugzeug zu bearbeiten.
 @verwaltungspersonal_views.route('/flugzeug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
@@ -87,6 +88,7 @@ def flugzeug_bearbeiten(page):
 
     return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge, user=current_user)
 
+
 #
 @verwaltungspersonal_views.route('/flugzeug-ändern', methods=['GET', 'POST'])
 @login_required
@@ -101,7 +103,7 @@ def flugzeug_ändern():
 
             anzahl = Passagier.query.join(Buchung, Flug). \
                 filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
-                filter(Flug.flugid == rows.flugid).\
+                filter(Flug.flugid == rows.flugid). \
                 filter(Buchung.buchungsstatus != 'storniert').filter(Flug.sollabflugzeit > date.today()).count()
             if anzahl > max_anzahl_passagier:
                 max_anzahl_passagier = anzahl
@@ -126,13 +128,14 @@ def flugzeug_ändern():
             flash("Flugzeugdaten erfolgreich geändert")
         return redirect(url_for('verwaltungspersonal_views.flugzeug_bearbeiten'))
 
+
 # Diese Hilfsfunktion setzt einen Flug inaktiv.
 @verwaltungspersonal_views.route('/flugzeug-inaktiv-setzen/<int:id>', methods=['GET', 'POST'])
 @login_required
 def flugzeug_inaktiv_setzen(id):
     flugzeug_inaktiv = Flugzeug.query.filter_by(flugzeugid=id).first()
 
-    flug_mit_flugzeug = Flug.query.filter(Flug.flugzeugid == id).filter(Flug.flugstatus != "annuliert").\
+    flug_mit_flugzeug = Flug.query.filter(Flug.flugzeugid == id).filter(Flug.flugstatus != "annuliert"). \
         filter(Flug.sollabflugzeit > date.today()).first()
     """
     anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
@@ -215,6 +218,7 @@ def flug_anlegen():
                            flugzeug_liste=flugzeug_liste, default_flughafen_von=default_flughafen_von,
                            default_flughafen_nach=default_flughafen_nach, tomorrow=date.today() + timedelta(days=1))
 
+
 # /F550/
 # Diese Funktion erlaubt es dem Verwaltungspersonal, einen Flug zu bearbeiten.
 @verwaltungspersonal_views.route('/flug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
@@ -247,6 +251,7 @@ def flug_bearbeiten(page):
     return render_template("Verwaltungspersonal/flug_bearbeiten.html", fluege=fluege, user=current_user,
                            flugzeug_liste=flugzeug_liste,
                            flughafen_liste=flughafen_liste)
+
 
 # Diese Funktion ermöglicht es dem Verwaltungspersonal, einen Flug zu annulieren.
 @verwaltungspersonal_views.route('/flug-annulieren/<int:id>', methods=['GET', 'POST'])
@@ -296,6 +301,8 @@ def flug_ändern():
         old_price = flug.preis
         old_abflug = flug.sollabflugzeit
         old_ankunft = flug.sollankunftszeit
+        old_abflug_ist = str(flug.istabflugzeit)
+        old_ankunft_ist = str(flug.istankunftszeit)
 
         flug.abflugid = request.form['von']
         flug.zielid = request.form['nach']
@@ -316,9 +323,9 @@ def flug_ändern():
                   category='error')
         elif flug.abflugid == flug.zielid:
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
-        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and int(old_price) != int(request.form['preis']):
+        elif is_between(old_abflug_ist, old_ankunft_ist) and int(old_price) != int(request.form['preis']):
             flash('Der Flug ist bereits gestartet. Sie können den Preis nicht mehr ändern', category='error')
-        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_abflug != (
+        elif is_between(old_abflug_ist, old_ankunft_ist) and old_abflug != (
                 request.form['abflugdatum'] + " " + request.form['sollabflugzeit']):
             flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
         elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_ankunft != (
@@ -361,6 +368,7 @@ def flug_ändern():
             flash("Flugdaten erfolgreich geändert", category='success')
 
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
+
 
 # /F580/
 # Diese Funktion erlaubt es dem Verwaltungspersonal, Accounts für Boden- oder Verwaltungspersonal anzulegen.
@@ -452,6 +460,7 @@ def accounts_ändern():
 
         return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
 
+
 # Diese Hilfsfunktion erlaubt es dem Verwaltungspersonal, Accounts für Boden- oder Verwaltungspersonal zu löschen.
 @verwaltungspersonal_views.route('/accounts-loeschen/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -536,3 +545,11 @@ def logging():
     with open("flask.log", "r") as logfile:
         logs = logfile.readlines()
     return render_template("Verwaltungspersonal/logging.html", logs=logs, user=current_user)
+
+
+@verwaltungspersonal_views.route("/logging-löschen/", methods=["GET", "POST"])
+@login_required
+def log_löschen():
+    with open("flask.log", "w") as logfile:
+        logs = logfile.write("")
+    return redirect(url_for('verwaltungspersonal_views.logging'))

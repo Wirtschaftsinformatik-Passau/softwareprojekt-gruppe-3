@@ -21,16 +21,28 @@
             <a class="nav-link" href="/accounts-anlegen">Accounts</a>
         </li>
     </ul>
-<br>
     <br>
+    <a href="{{ url_for('verwaltungspersonal_views.log_löschen') }}"
+                                                               class="btn btn-danger">Log löschen</a>
+
+    <br>
+
     <table class="table table-striped">
+
+
+    <br>
         <thead>
+
+
             <tr>
                 <th scope="col">Timestamp</th>
                 <th scope="col">Event</th>
 
+
+
             </tr>
         </thead>
+    {% if logs %}
         <tbody>
             {% for log in logs %}
                 <tr>
@@ -38,7 +50,9 @@
           <td>{{ " ".join(log.split()[3:]) }}</td>
                 </tr>
             {% endfor %}
+
         </tbody>
+    {% endif %}
     </table>
 {% endblock %}
 
