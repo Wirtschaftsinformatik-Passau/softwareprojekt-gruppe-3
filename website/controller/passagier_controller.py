@@ -67,7 +67,7 @@ def flug_buchen(id, anzahlPassagiere):
         # check if still available seats
 
         anzahl_geb_passagiere = Passagier.query.join(Buchung). \
-            filter(Buchung.flugid == flug_data.flugid).filter(Passagier.buchungsid == Buchung.buchungsid).\
+            filter(Buchung.flugid == flug_data.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
             filter(Buchung.buchungsstatus != 'storniert').count()
         flugzeug_kapa = Flugzeug.query.get(flug_data.flugzeugid).anzahlsitzplaetze
 
@@ -173,7 +173,7 @@ def buchungsbestaetigung():
 
     passagiere = Passagier.query.join(Buchung).filter(Passagier.buchungsid == buchungsid).all()
 
-    msg = Message('Buchungsbestaetigung', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+    msg = Message('Buchungsbestaetigung', sender='mailhog_grup3', recipients=[emailadresse])
     msg.html = render_template("Passagier/buchungsbestaetigung_email.html", user=current_user,
                                rechnungsnummer=rechnungsnummer,
                                buchungsnummer=buchungsnummer,
@@ -348,7 +348,7 @@ def online_check_in():
 
         flash("Der Online-Check-In war erfolgreich! Ihre Boardingkarte können Sie im Anhang einsehen.")
 
-        msg = Message('Boarding Pass', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+        msg = Message('Boarding Pass', sender='mailhog_grup3', recipients=[emailadresse])
         msg.html = render_template("Passagier/online_check_in_email.html", user=current_user)
         msg.attach("boardingkarte.pdf", "application/pdf", boarding_karte(passagier.passagierid))
         mail.send(msg)
@@ -357,6 +357,7 @@ def online_check_in():
 
     return render_template("Passagier/online_check_in.html", user=current_user, passagier=passagier, vorname=vorname,
                            nachname=nachname)
+
 
 # Eingabe: Flugzeit, Anzahl an Tagen
 # Diese Hilfsfunktion prüft, wie viele Tage die aktuelle Zeit von der übergebenen Flugzeit entfernt ist.
@@ -369,6 +370,7 @@ def is_flight_within_days(flight_time, num_days):
 
     # Check if the time difference is less than the specified number of days
     return time_difference <= timedelta(days=num_days)
+
 
 # /F340/
 # Diese Funktion erlaubt es einem Passagier, eine Buchung zu stornieren.
@@ -390,6 +392,7 @@ def storno(stor_buchungsnummer):
     else:
         return redirect(url_for('passagier_views.buchung_suchen'))
 
+
 # Diese Hilfsfunktion sendet nach einer Storniernung eine Stornierungsbestätigung per Mail an den Ex-Passagier
 @passagier_views.route('/stornierungsbestaetigung', methods=['POST', 'GET'])
 def stornierungsbestaetigung():
@@ -401,7 +404,7 @@ def stornierungsbestaetigung():
     flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
         Buchung.buchungsnummer == buchungsnummer).first()
 
-    msg = Message('Stornierungsbestaetigung', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+    msg = Message('Stornierungsbestaetigung', sender='mailhog_grup3', recipients=[emailadresse])
     msg.html = render_template("Passagier/stornierungsbestaetigung_email.html", user=current_user,
                                rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer, flug=flug)
 
@@ -410,10 +413,12 @@ def stornierungsbestaetigung():
     return render_template("Passagier/stornierungsbestaetigung.html", user=current_user,
                            rechnungsnummer=rechnungsnummer, buchungsnummer=buchungsnummer)
 
+
 # Diese Hilfsfunktion dient dazu, die Gepäcksbestimmungen bei der Buchung anzuzeigen
 @passagier_views.route('/gepaecksbestimmungen', methods=['GET'])
 def gepaecksbestimmungen_anzeigen():
     return render_template("Passagier/gepaecksbestimmungen.html", user=current_user)
+
 
 # Diese Hilfsfunktion erstellt basierend auf dem Online Check In eine Boardingkarte.
 def boarding_karte(passagier_id):

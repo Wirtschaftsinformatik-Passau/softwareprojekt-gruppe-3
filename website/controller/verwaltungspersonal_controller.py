@@ -398,7 +398,7 @@ def accounts_anlegen():
                                       passwort=generate_password_hash(passwort, method='sha256'))
             db.session.add(new_account)
             db.session.commit()
-            msg = Message('Ihr Account wurde erstellt', sender='airpassau.de@gmail.com', recipients=[emailadresse])
+            msg = Message('Ihr Account wurde erstellt', sender='mailhog_grup3', recipients=[emailadresse])
             msg.html = render_template('Verwaltungspersonal/neuer_account_erstellt_email.html', password=passwort,
                                        user=current_user, rolle=rolle, vorname=vorname)
             mail.send(msg)
