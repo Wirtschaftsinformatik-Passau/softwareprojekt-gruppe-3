@@ -299,8 +299,8 @@ def flug_ändern():
         flug = Flug.query.get_or_404(request.form.get('id'))
 
         old_price = flug.preis
-        old_abflug = flug.sollabflugzeit
-        old_ankunft = flug.sollankunftszeit
+        old_abflug_soll = str(flug.sollabflugzeit)
+        old_ankunft_soll = str(flug.sollankunftszeit)
         old_abflug_ist = str(flug.istabflugzeit)
         old_ankunft_ist = str(flug.istankunftszeit)
 
@@ -308,8 +308,8 @@ def flug_ändern():
         flug.zielid = request.form['nach']
         flug.flugzeugid = request.form['flugzeugtyp']
         flug.preis = request.form['preis']
-        flug.sollabflugzeit = request.form['abflugdatum'] + " " + request.form['sollabflugzeit']
-        flug.sollankunftszeit = request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit']
+        flug.sollabflugzeit = request.form['abflugdatum'] + " " + request.form['sollabflugzeit'] + ":00"
+        flug.sollankunftszeit = request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit'] + ":00"
         flug.istabflugzeit = request.form['abflugdatum'] + " " + request.form['istabflugzeit']
         flug.istankunftszeit = request.form['ankunftsdatum'] + " " + request.form['istankunftszeit']
         flug.flugnummer = request.form['fluglinie']
@@ -325,11 +325,7 @@ def flug_ändern():
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
         elif is_between(old_abflug_ist, old_ankunft_ist) and int(old_price) != int(request.form['preis']):
             flash('Der Flug ist bereits gestartet. Sie können den Preis nicht mehr ändern', category='error')
-        elif is_between(old_abflug_ist, old_ankunft_ist) and old_abflug != (
-                request.form['abflugdatum'] + " " + request.form['sollabflugzeit']):
-            flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
-        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_ankunft != (
-                request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit']):
+        elif is_between(old_abflug_ist, old_ankunft_ist) and old_abflug_soll != str(flug.sollabflugzeit) or old_ankunft_soll != str(flug.sollankunftszeit):
             flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
         else:
 
@@ -357,7 +353,7 @@ def flug_ändern():
 
             print(emailadressen)
 
-            msg = Message('Änderungen in Ihrer Buchung', sender='airpassau.de@gmail.com', recipients=emailadressen)
+            msg = Message('Änderungen in Ihrer Buchung', sender='mailhog_grup3', recipients=emailadressen)
             msg.html = render_template('Verwaltungspersonal/Flugdaten_geändert_email.html',
                                        user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
             mail.send(msg)
