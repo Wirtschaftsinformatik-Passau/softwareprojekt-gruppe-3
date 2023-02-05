@@ -32,12 +32,14 @@ def create_app():
     from website.controller.passagier_controller import passagier_views
     from website.controller.verwaltungspersonal_controller import verwaltungspersonal_views
     from website.controller.bodenpersonal_controller import bodenpersonal_views
+    from website.controller.flight_api_controller import flight_api
 
     app.register_blueprint(nutzer_ohne_account_views, url_prefix='/')
     app.register_blueprint(nutzer_mit_account_views, url_prefix='/')
     app.register_blueprint(passagier_views, url_prefix='/')
     app.register_blueprint(verwaltungspersonal_views, url_prefix='/')
     app.register_blueprint(bodenpersonal_views, url_prefix='/')
+    app.register_blueprint(flight_api, url_prefix='/api')
 
     from website.model.models import Flughafen, Flugzeug, Nutzerkonto, Passagier, Gepaeck
     login_manager = LoginManager()
