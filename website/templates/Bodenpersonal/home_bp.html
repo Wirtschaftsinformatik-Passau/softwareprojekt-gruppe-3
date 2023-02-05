@@ -94,22 +94,23 @@
                                     <br>
                                     {% if passagier_row.passagierstatus == "eingecheckt" and row.buchungsstatus=="gebucht"
             and  flug_datum >= today %}
+                                    <br>
                                     <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}"
                                               method="post">
-                                            <input type="submit" class="btn btn-warning btn-sm"
+                                            <input type="submit" class="btn btn-info btn-sm"
                                                    value=" Boarding Karte drucken">
                                         </form>
                                     <br>
 
                                         <form action="{{ url_for('bodenpersonal_views.boarding', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
                                               method="post">
-                                            <input type="submit" class="btn btn-warning btn-sm" value="Starte Boarding">
+                                            <input type="submit" class="btn btn-info btn-sm" value="Starte Boarding">
                                         </form>
 
                                     {% elif passagier_row.passagierstatus == "gebucht" and row.buchungsstatus=="gebucht" and  flug_datum >= today %}
 
                                         <a href="{{ url_for('bodenpersonal_views.einchecken',buchungsid = row.buchungsid,buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
-                                           class="btn btn-warning btn-sm">Check-In</a>
+                                           class="btn btn-info btn-sm">Check-In</a>
 
                                     {% endif %}
                                 </td>
@@ -133,7 +134,7 @@
                                                                value="{{ passagier_row.vorname }}">
                                                         <input type="hidden" name="nachname"
                                                                value="{{ passagier_row.nachname }}">
-                                                        <input type="submit" class="btn btn-warning btn-sm"
+                                                        <input type="submit" class="btn btn-info btn-sm"
                                                                value="Check-In">
                                                     </form>
                                                 {% endif %}
@@ -142,7 +143,7 @@
 
                                             <form action="{{ url_for('bodenpersonal_views.koffer_label', passagier_id=passagier_row.passagierid,gepaeckid=gepaeck_row.gepaeckid) }}"
                                                   method="post">
-                                                <input type="submit" class="btn btn-warning btn-sm"
+                                                <input type="submit" class="btn btn-info btn-sm"
                                                        value=" Etikett drucken">
                                             </form>
                                         {% endif %}
@@ -175,13 +176,13 @@
 
                                         <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}"
                                               method="post">
-                                            <input type="submit" class="btn btn-warning btn-sm"
+                                            <input type="submit" class="btn btn-info btn-sm"
                                                    value="Boarding Karte drucken">
                                         </form>
                                     <br>
                                         <form action="{{ url_for('bodenpersonal_views.boarding', buchungsid=row.buchungsid, buchungsnummer=row.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
                                               method="post">
-                                            <input type="submit" class="btn btn-warning btn-sm" value="Starte Boarding">
+                                            <input type="submit" class="btn btn-info btn-sm" value="Starte Boarding">
                                         </form>
 
                                     {% endif %}
@@ -206,7 +207,7 @@
                                                                value="{{ passagier_row.vorname }}">
                                                         <input type="hidden" name="nachname"
                                                                value="{{ passagier_row.nachname }}">
-                                                        <input type="submit" class="btn btn-warning btn-sm"
+                                                        <input type="submit" class="btn btn-info btn-sm"
                                                                value="Check-In">
                                                     </form>
                                                 {% endif %}
@@ -215,7 +216,7 @@
 
                                             <form action="{{ url_for('bodenpersonal_views.koffer_label', passagier_id=passagier_row.passagierid,gepaeckid=gepaeck_row.gepaeckid) }}"
                                                   method="post">
-                                                <input type="submit" class="btn btn-warning btn-sm"
+                                                <input type="submit" class="btn btn-info btn-sm"
                                                        value=" Etikett drucken">
                                             </form>
 
