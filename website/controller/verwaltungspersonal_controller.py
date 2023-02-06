@@ -574,7 +574,7 @@ def diagramm_anzeigen():
     sizes = [gesamt_annulliert/sum, gesamt_verspätet/sum, gesamt_pünktlich/sum]
 
     fig, ax = plt.subplots()
-    ax.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True)
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=False)
     ax.axis('equal')
 
     pngImage = io.BytesIO()

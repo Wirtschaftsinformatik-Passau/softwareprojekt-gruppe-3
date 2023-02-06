@@ -2,17 +2,15 @@
 
 {% block title %}Home für Verwaltungspersonal{% endblock %}
 {% block content %}
-     <head>
-      <title>Reporting</title>
-   </head>
+
    <body>
+<br>
 
-
-      <h3>Flugstatus Reporting</h3>
+      <h3>Reporting</h3>
       <br>
        <p>Gesamtumsatz: <b>{{ gesamtumsatz }}€</b></p>
       <img src="data:image/png;base64, {{ image }}" alt="Pie Chart">
-   <p><a href = "{{url_for('verwaltungspersonal_views.reporting') }}">Zurück zum Reporting</a></p>
+   <p><a href = "{{url_for('verwaltungspersonal_views.reporting') }}">Zurück</a></p>
 
 
    </body>
