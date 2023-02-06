@@ -198,12 +198,14 @@ def buchungsbestaetigung():
 # Diese Funktion erlaubt es einem Passagier, eine Buchung zu suchen.
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
-    if not role_required("Passagier"):
-        flash('ERROR: Kein Zugriff auf diese URL', category='error')
-        return redirect(url_for('nutzer_mit_account_views.anmelden'))
+
     # Der Nutzer wird zur Login-Seite weitergeleitet, falls er noch nicht angemeldet ist
     if not current_user.is_authenticated:
         flash('Sie müssen angemeldet sein, um nach einer Buchung zu suchen')  # erscheint nicht
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
+
+    if not role_required("Passagier"):
+        flash('ERROR: Kein Zugriff auf diese URL', category='error')
         return redirect(url_for('nutzer_mit_account_views.anmelden'))
 
     input_buchungsnummer = request.args.get('buchungsnummer')
