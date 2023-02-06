@@ -84,7 +84,7 @@
     </div>
     <br>
     {% if gesamt_annulliert + gesamt_verspaetet + gesamt_puenktlich != 0 %}
-    <a href="{{ url_for('verwaltungspersonal_views.diagramm_anzeigen', gesamt_annulliert=gesamt_annulliert, gesamt_puenktlich=gesamt_puenktlich, gesamt_verspaetet=gesamt_verspaetet, gesamtumsatz=gesamtumsatz) }}"
+    <a href="{{ url_for('verwaltungspersonal_views.diagramm_anzeigen', gesamt_annulliert=gesamt_annulliert, gesamt_puenktlich=gesamt_puenktlich, gesamt_verspaetet=gesamt_verspaetet, gesamtumsatz=gesamtumsatz, gesamt_passagiere=gesamt_passagiere, gesamt_sitzplaetze=gesamt_sitzplaetze) }}"
                                                    class="btn btn-info">In Grafik anzeigen</a>
     {% endif %}
     <br>

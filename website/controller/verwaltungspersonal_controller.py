@@ -523,11 +523,14 @@ def reporting():
     gesamt_pünktlich = 0
     gesamt_verspätet = 0
     gesamt_annulliert = 0
+    gesamt_passagiere = 0
+    gesamt_sitzplaetze = 0
 
     for rows in alle_fluege:
         anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
             filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
             filter(Flug.flugid == rows.flugid).count()
+        gesamt_passagiere += int(anzahl_passagiere)
         abflugid = rows.abflugid
         zielid = rows.zielid
         flugid = rows.flugid
@@ -542,6 +545,7 @@ def reporting():
             gesamt_annulliert += 1
 
         sitzplaetze = Flugzeug.query.filter(Flugzeug.flugzeugid == rows.flugzeugid).first().anzahlsitzplaetze
+        gesamt_sitzplaetze += int(sitzplaetze)
         auslastung = '{:.1%}'.format(anzahl_passagiere / sitzplaetze)
 
         reporting_list.append([flugid, abflugid, zielid, status, umsatz, auslastung])
@@ -557,7 +561,8 @@ def reporting():
                            alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date(),
                            gesamt_annulliert=gesamt_annulliert, gesamt_verspaetet=gesamt_verspätet,
                            gesamt_puenktlich=gesamt_pünktlich,
-                           gesamtumsatz=gesamtumsatz)
+                           gesamtumsatz=gesamtumsatz, gesamt_sitzplaetze=gesamt_sitzplaetze,
+                           gesamt_passagiere=gesamt_passagiere)
 
 
 @verwaltungspersonal_views.route("/diagramm_anzeigen/", methods=["GET", "POST"])
@@ -567,11 +572,15 @@ def diagramm_anzeigen():
     gesamt_pünktlich = int(request.args.get('gesamt_puenktlich'))
     gesamt_verspätet = int(request.args.get('gesamt_verspaetet'))
     gesamt_annulliert = int(request.args.get('gesamt_annulliert'))
+    gesamt_sitzplaetze = int(request.args.get('gesamt_sitzplaetze'))
+    gesamt_passagiere = int(request.args.get('gesamt_passagiere'))
+
+    gesamt_auslastung = '{:.1%}'.format(gesamt_passagiere / gesamt_sitzplaetze)
 
     sum = gesamt_verspätet + gesamt_pünktlich + gesamt_annulliert
 
     labels = ['annulliert', 'verspätet', 'pünktlich']
-    sizes = [gesamt_annulliert/sum, gesamt_verspätet/sum, gesamt_pünktlich/sum]
+    sizes = [gesamt_annulliert / sum, gesamt_verspätet / sum, gesamt_pünktlich / sum]
 
     fig, ax = plt.subplots()
     ax.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=False)
@@ -581,7 +590,8 @@ def diagramm_anzeigen():
     fig.savefig(pngImage, format='png')
     pngImageB64 = base64.b64encode(pngImage.getvalue()).decode('utf-8')
 
-    return render_template("Verwaltungspersonal/reporting_diagramm.html", image=pngImageB64, user=current_user, gesamtumsatz=gesamtumsatz)
+    return render_template("Verwaltungspersonal/reporting_diagramm.html", image=pngImageB64, user=current_user,
+                           gesamtumsatz=gesamtumsatz, gesamt_auslastung=gesamt_auslastung)
 
 
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
