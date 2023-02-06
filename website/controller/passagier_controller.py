@@ -259,7 +259,7 @@ def buchung_suchen():
                                    gepaeckanzahl=gepaeckanzahl)
 
 
-    # speziell nach nummer gesucht werden (muss aber mit nutzer id des angemedletetn nutzer
+    # speziell nach buchungsnummer wird hier gesucht (muss aber mit nutzer id des angemedletetn nutzer
     # zusammenhängen)
 
     elif buchung.nutzerid == current_user.id:
@@ -282,7 +282,7 @@ def buchung_suchen():
             join(Gepaeck, Gepaeck.passagierid == Passagier.passagierid).filter(
             Buchung.buchungsid == buchung.buchungsid).count()
 
-        # check if passagier ist schon eingecheckt oder boarded
+        # check if mindestens ein passagier schon eingecheckt oder boarded ist
 
         storno_possbile = True
         for i in passagier:

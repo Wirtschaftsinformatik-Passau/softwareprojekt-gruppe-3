@@ -1,5 +1,5 @@
-from flask import Flask
-from flask_login import LoginManager
+from flask import Flask, redirect, url_for
+from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 import datetime
@@ -14,6 +14,10 @@ def log_event(event):
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open('flask.log', 'a') as logfile:
         logfile.write(f'{now} - {event}\n')
+
+
+def role_required(rolle):
+    return current_user.rolle == rolle
 
 
 def create_app():

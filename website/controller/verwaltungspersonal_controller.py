@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from werkzeug.security import generate_password_hash
-from website import db, mail, log_event
+from website import db, mail, log_event, role_required
 from website.model.models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier
 from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
@@ -48,6 +48,8 @@ def is_between(start_time, end_time):
 @verwaltungspersonal_views.route('/home-vp', methods=['GET', 'POST'])
 @login_required
 def flugzeug_erstellen():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     if request.method == 'POST':
         modell = request.form.get('Modell')
         hersteller = request.form.get('Hersteller')
@@ -66,11 +68,13 @@ def flugzeug_erstellen():
 
 
 # /F530/
-# Diese Funktion erlaubt es dem Verwaltungspersonal, ein Flugzeug zu bearbeiten.
+# Diese Funktion erlaubt es dem Verwaltungspersonal, ein Flugzeug zu bearbeiten. Zeigt nur die Tabelle an
 @verwaltungspersonal_views.route('/flugzeug-bearbeiten', methods=['GET', 'POST'], defaults={"page": 1})
 @verwaltungspersonal_views.route('/flugzeug-bearbeiten/<int:page>', methods=['GET', 'POST'])
 @login_required
 def flugzeug_bearbeiten(page):
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     page = page
     pages = 4
 
@@ -92,10 +96,12 @@ def flugzeug_bearbeiten(page):
     return render_template("Verwaltungspersonal/flugzeug_bearbeiten.html", flugzeuge=flugzeuge, user=current_user)
 
 
-#
+# hiermit können konkrete Änderungen durchgeführt werden
 @verwaltungspersonal_views.route('/flugzeug-ändern', methods=['GET', 'POST'])
 @login_required
 def flugzeug_ändern():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     if request.method == 'POST':
         flugzeug = Flugzeug.query.get_or_404(request.form.get('id'))
         fluege_mit_flugzeug = Flug.query.join(Flugzeug).filter(Flug.flugzeugid == Flugzeug.flugzeugid). \
@@ -136,16 +142,12 @@ def flugzeug_ändern():
 @verwaltungspersonal_views.route('/flugzeug-inaktiv-setzen/<int:id>', methods=['GET', 'POST'])
 @login_required
 def flugzeug_inaktiv_setzen(id):
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     flugzeug_inaktiv = Flugzeug.query.filter_by(flugzeugid=id).first()
 
     flug_mit_flugzeug = Flug.query.filter(Flug.flugzeugid == id).filter(Flug.flugstatus != "annuliert"). \
         filter(Flug.sollabflugzeit > date.today()).first()
-    """
-    anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
-        filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
-        filter(Flug.flugzeugid == id).filter(Buchung.buchungsstatus != 'storniert'). \
-        filter(Flug.flugstatus != "annuliert").filter(Flug.sollabflugzeit > date.today()).count()
-    """
 
     if flug_mit_flugzeug:
         flash('Das Flugzeug welches Sie löschen wollen ist mit einem aktiven Flug verbunden. Bitte wenden Sie sich '
@@ -170,6 +172,8 @@ def flugzeug_inaktiv_setzen(id):
 @verwaltungspersonal_views.route('/flug-anlegen', methods=['GET', 'POST'])
 @login_required
 def flug_anlegen():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
     flugzeug_liste = Flugzeug.query.filter(Flugzeug.status == "aktiv").with_entities(Flugzeug.flugzeugid,
                                                                                      Flugzeug.hersteller,
@@ -228,6 +232,8 @@ def flug_anlegen():
 @verwaltungspersonal_views.route('/flug-bearbeiten/<int:page>', methods=['GET', 'POST'])
 @login_required
 def flug_bearbeiten(page):
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     flughafen_liste = Flughafen.query.all()
     flugzeug_liste = Flugzeug.query.filter(Flugzeug.status == "aktiv").with_entities(Flugzeug.flugzeugid,
                                                                                      Flugzeug.hersteller,
@@ -260,6 +266,8 @@ def flug_bearbeiten(page):
 @verwaltungspersonal_views.route('/flug-annulieren/<int:id>', methods=['GET', 'POST'])
 @login_required
 def flug_annulieren(id):
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     flug = Flug.query.get_or_404(id)
     if flug.flugstatus == "annulliert":
         flash('Flug wurde bereits annulliert!', category='error')
@@ -298,6 +306,8 @@ def flug_annulieren(id):
 @verwaltungspersonal_views.route('/flug-ändern/', methods=['GET', 'POST'])
 @login_required
 def flug_ändern():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     if request.method == 'POST':
         flug = Flug.query.get_or_404(request.form.get('id'))
 
@@ -377,6 +387,8 @@ def flug_ändern():
 @verwaltungspersonal_views.route('/accounts-anlegen', methods=['GET', 'POST'])
 @login_required
 def accounts_anlegen():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     if request.method == 'POST':
         vorname = request.form.get('vorname')
         nachname = request.form.get('nachname')
@@ -421,6 +433,8 @@ def accounts_anlegen():
 @verwaltungspersonal_views.route('/accounts-bearbeiten/<int:page>', methods=['GET', 'POST'])
 @login_required
 def accounts_bearbeiten(page):
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     page = page
     pages = 4
     accounts = Nutzerkonto.query.filter(
@@ -446,6 +460,8 @@ def accounts_bearbeiten(page):
 @verwaltungspersonal_views.route('/accounts-ändern', methods=['GET', 'POST'])
 @login_required
 def accounts_ändern():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     if request.method == 'POST':
         nutzer = Nutzerkonto.query.get_or_404(request.form.get('id'))
 
@@ -467,6 +483,8 @@ def accounts_ändern():
 @verwaltungspersonal_views.route('/accounts-loeschen/<int:id>', methods=['GET', 'POST'])
 @login_required
 def accounts_loeschen(id):
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     if id == current_user.id:
         flash('Sie können nicht Ihren eigenen Account löschen!', category='error')
         return redirect(url_for('verwaltungspersonal_views.accounts_bearbeiten'))
@@ -483,6 +501,8 @@ def accounts_loeschen(id):
 @verwaltungspersonal_views.route('/reporting', methods=['GET', 'POST'])
 @login_required
 def reporting():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     flughafen_liste = Flughafen.query.all()
 
     vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('von')).with_entities(
@@ -568,6 +588,8 @@ def reporting():
 @verwaltungspersonal_views.route("/diagramm_anzeigen/", methods=["GET", "POST"])
 @login_required
 def diagramm_anzeigen():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     gesamtumsatz = int(request.args.get('gesamtumsatz'))
     gesamt_pünktlich = int(request.args.get('gesamt_puenktlich'))
     gesamt_verspätet = int(request.args.get('gesamt_verspaetet'))
@@ -591,12 +613,15 @@ def diagramm_anzeigen():
     pngImageB64 = base64.b64encode(pngImage.getvalue()).decode('utf-8')
 
     return render_template("Verwaltungspersonal/reporting_diagramm.html", image=pngImageB64, user=current_user,
-                           gesamtumsatz=gesamtumsatz, gesamt_auslastung=gesamt_auslastung, gesamt_passagiere=gesamt_passagiere)
+                           gesamtumsatz=gesamtumsatz, gesamt_auslastung=gesamt_auslastung,
+                           gesamt_passagiere=gesamt_passagiere)
 
 
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
 @login_required
 def logging():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     with open("flask.log", "r") as logfile:
         logs = logfile.readlines()
     return render_template("Verwaltungspersonal/logging.html", logs=logs, user=current_user)
@@ -605,6 +630,8 @@ def logging():
 @verwaltungspersonal_views.route("/logging-löschen/", methods=["GET", "POST"])
 @login_required
 def log_löschen():
+    if not role_required("Verwaltungspersonal"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     with open("flask.log", "w") as logfile:
         logs = logfile.write("")
     return redirect(url_for('verwaltungspersonal_views.logging'))
