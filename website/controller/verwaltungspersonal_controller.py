@@ -529,7 +529,7 @@ def reporting():
     for rows in alle_fluege:
         anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
             filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
-            filter(Flug.flugid == rows.flugid).count()
+            filter(Flug.flugid == rows.flugid).filter(Buchung.buchungsstatus != "storniert").count()
         gesamt_passagiere += int(anzahl_passagiere)
         abflugid = rows.abflugid
         zielid = rows.zielid
@@ -591,7 +591,7 @@ def diagramm_anzeigen():
     pngImageB64 = base64.b64encode(pngImage.getvalue()).decode('utf-8')
 
     return render_template("Verwaltungspersonal/reporting_diagramm.html", image=pngImageB64, user=current_user,
-                           gesamtumsatz=gesamtumsatz, gesamt_auslastung=gesamt_auslastung)
+                           gesamtumsatz=gesamtumsatz, gesamt_auslastung=gesamt_auslastung, gesamt_passagiere=gesamt_passagiere)
 
 
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
