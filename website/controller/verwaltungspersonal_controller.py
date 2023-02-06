@@ -10,6 +10,9 @@ from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
 from flask_mail import Message
 import re
+import matplotlib.pyplot as plt
+import io
+import base64
 
 # store the standard routes for a website where the user can navigate to
 verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
@@ -299,23 +302,27 @@ def flug_ändern():
         flug = Flug.query.get_or_404(request.form.get('id'))
 
         old_price = flug.preis
-        old_abflug = flug.sollabflugzeit
-        old_ankunft = flug.sollankunftszeit
+        old_abflug_soll = str(flug.sollabflugzeit)
+        old_ankunft_soll = str(flug.sollankunftszeit)
         old_abflug_ist = str(flug.istabflugzeit)
         old_ankunft_ist = str(flug.istankunftszeit)
+
+        fliegt_schon = is_between(old_abflug_ist, old_ankunft_ist)
+
+        print(old_ankunft_ist, str(datetime.now()), old_ankunft_ist < str(datetime.now()))
 
         flug.abflugid = request.form['von']
         flug.zielid = request.form['nach']
         flug.flugzeugid = request.form['flugzeugtyp']
         flug.preis = request.form['preis']
-        flug.sollabflugzeit = request.form['abflugdatum'] + " " + request.form['sollabflugzeit']
-        flug.sollankunftszeit = request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit']
+        flug.sollabflugzeit = request.form['abflugdatum'] + " " + request.form['sollabflugzeit'] + ":00"
+        flug.sollankunftszeit = request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit'] + ":00"
         flug.istabflugzeit = request.form['abflugdatum'] + " " + request.form['istabflugzeit']
         flug.istankunftszeit = request.form['ankunftsdatum'] + " " + request.form['istankunftszeit']
         flug.flugnummer = request.form['fluglinie']
 
         # check ob ein Flug mit gleichen von und nach und abflugzeit existiert
-        if is_date_after_yesterday(flug.istankunftszeit, 0) or flug.flugstatus == "annulliert":
+        if old_ankunft_ist < str(datetime.now()) or flug.flugstatus == "annulliert":
             flash('Der Flug ist bereits gelandet oder annulliert worden. Sie können keine Änderungen mehr vornehmen',
                   category='error')
         elif flug.sollabflugzeit > flug.sollankunftszeit or flug.istabflugzeit > flug.istankunftszeit:
@@ -323,13 +330,10 @@ def flug_ändern():
                   category='error')
         elif flug.abflugid == flug.zielid:
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
-        elif is_between(old_abflug_ist, old_ankunft_ist) and int(old_price) != int(request.form['preis']):
+        elif fliegt_schon and int(old_price) != int(request.form['preis']):
             flash('Der Flug ist bereits gestartet. Sie können den Preis nicht mehr ändern', category='error')
-        elif is_between(old_abflug_ist, old_ankunft_ist) and old_abflug != (
-                request.form['abflugdatum'] + " " + request.form['sollabflugzeit']):
-            flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
-        elif is_between(flug.istabflugzeit, flug.istankunftszeit) and old_ankunft != (
-                request.form['ankunftsdatum'] + " " + request.form['sollankunftszeit']):
+        elif fliegt_schon and old_abflug_soll != str(
+                flug.sollabflugzeit) or old_ankunft_soll != str(flug.sollankunftszeit):
             flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
         else:
 
@@ -341,7 +345,6 @@ def flug_ändern():
 
             flughafen_von = Flughafen.query.filter(Flughafen.flughafenid == flug.abflugid).first()
             flughafen_nach = Flughafen.query.filter(Flughafen.flughafenid == flug.zielid).first()
-            wann = request.form['abflugdatum']
 
             db.session.commit()
 
@@ -355,11 +358,10 @@ def flug_ändern():
             for rows in alle_nutzer:
                 emailadressen.append(str(rows.emailadresse))
 
-            print(emailadressen)
-
-            msg = Message('Änderungen in Ihrer Buchung', sender='airpassau.de@gmail.com', recipients=emailadressen)
+            msg = Message('Änderungen in Ihrer Buchung', sender='mailhog_grup3', recipients=emailadressen)
             msg.html = render_template('Verwaltungspersonal/Flugdaten_geändert_email.html',
-                                       user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
+                                       user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt,
+                                       wann=flug.sollabflugzeit)
             mail.send(msg)
 
             log_event('Flugdaten (id = ' + str(
@@ -517,16 +519,33 @@ def reporting():
             Flug.sollabflugzeit). \
             filter(Flug.sollabflugzeit >= zeitvon).filter(cast(Flug.sollankunftszeit, Date) <= zeitbis)
 
+    gesamtumsatz = 0
+    gesamt_pünktlich = 0
+    gesamt_verspätet = 0
+    gesamt_annulliert = 0
+    gesamt_passagiere = 0
+    gesamt_sitzplaetze = 0
+
     for rows in alle_fluege:
         anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
             filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
-            filter(Flug.flugzeugid == rows.flugzeugid).count()
+            filter(Flug.flugid == rows.flugid).filter(Buchung.buchungsstatus != "storniert").count()
+        gesamt_passagiere += int(anzahl_passagiere)
         abflugid = rows.abflugid
         zielid = rows.zielid
         flugid = rows.flugid
         umsatz = rows.preis * anzahl_passagiere
+        gesamtumsatz = gesamtumsatz + umsatz
         status = rows.flugstatus
+        if status == "pünktlich":
+            gesamt_pünktlich += 1
+        elif status == "verspätet":
+            gesamt_verspätet += 1
+        else:
+            gesamt_annulliert += 1
+
         sitzplaetze = Flugzeug.query.filter(Flugzeug.flugzeugid == rows.flugzeugid).first().anzahlsitzplaetze
+        gesamt_sitzplaetze += int(sitzplaetze)
         auslastung = '{:.1%}'.format(anzahl_passagiere / sitzplaetze)
 
         reporting_list.append([flugid, abflugid, zielid, status, umsatz, auslastung])
@@ -534,9 +553,45 @@ def reporting():
     if not reporting_list and request.args.get('von') is not None:
         flash('In diesem Zeitraum oder zu diesen Flughäfen gibt es noch keine Daten', category='error')
 
+    print(gesamt_annulliert, gesamt_verspätet, gesamt_pünktlich,
+          gesamtumsatz)
+
     return render_template("Verwaltungspersonal/reporting.html", user=current_user, flughafen_liste=flughafen_liste,
                            default_flughafen_von=default_flughafen_von, default_flughafen_nach=default_flughafen_nach,
-                           alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date())
+                           alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date(),
+                           gesamt_annulliert=gesamt_annulliert, gesamt_verspaetet=gesamt_verspätet,
+                           gesamt_puenktlich=gesamt_pünktlich,
+                           gesamtumsatz=gesamtumsatz, gesamt_sitzplaetze=gesamt_sitzplaetze,
+                           gesamt_passagiere=gesamt_passagiere)
+
+
+@verwaltungspersonal_views.route("/diagramm_anzeigen/", methods=["GET", "POST"])
+@login_required
+def diagramm_anzeigen():
+    gesamtumsatz = int(request.args.get('gesamtumsatz'))
+    gesamt_pünktlich = int(request.args.get('gesamt_puenktlich'))
+    gesamt_verspätet = int(request.args.get('gesamt_verspaetet'))
+    gesamt_annulliert = int(request.args.get('gesamt_annulliert'))
+    gesamt_sitzplaetze = int(request.args.get('gesamt_sitzplaetze'))
+    gesamt_passagiere = int(request.args.get('gesamt_passagiere'))
+
+    gesamt_auslastung = '{:.1%}'.format(gesamt_passagiere / gesamt_sitzplaetze)
+
+    sum = gesamt_verspätet + gesamt_pünktlich + gesamt_annulliert
+
+    labels = ['annulliert', 'verspätet', 'pünktlich']
+    sizes = [gesamt_annulliert / sum, gesamt_verspätet / sum, gesamt_pünktlich / sum]
+
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=False)
+    ax.axis('equal')
+
+    pngImage = io.BytesIO()
+    fig.savefig(pngImage, format='png')
+    pngImageB64 = base64.b64encode(pngImage.getvalue()).decode('utf-8')
+
+    return render_template("Verwaltungspersonal/reporting_diagramm.html", image=pngImageB64, user=current_user,
+                           gesamtumsatz=gesamtumsatz, gesamt_auslastung=gesamt_auslastung, gesamt_passagiere=gesamt_passagiere)
 
 
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])

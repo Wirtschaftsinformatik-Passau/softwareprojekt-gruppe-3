@@ -28,9 +28,6 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#">Tabelle</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Diagramm</a>
-                </li>
             </ul>
             <div class="card" style="width: auto">
                 <div class="card-body">
@@ -86,7 +83,13 @@
         </div>
     </div>
     <br>
+    {% if gesamt_annulliert + gesamt_verspaetet + gesamt_puenktlich != 0 %}
+    <a href="{{ url_for('verwaltungspersonal_views.diagramm_anzeigen', gesamt_annulliert=gesamt_annulliert, gesamt_puenktlich=gesamt_puenktlich, gesamt_verspaetet=gesamt_verspaetet, gesamtumsatz=gesamtumsatz, gesamt_passagiere=gesamt_passagiere, gesamt_sitzplaetze=gesamt_sitzplaetze) }}"
+                                                   class="btn btn-info">In Grafik anzeigen</a>
+    {% endif %}
+    <br>
     {% if alle_fluege %}
+        <br>
         <div class="table-responsive">
             <table class="table">
                 <thead>
