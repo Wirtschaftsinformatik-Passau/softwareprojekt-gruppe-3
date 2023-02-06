@@ -354,7 +354,7 @@ def flug_ändern():
 
             msg = Message('Änderungen in Ihrer Buchung', sender='mailhog_grup3', recipients=emailadressen)
             msg.html = render_template('Verwaltungspersonal/Flugdaten_geändert_email.html',
-                                       user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=wann)
+                                       user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=flug.sollabflugzeit)
             mail.send(msg)
 
             log_event('Flugdaten (id = ' + str(
