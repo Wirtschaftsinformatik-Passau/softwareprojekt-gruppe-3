@@ -207,10 +207,10 @@ def buchung_suchen():
 
     if buchung is None:
 
-        # hier wird gesucht ob es buchungen zu dem angemeldeteten account gibt und die oberste angezeigt
+        # hier wird gesucht ob es buchungen zu dem angemeldeten account gibt und die oberste angezeigt
 
         buchung = Buchung.query.join(Flug).filter(Buchung.nutzerid == current_user.id). \
-            filter(Flug.istankunftszeit > datetime.now()).order_by(Buchung.buchungsid.desc()).first()
+            filter(Flug.istankunftszeit < datetime.now()).order_by(Buchung.buchungsid.desc()).first()
 
         if buchung is None:
             flash('Kein Buchungen gefunden', category='error')
