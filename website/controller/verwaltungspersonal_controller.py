@@ -306,6 +306,8 @@ def flug_ändern():
 
         fliegt_schon = is_between(old_abflug_ist, old_ankunft_ist)
 
+        print(old_ankunft_ist, str(datetime.now()), old_ankunft_ist < str(datetime.now()))
+
         flug.abflugid = request.form['von']
         flug.zielid = request.form['nach']
         flug.flugzeugid = request.form['flugzeugtyp']
@@ -317,7 +319,7 @@ def flug_ändern():
         flug.flugnummer = request.form['fluglinie']
 
         # check ob ein Flug mit gleichen von und nach und abflugzeit existiert
-        if old_ankunft_ist > str(datetime.now()) or flug.flugstatus == "annulliert":
+        if old_ankunft_ist < str(datetime.now()) or flug.flugstatus == "annulliert":
             flash('Der Flug ist bereits gelandet oder annulliert worden. Sie können keine Änderungen mehr vornehmen',
                   category='error')
         elif flug.sollabflugzeit > flug.sollankunftszeit or flug.istabflugzeit > flug.istankunftszeit:
