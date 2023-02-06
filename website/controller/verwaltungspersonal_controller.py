@@ -304,6 +304,8 @@ def flug_ändern():
         old_abflug_ist = str(flug.istabflugzeit)
         old_ankunft_ist = str(flug.istankunftszeit)
 
+        fliegt_schon = is_between(old_abflug_ist, old_ankunft_ist)
+
         flug.abflugid = request.form['von']
         flug.zielid = request.form['nach']
         flug.flugzeugid = request.form['flugzeugtyp']
@@ -323,9 +325,9 @@ def flug_ändern():
                   category='error')
         elif flug.abflugid == flug.zielid:
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
-        elif is_between(old_abflug_ist, old_ankunft_ist) and int(old_price) != int(request.form['preis']):
+        elif fliegt_schon and int(old_price) != int(request.form['preis']):
             flash('Der Flug ist bereits gestartet. Sie können den Preis nicht mehr ändern', category='error')
-        elif is_between(old_abflug_ist, old_ankunft_ist) and old_abflug_soll != str(
+        elif fliegt_schon and old_abflug_soll != str(
                 flug.sollabflugzeit) or old_ankunft_soll != str(flug.sollankunftszeit):
             flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
         else:
