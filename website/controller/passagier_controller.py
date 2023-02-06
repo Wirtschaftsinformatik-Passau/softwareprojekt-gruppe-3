@@ -199,14 +199,13 @@ def buchung_suchen():
     input_buchungsnummer = request.args.get('buchungsnummer')
 
     buchung = Buchung.query.join(Flug).filter(Buchung.buchungsnummer == input_buchungsnummer). \
-        filter(Buchung.nutzerid == current_user.id).filter(Flug.istabflugzeit > datetime.now()). \
+        filter(Buchung.nutzerid == current_user.id). \
         order_by(Buchung.buchungsid.desc()).first()
 
     # für den ersten aufruf, falls keine Buchungsnummer eingegeben wird kann keine gefunden werden
     # (sonst fehlermeldung)
 
     if buchung is None:
-
 
         return render_template('Passagier/buchung_suchen.html', user=current_user)
 
@@ -341,7 +340,7 @@ def storno(stor_buchungsnummer):
                                 buchungsid=buchung.buchungsid))
 
     else:
-        return redirect(url_for('passagier_views.buchung_suchen'))
+        return redirect(url_for('passagier_views.buchung_suchen', buchungsnummer=stor_buchungsnummer))
 
 
 # Diese Hilfsfunktion sendet nach einer Storniernung eine Stornierungsbestätigung per Mail an den Ex-Passagier
