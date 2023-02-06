@@ -199,7 +199,7 @@ def buchung_suchen():
     input_buchungsnummer = request.args.get('buchungsnummer')
 
     buchung = Buchung.query.join(Flug).filter(Buchung.buchungsnummer == input_buchungsnummer). \
-        filter(Buchung.nutzerid == current_user.id).filter(Flug.istankunftszeit < datetime.now()). \
+        filter(Buchung.nutzerid == current_user.id).filter(Flug.istabflugzeit > datetime.now()). \
         order_by(Buchung.buchungsid.desc()).first()
 
     # für den ersten aufruf, falls keine Buchungsnummer eingegeben wird kann keine gefunden werden
@@ -207,60 +207,11 @@ def buchung_suchen():
 
     if buchung is None:
 
-        # hier wird gesucht ob es buchungen zu dem angemeldeten account gibt und die oberste angezeigt
 
-        buchung = Buchung.query.join(Flug).filter(Buchung.nutzerid == current_user.id). \
-            filter(Flug.istankunftszeit < datetime.now()).order_by(Buchung.buchungsid.desc()).first()
+        return render_template('Passagier/buchung_suchen.html', user=current_user)
 
-        if buchung is None:
-            flash('Kein Buchungen gefunden', category='error')
-            return render_template('Passagier/buchung_suchen.html', user=current_user)
 
-        else:
-            ankunft_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-                Flug.abflugid == Flughafen.flughafenid).where(Buchung.buchungsnummer == buchung.buchungsnummer).first()
-            # Kennung des Zielflughafens
-            ziel_flughafen = Flughafen.query.filter(Buchung.flugid == Flug.flugid).where(
-                Flug.zielid == Flughafen.flughafenid).where(Buchung.buchungsnummer == buchung.buchungsnummer).first()
-            nutzer = Nutzerkonto.query.filter(
-                Buchung.nutzerid == Nutzerkonto.id).where(Buchung.buchungsid == buchung.buchungsnummer).first()
-            passagier = Passagier.query.filter(Buchung.buchungsnummer == buchung.buchungsnummer).where(
-                Buchung.buchungsid == Passagier.buchungsid).all()
-            flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
-                Buchung.buchungsnummer == buchung.buchungsnummer).first()
-            flugzeug = Flugzeug.query.filter(Flugzeug.flugzeugid == flug.flugid).first()
-            gepaeckanzahl = db.session.query(Passagier, Buchung, Gepaeck).join(Buchung,
-                                                                               Buchung.buchungsid == Passagier.buchungsid). \
-                join(Gepaeck, Gepaeck.passagierid == Passagier.passagierid).filter(
-                Buchung.buchungsid == buchung.buchungsid).count()
-
-            storno_possbile = True
-            for i in passagier:
-                if i.passagierstatus == "eingecheckt" or i.passagierstatus == "boarded":
-                    storno_possbile = False
-
-            check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
-
-            if is_flight_within_days(flug.sollabflugzeit, EINE_WOCHE):
-                storno_text = "Ihr Flug ist in weniger als sieben Tagen. Wenn Sie Ihre Buchung jetzt stornieren, " \
-                              "erhalten Sie keine Rückerstattung"
-
-            elif is_flight_within_days(flug.sollabflugzeit, ZWEI_WOCHEN):
-                storno_text = "Das Abflugdatum ihres Fluges ist zwischen 14 und 7 Tagen.Wenn Sie jetzt stornieren, " \
-                              "wird Ihnen 50% des Buchungspreis zurückerstattet"
-
-            else:
-                storno_text = "Ihr Flug ist noch mehr als zwei Wochen entfernt. Ihnen wird der volle Buchungspreis " \
-                              "zurückerstattet"
-
-            return render_template('Passagier/buchung_suchen.html', buchung=buchung,
-                                   ankunft_flughafen=ankunft_flughafen,
-                                   ziel_flughafen=ziel_flughafen, flug=flug, user=current_user, nutzer=nutzer,
-                                   check_in_available=check_in_available,
-                                   passagier=passagier, storno_text=storno_text, storno_possbile=storno_possbile,
-                                   gepaeckanzahl=gepaeckanzahl)
-
-    # hier kann speziell nach nummer gesucht werden (muss aber mit nutzer id des angemedletetn nutzer
+    # speziell nach nummer gesucht werden (muss aber mit nutzer id des angemedletetn nutzer
     # zusammenhängen)
 
     elif buchung.nutzerid == current_user.id:
@@ -277,7 +228,7 @@ def buchung_suchen():
             Buchung.buchungsid == Passagier.buchungsid).all()
         flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
             Buchung.buchungsnummer == input_buchungsnummer).first()
-        check_in_available = is_flight_within_days(flug.istabflugzeit, 1)
+        check_in_available = is_flight_within_days(flug.istabflugzeit, 1) and flug.istabflugzeit > datetime.now()
         gepaeckanzahl = db.session.query(Passagier, Buchung, Gepaeck).join(Buchung,
                                                                            Buchung.buchungsid == Passagier.buchungsid). \
             join(Gepaeck, Gepaeck.passagierid == Passagier.passagierid).filter(
@@ -353,7 +304,7 @@ def online_check_in():
         msg.attach("boardingkarte.pdf", "application/pdf", boarding_karte(passagier.passagierid))
         mail.send(msg)
 
-        return redirect(url_for('passagier_views.buchung_suchen'))
+        return redirect(url_for('passagier_views.buchung_suchen', buchungsnummer=buchungsnummer))
 
     return render_template("Passagier/online_check_in.html", user=current_user, passagier=passagier, vorname=vorname,
                            nachname=nachname)

@@ -103,7 +103,7 @@
                             {% if buchung.buchungsstatus != "storniert" and flug.flugstatus != "annulliert" and check_in_available and passagier_row.passagierstatus != "eingecheckt" and passagier_row.passagierstatus != "boarded" %}
                                 <a href="{{ url_for('passagier_views.online_check_in', buchungsid = buchung.buchungsid, buchungsnummer=buchung.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
                                    class="btn btn-warning btn-sm">Online Check In</a><br><br>
-                            {% elif passagier_row.passagierstatus == "eingecheckt" and passagier_row.passagierstatus != "boarded" %}
+                            {% elif passagier_row.passagierstatus == "eingecheckt" and passagier_row.passagierstatus != "boarded" and check_in_available and flug.flugstatus != "annulliert" %}
                                  <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}"
                                               method="post">
                                             <input type="submit" class="btn btn-warning btn-sm"
