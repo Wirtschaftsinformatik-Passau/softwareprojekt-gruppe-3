@@ -315,7 +315,7 @@ def flug_ändern():
         flug.flugnummer = request.form['fluglinie']
 
         # check ob ein Flug mit gleichen von und nach und abflugzeit existiert
-        if is_date_after_yesterday(flug.istankunftszeit, 0) or flug.flugstatus == "annulliert":
+        if old_ankunft_ist > str(datetime.now()) or flug.flugstatus == "annulliert":
             flash('Der Flug ist bereits gelandet oder annulliert worden. Sie können keine Änderungen mehr vornehmen',
                   category='error')
         elif flug.sollabflugzeit > flug.sollankunftszeit or flug.istabflugzeit > flug.istankunftszeit:
@@ -325,7 +325,8 @@ def flug_ändern():
             flash('Von und Nach dürfen nicht der gleichen Stadt entsprechen', category='error')
         elif is_between(old_abflug_ist, old_ankunft_ist) and int(old_price) != int(request.form['preis']):
             flash('Der Flug ist bereits gestartet. Sie können den Preis nicht mehr ändern', category='error')
-        elif is_between(old_abflug_ist, old_ankunft_ist) and old_abflug_soll != str(flug.sollabflugzeit) or old_ankunft_soll != str(flug.sollankunftszeit):
+        elif is_between(old_abflug_ist, old_ankunft_ist) and old_abflug_soll != str(
+                flug.sollabflugzeit) or old_ankunft_soll != str(flug.sollankunftszeit):
             flash('Der Flug ist bereits gestartet. Sie können die Sollzeiten nicht mehr ändern', category='error')
         else:
 
@@ -350,8 +351,6 @@ def flug_ändern():
 
             for rows in alle_nutzer:
                 emailadressen.append(str(rows.emailadresse))
-
-            print(emailadressen)
 
             msg = Message('Änderungen in Ihrer Buchung', sender='mailhog_grup3', recipients=emailadressen)
             msg.html = render_template('Verwaltungspersonal/Flugdaten_geändert_email.html',
