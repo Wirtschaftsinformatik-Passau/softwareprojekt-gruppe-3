@@ -570,8 +570,8 @@ def diagramm_anzeigen():
 
     sum = gesamt_verspätet + gesamt_pünktlich + gesamt_annulliert
 
-    labels = ['pünktlich', 'verspätet', 'annulliert']
-    sizes = [gesamt_annulliert/sum, gesamt_verspätet/sum, gesamt_annulliert/sum]
+    labels = ['annulliert', 'verspätet', 'pünktlich']
+    sizes = [gesamt_annulliert/sum, gesamt_verspätet/sum, gesamt_pünktlich/sum]
 
     fig, ax = plt.subplots()
     ax.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True)
@@ -580,6 +580,8 @@ def diagramm_anzeigen():
     pngImage = io.BytesIO()
     fig.savefig(pngImage, format='png')
     pngImageB64 = base64.b64encode(pngImage.getvalue()).decode('utf-8')
+
+    return render_template("Verwaltungspersonal/reporting_diagramm.html", image=pngImageB64, user=current_user, gesamtumsatz=gesamtumsatz)
 
 
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
