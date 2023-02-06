@@ -342,7 +342,6 @@ def flug_ändern():
 
             flughafen_von = Flughafen.query.filter(Flughafen.flughafenid == flug.abflugid).first()
             flughafen_nach = Flughafen.query.filter(Flughafen.flughafenid == flug.zielid).first()
-            wann = request.form['abflugdatum']
 
             db.session.commit()
 
