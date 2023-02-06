@@ -199,10 +199,10 @@ def buchung_suchen():
     input_buchungsnummer = request.args.get('buchungsnummer')
 
     buchung = Buchung.query.join(Flug).filter(Buchung.buchungsnummer == input_buchungsnummer). \
-        filter(Buchung.nutzerid == current_user.id).filter(Flug.istankunftszeit > datetime.now()). \
+        filter(Buchung.nutzerid == current_user.id).filter(Flug.istankunftszeit < datetime.now()). \
         order_by(Buchung.buchungsid.desc()).first()
 
-    # für den ersten aufruf falls keine Buchungsnummer eingegeben wird kann keine gefunden werden
+    # für den ersten aufruf, falls keine Buchungsnummer eingegeben wird kann keine gefunden werden
     # (sonst fehlermeldung)
 
     if buchung is None:
