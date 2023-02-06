@@ -515,14 +515,17 @@ def reporting():
             Flug.sollabflugzeit). \
             filter(Flug.sollabflugzeit >= zeitvon).filter(cast(Flug.sollankunftszeit, Date) <= zeitbis)
 
+    gesamtumsatz = 0
+
     for rows in alle_fluege:
         anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
             filter(Flug.flugid == Buchung.flugid).filter(Passagier.buchungsid == Buchung.buchungsid). \
-            filter(Flug.flugzeugid == rows.flugzeugid).count()
+            filter(Flug.flugid == rows.flugid).count()
         abflugid = rows.abflugid
         zielid = rows.zielid
         flugid = rows.flugid
         umsatz = rows.preis * anzahl_passagiere
+        gesamtumsatz = gesamtumsatz + umsatz
         status = rows.flugstatus
         sitzplaetze = Flugzeug.query.filter(Flugzeug.flugzeugid == rows.flugzeugid).first().anzahlsitzplaetze
         auslastung = '{:.1%}'.format(anzahl_passagiere / sitzplaetze)
@@ -535,6 +538,13 @@ def reporting():
     return render_template("Verwaltungspersonal/reporting.html", user=current_user, flughafen_liste=flughafen_liste,
                            default_flughafen_von=default_flughafen_von, default_flughafen_nach=default_flughafen_nach,
                            alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date())
+
+
+@verwaltungspersonal_views.route("/diagramm_anzeigen/", methods=["GET", "POST"])
+@login_required
+def diagramm_anzeigen():
+    re
+
 
 
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
@@ -551,3 +561,5 @@ def log_löschen():
     with open("flask.log", "w") as logfile:
         logs = logfile.write("")
     return redirect(url_for('verwaltungspersonal_views.logging'))
+
+
