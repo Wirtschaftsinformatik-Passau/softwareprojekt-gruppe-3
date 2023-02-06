@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, session, redirect, Response, url_for
 from flask_login import current_user, login_required
-from website import db
+from website import db, role_required
 from website.model.models import Flug, Flughafen, Buchung, Passagier, Gepaeck
 from datetime import datetime
 import random, string
@@ -86,6 +86,9 @@ def Kombination_2(buchungsnummer_2, ausweisnummer):
 @bodenpersonal_views.route('/home_bp', methods=["GET", "POST"])
 @login_required
 def home():
+    if not role_required("Bodenpersonal"):
+        flash('ERROR: Kein Zugriff auf diese URL', category='error')
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
     today = datetime.now().date()
 
     if request.method == 'POST':
@@ -202,6 +205,9 @@ def home():
 @bodenpersonal_views.route('/einchecken', methods=['POST', 'GET'])
 @login_required
 def einchecken():
+    if not role_required("Bodenpersonal"):
+        flash('ERROR: Kein Zugriff auf diese URL', category='error')
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
     buchungsnummer = request.args.get('buchungsnummer_1')
     vorname = request.args.get('vorname')
     nachname = request.args.get('nachname')
@@ -232,6 +238,9 @@ def einchecken():
 @bodenpersonal_views.route('/koffer_einchecken', methods=["POST"])
 @login_required
 def koffer_einchecken():
+    if not role_required("Bodenpersonal"):
+        flash('ERROR: Kein Zugriff auf diese URL', category='error')
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
     buchungsid = request.form.get('buchungsid')
     buchungsnummer = request.form.get('buchungsnummer')
     vorname = request.form.get('vorname')
@@ -253,6 +262,9 @@ def koffer_einchecken():
 @bodenpersonal_views.route('/koffer_label', methods=['POST'])
 @login_required
 def koffer_label():
+    if not role_required("Bodenpersonal"):
+        flash('ERROR: Kein Zugriff auf diese URL', category='error')#
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
     passagier_id = request.args.get('passagier_id')
     gepaeckid = request.args.get('gepaeckid')
 
@@ -308,6 +320,9 @@ def koffer_label():
 @bodenpersonal_views.route('/boarding', methods=['POST'])
 @login_required
 def boarding():
+    if not role_required("Bodenpersonal"):
+        flash('ERROR: Kein Zugriff auf diese URL', category='error')
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
     buchungsid = request.args.get('buchungsid')
     vorname = request.args.get('vorname')
     nachname = request.args.get('nachname')
@@ -324,6 +339,9 @@ def boarding():
 # Diese Hilfsfunktion erstellt pro Boarding einen QR Code und einen Boardingpass in Form einer PDF-Datei
 @bodenpersonal_views.route('/generate_boarding_pass', methods=['POST'])
 def generate_boarding_pass():
+    if not role_required("Bodenpersonal"):
+        flash('ERROR: Kein Zugriff auf diese URL', category='error')
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
     passagier_id = request.args.get('passagier_id')
     passagier = Passagier.query.filter(Passagier.passagierid == passagier_id).first()
     flug = Flug.query.join(Buchung, Buchung.flugid == Flug.flugid).join(Passagier,
@@ -385,6 +403,9 @@ def generate_boarding_pass():
 @bodenpersonal_views.route('/fluege_pruefen', methods=["GET", "POST"])
 @login_required
 def fluege_pruefen():
+    if not role_required("Bodenpersonal"):
+        flash('ERROR: Kein Zugriff auf diese URL', category='error')
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
     if request.method == 'POST':
         # get the flight number from the html form
         flugnummer = request.form['flugnummer']
