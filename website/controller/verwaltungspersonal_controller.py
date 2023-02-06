@@ -10,6 +10,9 @@ from sqlalchemy import or_, cast, Date, and_
 from datetime import date, timedelta
 from flask_mail import Message
 import re
+import matplotlib.pyplot as plt
+import io
+import base64
 
 # store the standard routes for a website where the user can navigate to
 verwaltungspersonal_views = Blueprint('verwaltungspersonal_views', __name__)
@@ -357,7 +360,8 @@ def flug_ändern():
 
             msg = Message('Änderungen in Ihrer Buchung', sender='mailhog_grup3', recipients=emailadressen)
             msg.html = render_template('Verwaltungspersonal/Flugdaten_geändert_email.html',
-                                       user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt, wann=flug.sollabflugzeit)
+                                       user=current_user, von=flughafen_von.stadt, nach=flughafen_nach.stadt,
+                                       wann=flug.sollabflugzeit)
             mail.send(msg)
 
             log_event('Flugdaten (id = ' + str(
@@ -516,6 +520,9 @@ def reporting():
             filter(Flug.sollabflugzeit >= zeitvon).filter(cast(Flug.sollankunftszeit, Date) <= zeitbis)
 
     gesamtumsatz = 0
+    gesamt_pünktlich = 0
+    gesamt_verspätet = 0
+    gesamt_annulliert = 0
 
     for rows in alle_fluege:
         anzahl_passagiere = Passagier.query.join(Buchung, Flug). \
@@ -527,6 +534,13 @@ def reporting():
         umsatz = rows.preis * anzahl_passagiere
         gesamtumsatz = gesamtumsatz + umsatz
         status = rows.flugstatus
+        if status == "pünktlich":
+            gesamt_pünktlich += 1
+        elif status == "verspätet":
+            gesamt_verspätet += 1
+        else:
+            gesamt_annulliert += 1
+
         sitzplaetze = Flugzeug.query.filter(Flugzeug.flugzeugid == rows.flugzeugid).first().anzahlsitzplaetze
         auslastung = '{:.1%}'.format(anzahl_passagiere / sitzplaetze)
 
@@ -535,16 +549,37 @@ def reporting():
     if not reporting_list and request.args.get('von') is not None:
         flash('In diesem Zeitraum oder zu diesen Flughäfen gibt es noch keine Daten', category='error')
 
+    print(gesamt_annulliert, gesamt_verspätet, gesamt_pünktlich,
+          gesamtumsatz)
+
     return render_template("Verwaltungspersonal/reporting.html", user=current_user, flughafen_liste=flughafen_liste,
                            default_flughafen_von=default_flughafen_von, default_flughafen_nach=default_flughafen_nach,
-                           alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date())
+                           alle_fluege=alle_fluege, reporting_list=reporting_list, today=datetime.today().date(),
+                           gesamt_annulliert=gesamt_annulliert, gesamt_verspaetet=gesamt_verspätet,
+                           gesamt_puenktlich=gesamt_pünktlich,
+                           gesamtumsatz=gesamtumsatz)
 
 
 @verwaltungspersonal_views.route("/diagramm_anzeigen/", methods=["GET", "POST"])
 @login_required
 def diagramm_anzeigen():
-    re
+    gesamtumsatz = int(request.args.get('gesamtumsatz'))
+    gesamt_pünktlich = int(request.args.get('gesamt_puenktlich'))
+    gesamt_verspätet = int(request.args.get('gesamt_verspaetet'))
+    gesamt_annulliert = int(request.args.get('gesamt_annulliert'))
 
+    sum = gesamt_verspätet + gesamt_pünktlich + gesamt_annulliert
+
+    labels = ['pünktlich', 'verspätet', 'annulliert']
+    sizes = [gesamt_annulliert/sum, gesamt_verspätet/sum, gesamt_annulliert/sum]
+
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True)
+    ax.axis('equal')
+
+    pngImage = io.BytesIO()
+    fig.savefig(pngImage, format='png')
+    pngImageB64 = base64.b64encode(pngImage.getvalue()).decode('utf-8')
 
 
 @verwaltungspersonal_views.route("/logging/", methods=["GET", "POST"])
@@ -561,5 +596,3 @@ def log_löschen():
     with open("flask.log", "w") as logfile:
         logs = logfile.write("")
     return redirect(url_for('verwaltungspersonal_views.logging'))
-
-

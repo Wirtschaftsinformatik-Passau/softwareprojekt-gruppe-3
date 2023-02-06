@@ -83,7 +83,7 @@
         </div>
     </div>
     <br>
-    <a href="{{ url_for('verwaltungspersonal_views.flug_anlegen') }}"
+    <a href="{{ url_for('verwaltungspersonal_views.diagramm_anzeigen', gesamt_annulliert=gesamt_annulliert, gesamt_puenktlich=gesamt_puenktlich, gesamt_verspaetet=gesamt_verspaetet, gesamtumsatz=gesamtumsatz) }}"
                                                    class="btn btn-info">In Grafik anzeigen</a>
     <br>
     {% if alle_fluege %}
