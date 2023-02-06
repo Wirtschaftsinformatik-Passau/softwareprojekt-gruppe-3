@@ -4,7 +4,7 @@ import string
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_required
 from flask_mail import Message
-from website import mail
+from website import mail, role_required
 from website import db
 from website.model.models import Flug, Flughafen, Flugzeug, Nutzerkonto, Buchung, Passagier, Gepaeck, Rechnung
 from datetime import date, datetime, timedelta
@@ -53,6 +53,8 @@ def is_date_in_past(date):
 @passagier_views.route('/flug-buchen/<int:id>/<int:anzahlPassagiere>', methods=['GET', 'POST'])
 @login_required
 def flug_buchen(id, anzahlPassagiere):
+    if not role_required("Passagier"):
+        return redirect(url_for('nutzer_mit_account_views.anmelden'))
     flughafen_liste = Flughafen.query.all()
     flug_data = Flug.query.filter_by(flugid=id).first()
     passagier_anzahl = 0
@@ -160,6 +162,9 @@ def flug_buchen(id, anzahlPassagiere):
 @login_required
 @passagier_views.route('/buchungsbestaetigung', methods=['POST', 'GET'])
 def buchungsbestaetigung():
+    if not role_required("Passagier"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
+
     rechnungsnummer = request.args['rechnungsnummer']
     buchungsnummer = request.args['buchungsnummer']
     buchungsid = int(request.args['buchungsid'])
@@ -191,6 +196,8 @@ def buchungsbestaetigung():
 # Diese Funktion erlaubt es einem Passagier, eine Buchung zu suchen.
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
+    if not role_required("Passagier"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     # Der Nutzer wird zur Login-Seite weitergeleitet, falls er noch nicht angemeldet ist
     if not current_user.is_authenticated:
         flash('Sie müssen angemeldet sein, um nach einer Buchung zu suchen')  # erscheint nicht
@@ -316,6 +323,8 @@ def buchung_suchen():
 # Diese Funktion erlaubt es einem Passagier, sich und Mitreisende online einzuchecken.
 @passagier_views.route('/online_check_in', methods=['POST', 'GET'])
 def online_check_in():
+    if not role_required("Passagier"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     # Übergabe jener Variablen aus der Buchung_suchen Funktion.
     # Abhängig von dem Button auf den geklickt wird, wird der eine oder andere Passagier ausgesucht
     buchungsnummer = request.args.get('buchungsnummer')
@@ -375,6 +384,8 @@ def is_flight_within_days(flight_time, num_days):
 # Diese Funktion erlaubt es einem Passagier, eine Buchung zu stornieren.
 @passagier_views.route('/<stor_buchungsnummer>', methods=['GET', 'POST'])
 def storno(stor_buchungsnummer):
+    if not role_required("Passagier"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     buchung = Buchung.query.filter(Buchung.buchungsnummer == stor_buchungsnummer).first()
     if buchung is not None:
         buchung.buchungsstatus = "storniert"
@@ -395,6 +406,8 @@ def storno(stor_buchungsnummer):
 # Diese Hilfsfunktion sendet nach einer Storniernung eine Stornierungsbestätigung per Mail an den Ex-Passagier
 @passagier_views.route('/stornierungsbestaetigung', methods=['POST', 'GET'])
 def stornierungsbestaetigung():
+    if not role_required("Passagier"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     rechnungsnummer = request.args['rechnungsnummer']
     buchungsnummer = request.args['buchungsnummer']
     buchungsid = int(request.args['buchungsid'])
@@ -416,6 +429,8 @@ def stornierungsbestaetigung():
 # Diese Hilfsfunktion dient dazu, die Gepäcksbestimmungen bei der Buchung anzuzeigen
 @passagier_views.route('/gepaecksbestimmungen', methods=['GET'])
 def gepaecksbestimmungen_anzeigen():
+    if not role_required("Passagier"):
+        return redirect(url_for('nutzer_ohne_account_views.home'))
     return render_template("Passagier/gepaecksbestimmungen.html", user=current_user)
 
 
