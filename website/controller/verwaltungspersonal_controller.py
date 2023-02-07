@@ -275,13 +275,15 @@ def flug_annulieren(id):
     if not role_required("Verwaltungspersonal"):
         flash('ERROR: Kein Zugriff auf diese URL', category='error')
         return redirect(url_for('nutzer_mit_account_views.anmelden'))
+
     flug = Flug.query.get_or_404(id)
     if flug.flugstatus == "annulliert":
         flash('Flug wurde bereits annulliert!', category='error')
         return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
-    elif is_between(flug.istabflugzeit, flug.istankunftszeit):
+    elif is_between(str(flug.istabflugzeit), str(flug.istankunftszeit)):
         flash('Flug ist bereits gestartet. Sie können diesen Flug nicht mehr annullieren', category='error')
+        return redirect(url_for('verwaltungspersonal_views.flug_bearbeiten'))
 
     else:
         flug.flugstatus = 'annulliert'

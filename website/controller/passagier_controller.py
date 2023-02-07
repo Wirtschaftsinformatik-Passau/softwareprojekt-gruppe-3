@@ -135,7 +135,6 @@ def flug_buchen(id, anzahlPassagiere):
                 zusatzgepaeck_counter * 40)
 
         # neue rechnung erstellen
-        # brutto und netto / summer der MwSt
 
         neue_rechnung = Rechnung(buchungsid=neue_buchung.buchungsid,
                                  rechnungsnummer=date.today().strftime("%d%m%Y") + neue_buchung.buchungsnummer,
@@ -249,7 +248,7 @@ def buchung_suchen():
                 if i.passagierstatus == "eingecheckt" or i.passagierstatus == "boarded":
                     storno_possbile = False
 
-            check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
+            check_in_available = is_flight_within_days(flug.sollabflugzeit, 1) and flug.istabflugzeit < datetime.now()
 
             if is_flight_within_days(flug.sollabflugzeit, EINE_WOCHE):
                 storno_text = "Ihr Flug ist in weniger als sieben Tagen. Wenn Sie Ihre Buchung jetzt stornieren, " \
