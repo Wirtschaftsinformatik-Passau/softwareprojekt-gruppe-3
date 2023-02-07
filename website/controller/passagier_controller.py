@@ -197,7 +197,6 @@ def buchungsbestaetigung():
 # Diese Funktion erlaubt es einem Passagier, eine Buchung zu suchen.
 @passagier_views.route('/buchung_suchen', methods=['GET', 'POST'])
 def buchung_suchen():
-
     # Der Nutzer wird zur Login-Seite weitergeleitet, falls er noch nicht angemeldet ist
     if not current_user.is_authenticated:
         flash('Sie müssen angemeldet sein, um nach einer Buchung zu suchen')  # erscheint nicht
@@ -248,7 +247,11 @@ def buchung_suchen():
                 if i.passagierstatus == "eingecheckt" or i.passagierstatus == "boarded":
                     storno_possbile = False
 
-            check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
+            if datetime.now() > flug.istabflugzeit:
+                storno_possbile = False
+
+            check_in_available = is_flight_within_days(flug.sollabflugzeit,
+                                                       1) and not datetime.now() > flug.istabflugzeit
 
             if is_flight_within_days(flug.sollabflugzeit, EINE_WOCHE):
                 storno_text = "Ihr Flug ist in weniger als sieben Tagen. Wenn Sie Ihre Buchung jetzt stornieren, " \
@@ -287,7 +290,7 @@ def buchung_suchen():
             Buchung.buchungsid == Passagier.buchungsid).all()
         flug = Flug.query.filter(Flug.flugid == Buchung.flugid).where(
             Buchung.buchungsnummer == input_buchungsnummer).first()
-        check_in_available = is_flight_within_days(flug.istabflugzeit, 1) and flug.istabflugzeit > datetime.now()
+        check_in_available = is_flight_within_days(flug.istabflugzeit, 1) and not datetime.now() > flug.istabflugzeit
         gepaeckanzahl = db.session.query(Passagier, Buchung, Gepaeck).join(Buchung,
                                                                            Buchung.buchungsid == Passagier.buchungsid). \
             join(Gepaeck, Gepaeck.passagierid == Passagier.passagierid).filter(
@@ -299,6 +302,9 @@ def buchung_suchen():
         for i in passagier:
             if i.passagierstatus == "eingecheckt" or i.passagierstatus == "boarded":
                 storno_possbile = False
+
+        if datetime.now() > flug.istabflugzeit:
+            storno_possbile = False
 
         # check wie weit weg der abflugzeitpunkt ist
 
@@ -356,6 +362,10 @@ def online_check_in():
         if not len(passagier.ausweisnummer) >= MINDESTLÄNGE_AUSWEISNUMMER:
             flash('Bitte überprüfen Sie die Ausweisnummer', category='error')
             return redirect(url_for('passagier_views.buchung_suchen'))
+
+        if str(passagier.ausweisgueltigkeit) > str(datetime.now()):
+            flash('Ausweisgütligkeit muss in der Zukunft liegen', category='error')
+            return redirect(url_for('passagier_views.online_check_in', buchungsnummer=buchungsnummer, vorname=vorname, nachname=nachname, buchungsid=buchungsid))
 
         db.session.commit()
 
