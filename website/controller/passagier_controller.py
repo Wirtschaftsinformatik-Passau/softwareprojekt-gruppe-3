@@ -363,7 +363,7 @@ def online_check_in():
             flash('Bitte überprüfen Sie die Ausweisnummer', category='error')
             return redirect(url_for('passagier_views.online_check_in', buchungsnummer=buchungsnummer, vorname=vorname, nachname=nachname, buchungsid=buchungsid))
 
-        if str(passagier.ausweisgueltigkeit) > str(datetime.now()):
+        if str(passagier.ausweisgueltigkeit) < str(datetime.now()):
             flash('Ausweisgütligkeit muss in der Zukunft liegen', category='error')
             return redirect(url_for('passagier_views.online_check_in', buchungsnummer=buchungsnummer, vorname=vorname, nachname=nachname, buchungsid=buchungsid))
 
