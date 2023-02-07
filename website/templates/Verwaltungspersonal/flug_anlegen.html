@@ -83,14 +83,14 @@
                         <div class="col-md-4 mb-3">
                             <label for="Abflugdatum">Abflugdatum:</label>
                             <input type="Date" class="form-control" id="abflugdatum" name="abflugdatum" placeholder=""
-                                   value="{{ request.args.get('abflugdatum', tomorrow) }}"
+                                   value="{{ request.args.get('abflugdatum', tomorrow) }}" min="1899-01-02" max="3000-12-31"
                                    required>
 
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="Ankunftsdatum">Ankunftsdatum:</label>
                             <input type="Date" class="form-control" id="ankunftsdatum" name="ankunftsdatum" placeholder=""
-                                   value="{{ request.args.get('ankunftsdatum', tomorrow) }}"
+                                   value="{{ request.args.get('ankunftsdatum', tomorrow) }}" min="1899-01-02" max="3000-12-31"
                                    required>
 
                         </div>
