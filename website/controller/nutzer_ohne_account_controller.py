@@ -35,6 +35,11 @@ def is_date_after_yesterday(date, diff):
 # home() ist integriert mit Flug suchen
 @nutzer_ohne_account_views.route('/', methods=['GET', 'POST'])
 def home():
+    if current_user.is_authenticated and current_user.rolle == "Verwaltungspersonal":
+        return redirect(url_for('verwaltungspersonal_views.flugzeug_erstellen'))
+    if current_user.is_authenticated and current_user.rolle == "Bodenpersonal":
+        return redirect(url_for('bodenpersonal_views.home'))
+
     flughafen_liste = Flughafen.query.with_entities(Flughafen.stadt)
 
     vonID = Flughafen.query.filter(Flughafen.stadt == request.args.get('von', default_flughafen_von)).with_entities(
