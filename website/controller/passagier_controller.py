@@ -248,7 +248,7 @@ def buchung_suchen():
                 if i.passagierstatus == "eingecheckt" or i.passagierstatus == "boarded":
                     storno_possbile = False
 
-            check_in_available = is_flight_within_days(flug.sollabflugzeit, 1) and flug.istabflugzeit < datetime.now()
+            check_in_available = is_flight_within_days(flug.sollabflugzeit, 1)
 
             if is_flight_within_days(flug.sollabflugzeit, EINE_WOCHE):
                 storno_text = "Ihr Flug ist in weniger als sieben Tagen. Wenn Sie Ihre Buchung jetzt stornieren, " \

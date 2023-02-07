@@ -339,9 +339,6 @@ def boarding():
 # Diese Hilfsfunktion erstellt pro Boarding einen QR Code und einen Boardingpass in Form einer PDF-Datei
 @bodenpersonal_views.route('/generate_boarding_pass', methods=['POST'])
 def generate_boarding_pass():
-    if not role_required("Bodenpersonal"):
-        flash('ERROR: Kein Zugriff auf diese URL', category='error')
-        return redirect(url_for('nutzer_mit_account_views.anmelden'))
     passagier_id = request.args.get('passagier_id')
     passagier = Passagier.query.filter(Passagier.passagierid == passagier_id).first()
     flug = Flug.query.join(Buchung, Buchung.flugid == Flug.flugid).join(Passagier,

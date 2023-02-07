@@ -320,7 +320,7 @@ def flug_ändern():
         return redirect(url_for('nutzer_mit_account_views.anmelden'))
     if request.method == 'POST':
         flug = Flug.query.get_or_404(request.form.get('id'))
-
+        #alte werte speicher für vergleich
         old_price = flug.preis
         old_abflug_soll = str(flug.sollabflugzeit)
         old_ankunft_soll = str(flug.sollankunftszeit)
