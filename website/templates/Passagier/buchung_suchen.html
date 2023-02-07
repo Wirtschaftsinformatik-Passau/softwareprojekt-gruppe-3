@@ -104,11 +104,11 @@
                                 <a href="{{ url_for('passagier_views.online_check_in', buchungsid = buchung.buchungsid, buchungsnummer=buchung.buchungsnummer, vorname=passagier_row.vorname, nachname=passagier_row.nachname) }}"
                                    class="btn btn-warning btn-sm">Online Check In</a><br><br>
                             {% elif passagier_row.passagierstatus == "eingecheckt" and passagier_row.passagierstatus != "boarded" and check_in_available and flug.flugstatus != "annulliert" %}
-                                 <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}"
-                                              method="post">
-                                            <input type="submit" class="btn btn-warning btn-sm"
-                                                   value=" Boarding Karte drucken">
-                                        </form>
+                                <form action="{{ url_for('bodenpersonal_views.generate_boarding_pass', passagier_id=passagier_row.passagierid) }}"
+                                      method="post">
+                                    <input type="submit" class="btn btn-warning btn-sm"
+                                           value=" Boarding Karte drucken">
+                                </form>
                                 <br>
                                 <br>
                             {% endif %}
@@ -160,9 +160,10 @@
 
 
                             <div class="modal-body">
-                                <div class="card" style="width: 60rem;height: 10rem">
+                                <div class="card" style="width: auto; height:auto">
+                                    <!--PROBLEM: no responsive utilities by Bootstrap for card yet-->
                                     <div class="card-body">
-                                        <div class="container" style="width: auto; height: auto">
+                                        <div class="container" style="width: auto; height:auto">
                                             <b><font size="4"> {{ storno_text }} </font></b>
 
                                         </div>
